@@ -17,13 +17,13 @@ World of Plant는 밝은 식물·행성 테마, Wordless Mage는 어두운 황�
 
 ## GitHub Pages 배포
 
-배포 저장소: https://github.com/BluSt0ne/Introduction.github.io
+배포 저장소: https://github.com/BluSt0ne/Introduction
 
 1. 저장소 Settings → Pages → Build and deployment → Source를 **GitHub Actions**로 선택합니다.
 2. main 브랜치에 파일을 올리면 `.github/workflows/pages.yml`이 `public/`을 배포합니다.
-3. Actions에서 성공 여부를 확인합니다. 배포 주소는 `https://blust0ne.github.io/Introduction.github.io/`입니다.
+3. Actions에서 성공 여부를 확인합니다. 배포 주소는 `https://blust0ne.github.io/Introduction/`입니다.
 
-프로젝트 저장소이므로 주소에 `Introduction.github.io/` 경로가 포함됩니다. 루트 경로가 바뀌어도 동작하도록 사이트 파일 링크를 상대 경로로 작성했습니다.
+프로젝트 저장소이므로 주소에 `Introduction/` 경로가 포함됩니다. 루트 경로가 바뀌어도 동작하도록 사이트 파일 링크를 상대 경로로 작성했습니다.
 
 워크플로는 GitHub 공식 문서의 Pages 구성을 따릅니다: [Using custom workflows with GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
