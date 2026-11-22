@@ -2,7 +2,7 @@ name: Publish project archive
 on:
   push:
     branches: [main]
-    paths: ['public/**', '.github/workflows/pages.yml']
+    paths: ['public/**', 'scripts/test.mjs', '.github/workflows/pages.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Check document links and archive behavior
+        run: node scripts/test.mjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload static site

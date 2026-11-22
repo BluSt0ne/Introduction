@@ -58,6 +58,3 @@ let searchTimer;$('#global-search').addEventListener('input',e=>{const q=e.targe
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!document.querySelector('dialog[open]')){e.preventDefault();$('#global-search').focus();}});
 window.addEventListener('hashchange',()=>{document.querySelectorAll('dialog[open]').forEach(d=>d.close());render();window.scrollTo({top:0,behavior:'instant'});});
 render();
-
-
-
