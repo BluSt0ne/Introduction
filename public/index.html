@@ -1,36 +1,8 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="World of Plant와 Wordless Wizard. 게임의 컨셉, 플레이 흐름, 제작 구조와 상세 기획 문서를 함께 살펴보는 프로젝트 아카이브.">
-  <meta name="theme-color" content="#f7f8fa"><title>Project Archive · WOP & WW</title>
-  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./styles.css">
-  <script defer src="./data/site-data.js"></script><script defer src="./app.js"></script>
-</head>
-<body>
-<a class="skip-link" href="#main">본문으로 이동</a>
-<aside class="sidebar">
-  <a class="brand" href="#overview" aria-label="Project Archive 홈"><span class="brand-icon">P<span>·</span></span><span>Project<br><b>Archive</b></span></a>
-  <p class="nav-label">WORKSPACE</p>
-  <nav aria-label="주 메뉴">
-    <a href="#overview" data-nav="overview"><span class="nav-symbol">◫</span>프로젝트</a>
-    <a href="#documents" data-nav="documents"><span class="nav-symbol">▤</span>기획 문서<span class="nav-count" id="doc-count"></span></a>
-    <a href="#resources" data-nav="resources"><span class="nav-symbol">▧</span>리소스 목록</a>
-    <a href="#changelog" data-nav="changelog"><span class="nav-symbol">◷</span>변경 기록</a>
-  </nav>
-  <p class="nav-label projects-label">PROJECTS</p>
-  <nav aria-label="프로젝트 바로가기" class="project-nav">
-    <a href="#project/wop" data-project="wop"><span class="project-mark wop">W</span>World of Plant</a>
-    <a href="#project/ww" data-project="ww"><span class="project-mark ww">W</span>Wordless Wizard</a>
-  </nav>
-  <div class="sidebar-bottom"><a href="#guide">아카이브 안내</a><a href="./editor.html">기록 관리 <span>로컬 초안</span></a><p>Design. Build. Document.</p></div>
-</aside>
-<div class="workspace">
-  <header class="topbar"><span id="breadcrumb">프로젝트</span><div class="top-actions"><label class="searchbox"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="global-search" type="search" placeholder="문서·리소스 검색" aria-label="문서 및 리소스 검색"><kbd>/</kbd></label><a class="repo-link" href="https://github.com/BluSt0ne/Introduction.github.io" target="_blank" rel="noopener noreferrer">GitHub</a></div></header>
-  <main id="main" tabindex="-1"></main>
-  <footer class="footer"><span>Project Archive <span class="footer-sep">/</span> WOP & WW</span><span>마지막 정리 <time id="updated"></time></span></footer>
-</div>
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="World of Plant와 Wordless Mage의 컨셉, 플레이 흐름, 제작 방식과 기획 문서."><meta name="theme-color" content="#101914"><title>BluSt0ne · Games</title><link rel="icon" href="./assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./styles.css"><script defer src="./data/site-data.js"></script><script defer src="./app.js"></script></head>
+<body data-theme="archive"><a class="skip-link" href="#main">본문으로 이동</a>
+<header class="site-header"><a class="site-brand" href="#overview">BluSt0ne<span aria-hidden="true">.</span></a><nav class="site-nav" aria-label="주 메뉴"><a href="#overview" data-nav="overview">프로젝트</a><a href="#documents" data-nav="documents">기획 문서 <span id="doc-count"></span></a><a href="#resources" data-nav="resources">리소스</a><a href="#changelog" data-nav="changelog">변경 기록</a></nav><label class="searchbox"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="global-search" type="search" placeholder="검색" aria-label="문서 및 리소스 검색"><kbd>/</kbd></label></header>
+<div class="workspace"><span id="breadcrumb" class="sr-only"></span><main id="main" tabindex="-1"></main><footer class="footer"><a href="#overview">BluSt0ne / Games</a><div><a href="./editor.html">기록 관리</a><a href="https://github.com/BluSt0ne/Introduction.github.io" target="_blank" rel="noopener noreferrer">GitHub</a></div><time id="updated" class="sr-only"></time></footer></div>
 <dialog id="document-dialog" class="document-dialog" aria-labelledby="dialog-title"><header class="dialog-top"><div><span class="eyebrow" id="dialog-kicker"></span><h2 id="dialog-title"></h2></div><button class="icon-button" id="close-dialog" aria-label="문서 닫기">✕</button></header><div id="dialog-body"></div></dialog>
 <dialog id="resource-dialog" class="resource-dialog" aria-labelledby="resource-title"><header class="dialog-top"><h2 id="resource-title"></h2><button class="icon-button" id="close-resource" aria-label="리소스 닫기">✕</button></header><div id="resource-body"></div></dialog>
-<noscript>문서 검색과 본문 열람에는 JavaScript가 필요합니다. <a href="./downloads/wop-overview.docx">World of Plant 기획서 다운로드</a> · <a href="./downloads/ww-overview.docx">Wordless Wizard 기획서 다운로드</a></noscript>
-</body></html>
+<noscript>JavaScript를 켜면 프로젝트와 문서를 열람할 수 있습니다. <a href="./downloads/wop-overview.docx">World of Plant 기획서</a> · <a href="./downloads/ww-overview.docx">Wordless Mage 기획서</a></noscript></body></html>

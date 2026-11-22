@@ -1,8 +1,10 @@
 # Project Archive · WOP & WW
 
-World of Plant와 Wordless Wizard를 소개하는 면접관용 프로젝트 아카이브입니다.
+World of Plant와 Wordless Mage를 소개하는 면접관용 프로젝트 아카이브입니다.
 
 ## 화면 구성
+
+World of Plant는 밝은 식물·행성 테마, Wordless Mage는 어두운 황동·마법 테마를 사용합니다. 기본 화면은 두 프로젝트를 고르는 간결한 갤러리입니다.
 
 - 프로젝트별 한 페이지: 컨셉 → 플레이 흐름 → 제작 방식 → 관련 기획서
 - 상세 문서: 팝업 열람, 개별 링크, 원본 PPTX / DOCX 다운로드

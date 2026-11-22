@@ -1,8 +1,8 @@
 window.ARCHIVE_DATA = {
   "schemaVersion": 1,
   "site": {
-    "title": "Project Archive",
-    "subtitle": "WOP & WW 개발 기록",
+    "title": "BluSt0ne · Games",
+    "subtitle": "World of Plant & Wordless Mage",
     "updated": "2026-11-22",
     "description": "게임의 설계부터 리소스와 변경 기록까지, 함께 확인하는 프로젝트 아카이브."
   },
@@ -25,7 +25,7 @@ window.ARCHIVE_DATA = {
     },
     {
       "id": "ww",
-      "name": "Wordless Wizard",
+      "name": "Wordless Mage",
       "short": "WW",
       "genre": "마법 조합 · 환경 퍼즐",
       "description": "로봇의 행동에서 마법 문자를 얻고, 대상의 시간·무게·위치를 바꾸어 길을 만듭니다.",
@@ -37,7 +37,7 @@ window.ARCHIVE_DATA = {
         "퍼즐 해결"
       ],
       "note": "WordlessMage 문서를 함께 수록",
-      "cover": "assets/media/51d1b8617e53e536-thumb.webp"
+      "cover": "assets/media/356f2968b216dbe0-thumb.webp"
     }
   ],
   "documents": [
@@ -13084,6 +13084,28 @@ window.ARCHIVE_DATA = {
     }
   ],
   "releases": [
+    {
+      "id": "archive-0-2-0",
+      "project": "site",
+      "version": "v0.2.0",
+      "date": "2026-11-22",
+      "title": "게임별 테마 적용",
+      "summary": "프로젝트의 분위기에 맞춰 화면과 요약을 정리했습니다.",
+      "changes": [
+        {
+          "type": "변경",
+          "text": "World of Plant: 식물·행성·자동화를 담은 녹색 테마"
+        },
+        {
+          "type": "변경",
+          "text": "Wordless Mage: 석벽·황동·청록빛 마법 테마"
+        },
+        {
+          "type": "변경",
+          "text": "안내 문구 축소, 프로젝트별 핵심 요약 간결화"
+        }
+      ]
+    },
     {
       "id": "archive-0-1-0",
       "project": "site",
