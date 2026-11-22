@@ -1,10 +1,11 @@
 window.ARCHIVE_DATA = {
   "schemaVersion": 1,
   "site": {
-    "title": "BluSt0ne · Games",
+    "title": "Game Archive",
     "subtitle": "World of Plant & Wordless Mage",
     "updated": "2026-11-22",
-    "description": "게임의 설계부터 리소스와 변경 기록까지, 함께 확인하는 프로젝트 아카이브."
+    "description": "게임의 설계부터 리소스와 변경 기록까지, 함께 확인하는 프로젝트 아카이브.",
+    "contactEmail": "dngus0822@gmail.com"
   },
   "projects": [
     {
@@ -13084,6 +13085,32 @@ window.ARCHIVE_DATA = {
     }
   ],
   "releases": [
+    {
+      "id": "archive-0-3-0",
+      "project": "site",
+      "version": "v0.3.0",
+      "date": "2026-11-22",
+      "title": "프로젝트별 문서 정리",
+      "summary": "프로젝트 색상과 주제별 픽토그램으로 문서를 구분합니다.",
+      "changes": [
+        {
+          "type": "변경",
+          "text": "기획 문서를 프로젝트별 목록으로 분리"
+        },
+        {
+          "type": "변경",
+          "text": "파일 형식 대신 주제별 픽토그램 표시"
+        },
+        {
+          "type": "변경",
+          "text": "홈 아이콘과 이메일 연락처 적용"
+        },
+        {
+          "type": "삭제",
+          "text": "검색창과 방문자용 관리·저장소 링크"
+        }
+      ]
+    },
     {
       "id": "archive-0-2-0",
       "project": "site",
