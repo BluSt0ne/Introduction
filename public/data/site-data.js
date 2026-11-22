@@ -5,7 +5,9 @@ window.ARCHIVE_DATA = {
     "subtitle": "World of Plant & Wordless Mage",
     "updated": "2026-11-22",
     "description": "게임의 설계부터 리소스와 변경 기록까지, 함께 확인하는 프로젝트 아카이브.",
-    "contactEmail": "dngus0822@gmail.com"
+    "contactEmail": "dngus0822@gmail.com",
+    "heading": "Projects",
+    "kicker": "GAME DESIGN & DEVELOPMENT"
   },
   "projects": [
     {
@@ -22,7 +24,63 @@ window.ARCHIVE_DATA = {
         "행성 확장"
       ],
       "note": "문서 기준 v1.0 · 2026.11.18",
-      "cover": "assets/media/82c6e304f4ad008f-thumb.webp"
+      "cover": "assets/media/82c6e304f4ad008f-thumb.webp",
+      "brief": {
+        "title": [
+          "World of",
+          "Plant"
+        ],
+        "label": "INCREMENTAL · AUTOMATION",
+        "tagline": "커서로 피운 꽃밭을, 자동으로 돌아가는 행성으로.",
+        "concept": "커서의 파동으로 꽃을 깨우고, 생산을 자동화해 다른 행성까지 정원을 넓히는 증분형 게임.",
+        "points": [
+          "커서가 닿으면 시작되는 생산",
+          "범위와 빈도로 보이는 성장",
+          "손 → 장치 → 로봇 → 로켓"
+        ],
+        "steps": [
+          [
+            "파동",
+            "커서로 꽃 깨우기"
+          ],
+          [
+            "생산",
+            "에너지·원석 모으기"
+          ],
+          [
+            "투자",
+            "땅과 생산 수단 확장"
+          ],
+          [
+            "자동화",
+            "장치·로봇에 작업 맡기기"
+          ],
+          [
+            "행성 확장",
+            "로켓으로 설계 옮기기"
+          ]
+        ],
+        "build": [
+          [
+            "공통 생산 규칙",
+            "커서와 자동 장치가 같은 파동·생산 규칙을 공유합니다."
+          ],
+          [
+            "블루프린트",
+            "배치 원본과 작업 사본을 분리해 설계 수정과 시공을 독립시킵니다."
+          ],
+          [
+            "데이터 기반 성장",
+            "사거리·주기·비용·증가 배수를 분리해 성장 속도를 조정합니다."
+          ]
+        ],
+        "featured": [
+          "wop-overview",
+          "wop-01-detail",
+          "wop-04"
+        ]
+      },
+      "cardText": "꽃에서 시작해, 행성으로."
     },
     {
       "id": "ww",
@@ -38,7 +96,63 @@ window.ARCHIVE_DATA = {
         "퍼즐 해결"
       ],
       "note": "WordlessMage 문서를 함께 수록",
-      "cover": "assets/media/356f2968b216dbe0-thumb.webp"
+      "cover": "assets/media/356f2968b216dbe0-thumb.webp",
+      "brief": {
+        "title": [
+          "Wordless",
+          "Mage"
+        ],
+        "label": "MAGIC · ENVIRONMENTAL PUZZLE",
+        "tagline": "말을 빼앗아 마법으로, 마법을 조합해 새로운 길로.",
+        "concept": "로봇의 대사에서 마법 문자를 얻고, 시간·무게·위치를 바꾸어 환경 퍼즐을 푸는 게임.",
+        "points": [
+          "관찰과 유도로 얻는 마법",
+          "서로 다른 효과의 조합",
+          "환경의 반응으로 만드는 해법"
+        ],
+        "steps": [
+          [
+            "관찰",
+            "로봇과 환경 읽기"
+          ],
+          [
+            "유도",
+            "필요한 대사 끌어내기"
+          ],
+          [
+            "획득",
+            "마법 문자 확보"
+          ],
+          [
+            "조합",
+            "대상의 상태 바꾸기"
+          ],
+          [
+            "퍼즐 해결",
+            "장치와 경로 연결"
+          ]
+        ],
+        "build": [
+          [
+            "대사에서 마법까지",
+            "대사 → 드롭 오브젝트 → 마법 데이터로 획득과 사용을 연결합니다."
+          ],
+          [
+            "대상별 반응 규칙",
+            "정지·운반·가연 여부와 무게를 정의해 같은 마법도 다르게 작동합니다."
+          ],
+          [
+            "효과의 역할 분리",
+            "시간·수치·위치·제거를 나눠 마법을 조합할 이유를 만듭니다."
+          ]
+        ],
+        "featured": [
+          "ww-overview",
+          "ww-13",
+          "ww-15"
+        ]
+      },
+      "cardText": "마법으로 바꾸는 환경의 규칙."
     }
   ],
   "documents": [
@@ -13085,6 +13199,32 @@ window.ARCHIVE_DATA = {
     }
   ],
   "releases": [
+    {
+      "id": "archive-0-4-0",
+      "project": "site",
+      "version": "v0.4.0",
+      "date": "2026-11-22",
+      "title": "사이트 편집 도구와 화면 통일",
+      "summary": "문구·문서·이미지를 수정하는 편집 도구를 확장하고 두 프로젝트의 다크 톤을 맞췄습니다.",
+      "changes": [
+        {
+          "type": "추가",
+          "text": "프로젝트 소개·문서 본문·표·이미지·내부 파일 편집과 폴더 저장·수정 파일 내보내기"
+        },
+        {
+          "type": "변경",
+          "text": "World of Plant 다크 톤과 전용 서체 적용"
+        },
+        {
+          "type": "변경",
+          "text": "두 프로젝트 홈 카드와 버튼의 모서리 형태 통일"
+        },
+        {
+          "type": "삭제",
+          "text": "문서와 리소스의 원본 다운로드 버튼"
+        }
+      ]
+    },
     {
       "id": "archive-0-3-0",
       "project": "site",
