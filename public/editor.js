@@ -90,20 +90,71 @@ function renderImageEditor(b,index){const l=imageLayout(b.layout),prefix='이미
 function readImageBlock(el){const values={};for(const field of el.querySelectorAll('[data-image-prop]'))values[field.dataset.imageProp]=field.value;return {index:Number(el.dataset.imageIndex),src:safePath(values.src),alt:values.alt||'',caption:values.caption||'',layout:imageLayout(values)};}
 function coverFields(form){return {cover:safePath(formField(form,'cover').value),coverLayout:{fit:formField(form,'coverFit').value==='contain'?'contain':'cover',positionX:mediaNumber(formField(form,'coverX').value,50,0,100),positionY:mediaNumber(formField(form,'coverY').value,50,0,100)}};}
 function loadCoverFields(form,row){const l=row.coverLayout||{};formField(form,'cover').value=row.cover||'';formField(form,'coverFit').value=l.fit==='contain'?'contain':'cover';formField(form,'coverX').value=l.positionX??50;formField(form,'coverY').value=l.positionY??50;if(form.id==='project-form')formField(form,'heroWidth').value=l.heroWidth??(row.id==='ww'?67:47);}
-function currentPreviewData(){let next=clone(draft);const active=document.querySelector('.editor-section:not([hidden])')?.id;if(active==='projects-panel'){const form=$('#project-form'),fd=new FormData(form),values={};for(const name of ['name','genre','cardText','cover','title','label','tagline','concept','points','steps','build'])values[name]=String(fd.get(name)||'');next=updateProjectFromFields(next,selectedProjectId,values);const cover=coverFields(form);cover.coverLayout.heroWidth=mediaNumber(formField(form,'heroWidth').value,selectedProjectId==='ww'?67:47,25,80);Object.assign(next.projects.find(p=>p.id===selectedProjectId),cover);for(const name of ['heading','kicker','contactEmail'])next.site[name]=formField($('#site-form'),name).value.trim();}else if(active==='documents-panel')next=applyDocumentFields(next,selectedDocumentId,selectedSectionIndex,collectDocumentFields());return next;}
+// Preview accepts incomplete typing. Save/export still uses the strict validators.
+function previewPath(value,fallback=''){try{return safePath(value);}catch{return fallback;}}
+function previewPairs(value){return String(value).split('\n').filter(line=>line.trim()).map(line=>{const split=line.indexOf('|');return split<0?[line,'']:[line.slice(0,split).trim(),line.slice(split+1).trim()];});}
+function previewCover(form,row){return {cover:previewPath(formField(form,'cover').value,row.cover),coverLayout:{...row.coverLayout,fit:formField(form,'coverFit').value==='contain'?'contain':'cover',positionX:mediaNumber(formField(form,'coverX').value,50,0,100),positionY:mediaNumber(formField(form,'coverY').value,50,0,100)}};}
+function currentPreviewData(){
+ const next=clone(draft),active=document.querySelector('.editor-section:not([hidden])')?.id;
+ if(active==='projects-panel'){
+  const form=$('#project-form'),p=next.projects.find(p=>p.id===selectedProjectId),read=name=>formField(form,name).value;
+  p.name=read('name');p.genre=read('genre');p.cardText=read('cardText');p.description=read('tagline');
+  p.brief={...(p.brief||original.projects.find(base=>base.id===p.id)?.brief),title:read('title').split('\n'),label:read('label'),tagline:read('tagline'),concept:read('concept'),points:parseLines(read('points')),steps:previewPairs(read('steps')),build:previewPairs(read('build'))};
+  Object.assign(p,previewCover(form,p));p.coverLayout.heroWidth=mediaNumber(read('heroWidth'),p.id==='ww'?67:47,25,80);
+  for(const name of ['heading','kicker','contactEmail'])next.site[name]=formField($('#site-form'),name).value;
+ }else if(active==='documents-panel'){
+  const form=$('#document-form'),doc=next.documents.find(d=>d.id===selectedDocumentId),section=doc.sections[selectedSectionIndex];
+  doc.title=formField(form,'title').value;doc.kind=formField(form,'kind').value;section.title=formField(form,'sectionTitle').value;Object.assign(doc,previewCover(form,doc));
+  for(const el of document.querySelectorAll('.doc-text-edit')){const b=section.blocks[Number(el.dataset.block)];if(b?.type==='text')b.text=el.value;}
+  for(const el of document.querySelectorAll('.doc-cell-edit')){const rows=section.blocks[Number(el.dataset.block)]?.rows;if(rows?.[Number(el.dataset.row)])rows[Number(el.dataset.row)][Number(el.dataset.col)]=el.value;}
+  for(const el of document.querySelectorAll('.editor-image-block')){const b=section.blocks[Number(el.dataset.imageIndex)];if(b?.type!=='image')continue;const values={};for(const field of el.querySelectorAll('[data-image-prop]'))values[field.dataset.imageProp]=field.value;b.src=previewPath(values.src,b.src);b.alt=values.alt||'';b.caption=values.caption||'';b.layout=imageLayout(values);}
+ }
+ return next;
+}
 function resolvePreviewMedia(data){for(const p of data.projects)p.cover=previewAsset(p.cover);for(const r of data.resources)if(r.preview)r.preview=previewAsset(r.preview);for(const d of data.documents){if(d.cover)d.cover=previewAsset(d.cover);for(const s of d.sections)for(const b of s.blocks)if(b.type==='image')b.src=previewAsset(b.src);}return data;}
-function sendLivePreview(){const frame=$('#live-preview-frame');if(!frame?.contentWindow)return;try{const data=resolvePreviewMedia(currentPreviewData());const mode=$('#preview-page').value;const route=mode==='overview'?'overview':mode==='documents'?'documents?project='+data.documents.find(d=>d.id===selectedDocumentId).project:mode==='document'?'document/'+selectedDocumentId:'project/'+selectedProjectId;frame.contentWindow.postMessage({type:'archive-live-preview',data,route,focus:mode==='document'?previewImageFocus:null,css:stagedFiles.get('styles.css')||''},new URL(location.href).origin);$('#live-preview-status').textContent='입력한 내용 미리보기 · 공개 반영 전';}catch(error){$('#live-preview-status').textContent='미리보기 대기: '+error.message;}}
-function scheduleLivePreview(){clearTimeout(livePreviewTimer);livePreviewTimer=setTimeout(sendLivePreview,250);}
+const LIVE_PREVIEW_KEY='project-archive-live-preview-v1';
+const previewSession=crypto.randomUUID();
+const livePreviewChannel=typeof window.BroadcastChannel==='function'?new window.BroadcastChannel('project-archive-live-preview'):null;
+let previewRevision=0,lastPreviewRevision='';
+function sendLivePreview(){
+ try{
+  const sourceData=currentPreviewData(),data=resolvePreviewMedia(clone(sourceData)),mode=$('#preview-page').value;
+  const route=mode==='overview'?'overview':mode==='documents'?'documents?project='+data.documents.find(d=>d.id===selectedDocumentId).project:mode==='document'?'document/'+selectedDocumentId:'project/'+selectedProjectId;
+  const payload={type:'archive-live-preview',revision:previewSession+':'+(++previewRevision),data,route,focus:mode==='document'?previewImageFocus:null,css:stagedFiles.get('styles.css')||''};
+  lastPreviewRevision=payload.revision;
+  $('#live-preview-status').textContent='미리보기 반영 중…';
+  $('#open-live-preview').setAttribute('href','./index.html?draft=1#'+route);
+  $('#live-preview-frame')?.contentWindow?.postMessage(payload,new URL(location.href).origin);
+  livePreviewChannel?.postMessage(payload);
+  // Separate-window fallback and first-load snapshot. Never overwrite the saved draft.
+  try{localStorage.setItem(LIVE_PREVIEW_KEY,JSON.stringify({...payload,data:sourceData,updatedAt:Date.now()}));}catch{}
+ }catch(error){$('#live-preview-status').textContent='미리보기를 표시하지 못했습니다: '+error.message;}
+}
+function scheduleLivePreview(){
+ if(livePreviewTimer!==null)return;
+ // Throttle instead of debounce: continuous typing and dragging keep updating.
+ livePreviewTimer=setTimeout(()=>{livePreviewTimer=null;sendLivePreview();},80);
+}
+function initPreviewSync(){
+ window.addEventListener('message',event=>{
+  if(event.source!==$('#live-preview-frame')?.contentWindow||event.origin!==new URL(location.href).origin)return;
+  if(event.data?.type==='archive-preview-ready'){scheduleLivePreview();return;}
+  if(event.data?.type==='archive-preview-applied'&&event.data.revision===lastPreviewRevision)$('#live-preview-status').textContent='실시간 반영됨 · 저장 전 내용';
+ });
+ if(livePreviewChannel)livePreviewChannel.onmessage=event=>{if(event.data?.type==='archive-preview-request')scheduleLivePreview();};
+ $('#open-live-preview').addEventListener('click',sendLivePreview);
+}
 async function attachEditorImage(file,target){if(!file)return;if(!['image/png','image/jpeg','image/webp'].includes(file.type))throw Error('PNG·JPEG·WebP 이미지를 선택해 주세요.');const path=await stageAsset(file);if(target==='body'){insertDocumentImage(path,file.name.replace(/\.[^.]+$/,''));}else{formField($('#'+(target==='document'?'document':'project')+'-form'),'cover').value=path;status('이미지를 첨부했습니다. 크기·초점을 조절하고 초안을 저장해 주세요.');}scheduleLivePreview();}
 function insertDocumentImage(src,alt=''){const path=safePath(src);if(!path)throw Error('이미지 주소를 입력해 주세요.');if(!saveDocumentFields(true))return false;const next=clone(draft);next.documents.find(d=>d.id===selectedDocumentId).sections[selectedSectionIndex].blocks.push({type:'image',src:path,alt,caption:'',layout:imageLayout()});if(!persist(next,'본문 이미지를 추가했습니다.'))return false;loadDocument();scheduleLivePreview();return true;}
-function updatePlacementStage(el){const b=readImageBlock(el),l=b.layout,placed=el.querySelector('.placement-image'),img=placed.querySelector('img');placed.style.width=l.width+'%';placed.style.marginLeft=l.offsetX+'%';placed.style.marginTop=l.spaceTop+'px';img.src=previewAsset(b.src);img.style.height=l.height?l.height+'px':'auto';img.style.objectFit=l.fit;for(const key of ['width','offsetX','spaceTop','height'])el.querySelector('[data-image-prop="'+key+'"]').value=l[key];}
+function updatePlacementStage(el){let b;try{b=readImageBlock(el);}catch{return;}const l=b.layout,placed=el.querySelector('.placement-image'),img=placed.querySelector('img');placed.style.width=l.width+'%';placed.style.marginLeft=l.offsetX+'%';placed.style.marginTop=l.spaceTop+'px';img.src=previewAsset(b.src);img.style.height=l.height?l.height+'px':'auto';img.style.objectFit=l.fit;for(const key of ['width','offsetX','spaceTop','height'])el.querySelector('[data-image-prop="'+key+'"]').value=l[key];}
 function initMediaEditor(){
+ initPreviewSync();
  loadCoverFields($('#project-form'),draft.projects.find(p=>p.id===selectedProjectId));loadCoverFields($('#document-form'),draft.documents.find(d=>d.id===selectedDocumentId));
  $('#add-image-url').addEventListener('click',()=>{try{if(insertDocumentImage($('#new-image-url').value))$('#new-image-url').value='';}catch(error){status(error.message);}});$('#live-preview-frame').addEventListener('load',sendLivePreview);$('#preview-page').addEventListener('change',sendLivePreview);$('#refresh-live-preview').addEventListener('click',sendLivePreview);
  $('#preview-size').addEventListener('change',e=>{$('#preview-viewport').dataset.size=e.target.value;});
  $('#expand-live-preview').addEventListener('click',e=>{previewExpanded=!previewExpanded;$('#live-preview-panel').classList.toggle('expanded',previewExpanded);e.target.textContent=previewExpanded?'미리보기 축소':'크게 보기';e.target.setAttribute('aria-pressed',String(previewExpanded));});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&previewExpanded)$('#expand-live-preview').click();});
- document.addEventListener('input',e=>{const block=e.target.closest('.editor-image-block');if(block){previewImageFocus=selectedSectionIndex+'-'+block.dataset.imageIndex;updatePlacementStage(block);}else previewImageFocus=null;if(e.target.closest('#project-form,#document-form,#site-form'))scheduleLivePreview();});
+ document.addEventListener('input',e=>{const block=e.target.closest('.editor-image-block');if(block){previewImageFocus=selectedSectionIndex+'-'+block.dataset.imageIndex;updatePlacementStage(block);}else{const field=e.target.closest('.doc-text-edit,.doc-cell-edit');previewImageFocus=field?selectedSectionIndex+'-'+field.dataset.block:null;}if(e.target.closest('#project-form,#document-form,#site-form'))scheduleLivePreview();});
  document.addEventListener('change',e=>{if(['document-select','section-select','project-select'].includes(e.target.id))previewImageFocus=null;if(e.target.closest('.editor-image-block'))updatePlacementStage(e.target.closest('.editor-image-block'));scheduleLivePreview();});
  document.addEventListener('click',e=>{const align=e.target.closest('[data-image-align]');if(align){const block=align.closest('.editor-image-block');previewImageFocus=selectedSectionIndex+'-'+block.dataset.imageIndex;const width=readImageBlock(block).layout.width;block.querySelector('[data-image-prop="offsetX"]').value=align.dataset.imageAlign==='left'?0:align.dataset.imageAlign==='right'?100-width:(100-width)/2;updatePlacementStage(block);scheduleLivePreview();}const move=e.target.closest('[data-move-doc-block]');if(move){if(!saveDocumentFields(true))return;const next=clone(draft),blocks=next.documents.find(d=>d.id===selectedDocumentId).sections[selectedSectionIndex].blocks,from=Number(move.dataset.block),to=from+Number(move.dataset.moveDocBlock);if(to>=0&&to<blocks.length){[blocks[from],blocks[to]]=[blocks[to],blocks[from]];persist(next,'본문 순서를 바꿨습니다.');loadDocument();}}const tab=e.target.closest('[data-editor-tab]');if(tab){if(tab.dataset.editorTab==='documents-panel')$('#preview-page').value='document';if(tab.dataset.editorTab==='projects-panel')$('#preview-page').value='project';scheduleLivePreview();}});
  for(const [id,target]of [['document-cover-file','document'],['document-body-file','body']])$('#'+id).addEventListener('change',async e=>{try{await attachEditorImage(e.target.files[0],target);}catch(error){status(error.message);}e.target.value='';});
