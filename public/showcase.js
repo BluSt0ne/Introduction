@@ -44,6 +44,7 @@ const ICON = {
   grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
   cap: '<path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5M22 9v6"/>',
   medal: '<circle cx="12" cy="15" r="5"/><path d="M8.5 11 6 3h4l2 5 2-5h4l-2.5 8"/><path d="m12 13 .8 1.6 1.7.2-1.2 1.2.3 1.7-1.6-.8-1.6.8.3-1.7-1.2-1.2 1.7-.2z"/>',
+  palette: '<path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 2-1.9 0-.6-.3-1-.6-1.4-.3-.4-.5-.8-.5-1.3 0-1 .8-1.6 1.8-1.6H17a4 4 0 0 0 4-4c0-4.3-4-7.8-9-7.8z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="14.5" cy="7" r="1.2"/><circle cx="17" cy="10.5" r="1.2"/>',
   me: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
 };
 const ico = (k, cls = '') => `<svg class="nx-ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[k] || ''}</svg>`;
@@ -95,7 +96,7 @@ function profileTools(items) {
 }
 function historyMarks(h) {
   const marks=list(h.marks);
-  if(marks.length)return `<span class="nx-h-media">${marks.map(m=>`<span class="nx-history-mark" title="${e(m.label)}"><img src="${e(m.src)}" alt="${e(m.label)}"></span>`).join('')}</span>`;
+  if(marks.length)return `<span class="nx-h-media">${marks.map(m=>`<span class="nx-history-mark"><img src="${e(m.src)}" alt="${e(m.label)}"></span>`).join('')}</span>`;
   return `<span class="nx-h-media">${list(h.images).length?list(h.images).map(src=>`<img src="${e(src)}" alt="" loading="lazy">`).join(''):`<i>${ico(h.icon||'check')}</i>`}</span>`;
 }
 function profile(P) {
@@ -125,7 +126,7 @@ function psCard(it, extra = '', L = {}) {
     <hr>
     <h4 class="sol">${e(L.solution || '해결')}</h4><p>${rich(it.solution)}</p>
     ${it.reason ? `<div class="nx-ps-reason"><h4>${e(L.reason || '수정 사유')}</h4><p>${rich(it.reason)}</p></div>` : ''}
-    ${list(it.images).length ? `<div class="nx-ps-shots" style="--n:${Math.min(list(it.images).length, 2)}">${list(it.images).map(im => `<figure><button type="button" class="nx-zoom" data-full="${e(im.full || im.src)}" data-cap="${e(im.caption)}" aria-label="${e(im.caption)} 크게 보기"><img src="${e(im.src)}" alt="${e(im.caption)}" loading="lazy"><span class="nx-zoom-ico" aria-hidden="true">⤢</span></button><figcaption>${e(im.caption)}</figcaption></figure>`).join('')}</div>` : ''}
+    ${it.anim ? `<div class="nx-ps-clip" data-mini="${e(it.anim)}" aria-hidden="true"><canvas></canvas></div>` : list(it.images).length ? `<div class="nx-ps-shots" style="--n:${Math.min(list(it.images).length, 2)}">${list(it.images).map(im => `<figure><button type="button" class="nx-zoom" data-full="${e(im.full || im.src)}" data-cap="${e(im.caption)}" aria-label="${e(im.caption)} 크게 보기"><img src="${e(im.src)}" alt="${e(im.caption)}" loading="lazy"><span class="nx-zoom-ico" aria-hidden="true">⤢</span></button><figcaption>${e(im.caption)}</figcaption></figure>`).join('')}</div>` : ''}
   </article>`;
 }
 function aiIssues() {
@@ -208,7 +209,7 @@ function countUp(root = document) {
   });
 }
 function reveal() {
-  const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('nx-in'); io.unobserve(en.target); } }), { threshold: .12 });
+  const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('nx-in'); io.unobserve(en.target); } }), { threshold: 0, rootMargin: '0px 0px -8% 0px' });
   $$('.nx-reveal:not(.nx-in)').forEach(el => reduce ? el.classList.add('nx-in') : io.observe(el));
 }
 
@@ -249,6 +250,7 @@ function mount(force) {
   const slot = $('#nx-intro .nx-intro-copy', main); if (slot) { slot.append(grid); heading.classList.add('nx-moved'); }
   heading.insertAdjacentHTML('afterend', play() + split() + aiIssues() + verify() + archive());
   if (window.NXAnim) cleanups.push(NXAnim.mount($('#nx-anim-wop'), NXAnim.wopScene()), NXAnim.mount($('#nx-anim-ww'), NXAnim.wmScene()));
+  if (window.NXAnim && NXAnim.mini) $$('[data-mini]', main).forEach(el => { const make = NXAnim.mini[el.dataset.mini]; if (make) cleanups.push(NXAnim.mount(el, make())); });
   countUp(); reveal(); rail();
   if (force) $$('.nx-reveal', main).forEach(n => n.classList.add('nx-in'));
 }

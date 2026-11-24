@@ -426,6 +426,154 @@ function wmScene() {
 }
 
 /* ================= player ================= */
+/* ---------- small looping clips for the design-intent cards ---------- */
+// every clip: { duration, steps, draw(c, W, H, t) }, drawn on a flat panel
+function miniBase(c, W, H) { c.fillStyle = '#121b16'; c.fillRect(0, 0, W, H); }
+function miniRing(c, x, y, k, R, col, w = 1.4) { if (k <= 0 || k >= 1) return; c.strokeStyle = a(col, .75 * (1 - k)); c.lineWidth = w; c.beginPath(); c.arc(x, y, k * R, 0, TAU); c.stroke(); }
+function miniBud(c, x, y, r) { c.fillStyle = a(MUTED, .35); c.beginPath(); c.arc(x, y, r * .35, 0, TAU); c.fill(); }
+function miniSlot(c, x, y, s, on, flash) { c.fillStyle = '#0c1210'; c.strokeStyle = flash ? '#ff6b5a' : a(MUTED, .7); c.lineWidth = 1.4; c.beginPath(); c.roundRect(x - s / 2, y - s / 2, s, s, s * .18); c.fill(); c.stroke(); if (on) handIcon(c, x, y + s * .05, s * .55, GOLD); }
+function miniBox(c, x, y, s, col = '#3a4a44') { c.fillStyle = col; c.strokeStyle = a(INK, .7); c.lineWidth = 1.3; c.beginPath(); c.roundRect(x - s / 2, y - s, s, s, 3); c.fill(); c.stroke(); c.strokeStyle = a(INK, .25); c.beginPath(); c.moveTo(x - s / 2, y - s); c.lineTo(x + s / 2, y); c.moveTo(x + s / 2, y - s); c.lineTo(x - s / 2, y); c.stroke(); }
+function miniStar(c, x, y, r, on) { c.beginPath(); for (let i = 0; i < 10; i++) { const an = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; c.lineTo(x + Math.cos(an) * rr, y + Math.sin(an) * rr); } c.closePath(); if (on) { c.fillStyle = SUN; c.fill(); } else { c.strokeStyle = a(MUTED, .6); c.lineWidth = 1.2; c.stroke(); } }
+
+// a field of flower spots shared by the World of Plant clips
+const MINI_SPOTS = (() => { const r = rnd(7), out = []; while (out.length < 22) { const x = r(), y = r(); if (out.every(p => Math.hypot(p[0] - x, (p[1] - y) * .6) > .1)) out.push([x, y, Math.floor(r() * 3)]); } return out; })();
+function miniField(c, W, H, wake, area = [.08, .14, .84, .76]) {
+  const S = Math.min(W, H), fr = S * .045;
+  MINI_SPOTS.forEach(([u, v, ci], i) => { const x = W * (area[0] + u * area[2]), y = H * (area[1] + v * area[3]), k = wake(x, y, i); if (k > 0) bloom(c, x, y, fr, PET[ci], k); else miniBud(c, x, y, fr); });
+}
+
+const MINI = {
+  // cursor over open ground sends waves by itself; a click adds one more
+  'wop-hover': () => {
+    const D = 6, cur = t => [.2 + .6 * (.5 - .5 * Math.cos(t / D * TAU)), .45 + .18 * Math.sin(t / D * TAU * 2)];
+    return { duration: D, steps: [[0, '']], draw(c, W, H, t) {
+      miniBase(c, W, H); const S = Math.min(W, H), R = S * .32;
+      const waves = []; for (let w = 0; w * .55 < t; w++) { const tw = w * .55, [u, v] = cur(tw); waves.push([W * u, H * v, tw, R]); }
+      if (t > 3.2) { const [u, v] = cur(3.2); waves.push([W * u, H * v, 3.2, R * 1.6]); }
+      miniField(c, W, H, (x, y) => { let best = 0; waves.forEach(([wx, wy, tw, rr]) => { const d = Math.hypot(x - wx, y - wy); if (d < rr) best = Math.max(best, seg(t, tw + d / rr * .9, tw + d / rr * .9 + .4)); }); return best; });
+      waves.forEach(([wx, wy, tw, rr]) => miniRing(c, wx, wy, seg(t, tw, tw + .9), rr, rr > R ? SUN : INK, rr > R ? 2 : 1.2));
+      const [u, v] = cur(t); arrowCursor(c, W * u, H * v, S * .07);
+      if (t > 3.1 && t < 3.5) { c.fillStyle = a(SUN, .9); c.beginPath(); c.arc(W * u, H * v, S * .018, 0, TAU); c.fill(); }
+    } };
+  },
+  // the emitter repeats the cursor's wave: same ring, same bloom
+  'wop-auto': () => ({ duration: 6, steps: [[0, '']], draw(c, W, H, t) {
+    miniBase(c, W, H); const S = Math.min(W, H), R = S * .38, L = [W * .27, H * .5], Rt = [W * .73, H * .5];
+    const src = [[L, 0], [Rt, .25]], waves = [];
+    src.forEach(([p, off]) => { for (let w = 0; off + w * 1.2 < t; w++) waves.push([p[0], p[1], off + w * 1.2]); });
+    miniField(c, W, H, (x, y) => { let best = 0; waves.forEach(([wx, wy, tw]) => { const d = Math.hypot(x - wx, y - wy); if (d < R) best = Math.max(best, seg(t, tw + d / R, tw + d / R + .4)); }); return best; });
+    waves.forEach(([wx, wy, tw]) => miniRing(c, wx, wy, seg(t, tw, tw + 1.1), R, wx < W / 2 ? INK : ACC));
+    arrowCursor(c, L[0] - S * .02, L[1] - S * .03, S * .07);
+    emitter(c, Rt[0], Rt[1], S * .12, 1, t);
+    c.strokeStyle = a(MUTED, .3); c.setLineDash([3, 4]); c.beginPath(); c.moveTo(W / 2, H * .12); c.lineTo(W / 2, H * .88); c.stroke(); c.setLineDash([]);
+  } }),
+  // upgrades show up as a wider range and a faster beat
+  'wop-upgrade': () => ({ duration: 7.5, steps: [[0, '']], draw(c, W, H, t) {
+    miniBase(c, W, H); const S = Math.min(W, H), P = [W * .5, H * .54];
+    const lvl = t < 2.5 ? 0 : t < 5 ? 1 : 2, R = S * (lvl ? .42 : .26), every = lvl === 2 ? .45 : 1.1, start = [0, 2.5, 5][lvl];
+    c.strokeStyle = a(ACC, .35); c.setLineDash([4, 4]); c.lineWidth = 1.2; c.beginPath(); c.arc(P[0], P[1], R, 0, TAU); c.stroke(); c.setLineDash([]);
+    for (let w = 0; start + w * every < t; w++) miniRing(c, P[0], P[1], seg(t, start + w * every, start + w * every + 1), R, ACC, 1.6);
+    emitter(c, P[0], P[1], S * .13, 1, t);
+    const up = [2.5, 5].find(s => t > s && t < s + .8);
+    if (up) { const k = seg(t, up, up + .8); c.fillStyle = a(SUN, 1 - k); c.beginPath(); const y = P[1] - S * .2 - k * S * .08; c.moveTo(P[0], y - S * .05); c.lineTo(P[0] + S * .04, y); c.lineTo(P[0] - S * .04, y); c.closePath(); c.fill(); }
+    // level pips: range, then rate
+    [['range', 1], ['rate', 2]].forEach(([, need], i) => { c.fillStyle = lvl >= need ? ACC : a(MUTED, .3); c.beginPath(); c.roundRect(W * .06 + i * S * .07, H * .08, S * .05, S * .05, 3); c.fill(); });
+  } }),
+  // editing the original does not stop the copy being built
+  'wop-blueprint': () => ({ duration: 7, steps: [[0, '']], draw(c, W, H, t) {
+    miniBase(c, W, H); const S = Math.min(W, H), cell = S * .14;
+    const layout = [[0, 0, 'e'], [1, 0, 'f'], [2, 0, 'f'], [0, 1, 'f'], [1, 1, 'b'], [2, 1, 'f'], [0, 2, 'f'], [1, 2, 'f'], [2, 2, 'e']];
+    const O = [W * .5 - cell * 4.4, H * .5 - cell * 1.1], Cp = [W * .5 + cell * 1.8, H * .5 - cell * 1.1];
+    const frame = (p, col) => { c.strokeStyle = col; c.lineWidth = 1.4; c.beginPath(); c.roundRect(p[0] - cell * .1, p[1] - cell * .1, cell * 3.2, cell * 3.2, 5); c.stroke(); };
+    frame(O, BLUE); frame(Cp, a(MUTED, .5));
+    const edit = seg(t, 3.0, 3.4);
+    layout.forEach(([gx, gy, k], i) => {
+      const x = O[0] + gx * cell * 1, y = O[1] + gy * cell * 1, xx = Cp[0] + gx * cell, yy = Cp[1] + gy * cell;
+      const changed = i === 1 && edit > 0;
+      if (k === 'e') emitter(c, x + cell * .5, y + cell * .5, cell * .9, 1, t); else if (k === 'b') battery(c, x + cell * .5, y + cell * .5, cell * .85, 1); else bloom(c, x + cell * .5, y + cell * .5, cell * .35, changed ? '#e9b7c6' : ACC, 1);
+      if (changed) miniRing(c, x + cell * .5, y + cell * .5, edit, cell, BLUE);
+      const bt = 1 + i * .55, kk = seg(t, bt, bt + .35);
+      if (kk <= 0) { c.strokeStyle = a(BLUE, .6); c.lineWidth = 1; c.strokeRect(xx + cell * .15, yy + cell * .15, cell * .7, cell * .7); }
+      else if (k === 'e') emitter(c, xx + cell * .5, yy + cell * .5, cell * .9, kk, t); else if (k === 'b') battery(c, xx + cell * .5, yy + cell * .5, cell * .85, kk); else bloom(c, xx + cell * .5, yy + cell * .5, cell * .35, ACC, kk);
+    });
+    if (t > 3.0 && t < 4.2) { c.fillStyle = a(BLUE, .9 * (1 - seg(t, 3.8, 4.2))); c.beginPath(); c.arc(O[0] + cell * 1.5, O[1] - cell * 1.1, S * .025, 0, TAU); c.fill(); }
+    c.fillStyle = a(MUTED, .6); c.beginPath(); c.moveTo(W * .5, H * .45); c.lineTo(W * .55, H * .5); c.lineTo(W * .5, H * .55); c.closePath(); c.fill();
+  } }),
+  // the robot's shout becomes the spell: bubble breaks, hand drops into a slot
+  'ww-speech': () => ({ duration: 5.5, steps: [[0, '']], draw(c, W, H, t) {
+    miniBase(c, W, H); const S = Math.min(W, H), G = H * .8, RX = W * .36;
+    c.strokeStyle = a(MUTED, .5); c.lineWidth = 1.2; c.beginPath(); c.moveTo(0, G); c.lineTo(W, G); c.stroke();
+    const hit = 2.2, flat = t < hit ? 1 : Math.max(.2, 1 - seg(t, hit, hit + .15) * .8), gone = seg(t, hit + .2, hit + .6);
+    // weight
+    const wy = t < hit - .4 ? H * .05 : lerp(H * .05, G - S * .3 * flat, seg(t, hit - .4, hit) ** 2);
+    if (t < hit + .6) { c.fillStyle = '#26323a'; c.strokeStyle = INK; c.lineWidth = 1.3; c.beginPath(); c.roundRect(RX - S * .07, wy - S * .1, S * .14, S * .1, 3); c.fill(); c.stroke(); }
+    if (gone < 1) { c.globalAlpha = 1 - gone; c.save(); c.translate(RX, G); c.scale(1, flat); c.fillStyle = '#26323a'; c.strokeStyle = INK; c.lineWidth = 1.3; c.beginPath(); c.roundRect(-S * .07, -S * .2, S * .14, S * .2, 5); c.fill(); c.stroke(); c.fillStyle = '#ff6b5a'; c.fillRect(-S * .035, -S * .15, S * .07, S * .025); c.restore(); c.globalAlpha = 1; }
+    // bubble with the stop hand, then shards and the falling glyph
+    const BX = RX + S * .2, BY = G - S * .42;
+    if (t > .5 && t < hit) { const k = pop(seg(t, .5, .8)); c.fillStyle = '#f4f1e6'; c.beginPath(); c.roundRect(BX - S * .1 * k, BY - S * .08 * k, S * .2 * k, S * .16 * k, 8); c.fill(); handIcon(c, BX, BY + S * .01, S * .1 * k, '#26323a'); }
+    if (t >= hit) {
+      const k = seg(t, hit, hit + .5); for (let i = 0; i < 6; i++) { const an = i / 6 * TAU; c.fillStyle = a('#f4f1e6', 1 - k); c.fillRect(BX + Math.cos(an) * S * .14 * k, BY + Math.sin(an) * S * .14 * k, S * .025, S * .025); }
+      const fall = seg(t, hit + .1, hit + 1.1), fly = seg(t, hit + 1.4, hit + 2.0);
+      const gx = lerp(BX, W * .82, ease(fly)), gy = fly > 0 ? lerp(G - S * .06, H * .16, ease(fly)) : lerp(BY, G - S * .06, fall * fall);
+      if (fly < 1) handIcon(c, gx, gy, S * .09, GOLD);
+    }
+    [0, 1, 2].forEach(i => miniSlot(c, W * .82 + (i - 1) * S * .13, H * .16, S * .1, i === 0 && t > hit + 2.0));
+  } }),
+  // one target, five spells, five different results
+  'ww-five': () => ({ duration: 10, steps: [[0, '']], draw(c, W, H, t) {
+    miniBase(c, W, H); const S = Math.min(W, H), G = H * .82, X = W * .55;
+    c.strokeStyle = a(MUTED, .5); c.lineWidth = 1.2; c.beginPath(); c.moveTo(0, G); c.lineTo(W, G); c.stroke();
+    const i = Math.floor(t / 2) % 5, k = seg(t % 2, .3, 1.3), names = ['stop', 'heavy', 'light', 'carry', 'fire'];
+    // spell row
+    names.forEach((n, j) => { const x = W * .12 + j * S * .14, y = H * .14; c.strokeStyle = j === i ? GOLD : a(MUTED, .4); c.lineWidth = j === i ? 2 : 1.2; c.beginPath(); c.roundRect(x - S * .05, y - S * .05, S * .1, S * .1, 4); c.stroke(); miniGlyph(c, n, x, y, S * .06, j === i ? GOLD : a(MUTED, .6)); });
+    let bx = X, by = G, col = '#3a4a44';
+    if (i === 1) { by = G + S * .03 * k; c.fillStyle = a(INK, .3 * k); c.fillRect(X - S * .12, G, S * .24, S * .02); }
+    if (i === 2) by = G - S * .22 * ease(k) - Math.sin(t * 4) * S * .01 * k;
+    if (i === 3) bx = X + S * .3 * ease(k);
+    if (i === 4) col = k > .3 ? '#6b3a2a' : col;
+    miniBox(c, bx, by, S * .16, col);
+    if (i === 0) { const r = S * .13; c.strokeStyle = a(BLUE, .8 * k); c.lineWidth = 1.6; c.beginPath(); c.arc(bx, by - S * .08, r, 0, TAU * k); c.stroke(); }
+    if (i === 4 && k > .2) for (let f = 0; f < 5; f++) { const fx = bx + (f - 2) * S * .03, fh = S * (.05 + .04 * Math.abs(Math.sin(t * 9 + f))); c.fillStyle = a(f % 2 ? '#f29a4a' : SUN, .9); c.beginPath(); c.moveTo(fx - S * .015, by - S * .16); c.quadraticCurveTo(fx, by - S * .16 - fh * 2, fx + S * .015, by - S * .16); c.fill(); }
+  } }),
+  // three slots: fill, refuse a fourth, spend one
+  'ww-slots': () => ({ duration: 6.5, steps: [[0, '']], draw(c, W, H, t) {
+    miniBase(c, W, H); const S = Math.min(W, H), sx = i => W * .5 + (i - 1) * S * .22, sy = H * .55, ss = S * .17;
+    const fill = [1, 1.8, 2.6], reject = 3.4, use = 4.8;
+    const full = t > 3.0 && t < use + .2, flash = t > reject + .35 && t < reject + .75;
+    [0, 1, 2].forEach(i => { const on = t > fill[i] + .5 && !(i === 2 && t > use + .5); miniSlot(c, sx(i), sy, ss, on, flash); });
+    fill.forEach((f, i) => { const k = seg(t, f, f + .5); if (k > 0 && k < 1) handIcon(c, lerp(W * .5, sx(i), ease(k)), lerp(H * .08, sy, ease(k)), ss * .55, GOLD); });
+    const r = seg(t, reject, reject + .9); if (r > 0 && r < 1) { const y = r < .4 ? lerp(H * .08, sy - ss * .8, ease(r / .4)) : lerp(sy - ss * .8, H * .02, ease((r - .4) / .6)); c.globalAlpha = 1 - Math.max(0, (r - .5) * 2); handIcon(c, W * .5, y, ss * .55, '#ff6b5a'); c.globalAlpha = 1; }
+    const u = seg(t, use, use + .7); if (u > 0 && u < 1) { handIcon(c, lerp(sx(2), W * .9, ease(u)), lerp(sy, H * .2, ease(u)), ss * .55, GOLD); }
+    if (u >= 1 && t < use + 1.4) miniRing(c, W * .9, H * .2, seg(t, use + .7, use + 1.4), S * .12, GOLD, 2);
+    void full;
+  } }),
+  // clearing opens the next level; stars are a separate, optional goal
+  'ww-goal': () => ({ duration: 7, steps: [[0, '']], draw(c, W, H, t) {
+    miniBase(c, W, H); const S = Math.min(W, H), y = H * .6, xs = [W * .2, W * .5, W * .8], r = S * .085;
+    c.strokeStyle = a(MUTED, .4); c.lineWidth = 2; c.beginPath(); c.moveTo(xs[0], y); c.lineTo(xs[2], y); c.stroke();
+    const clear = seg(t, 1.2, 1.6), open = seg(t, 1.8, 2.3);
+    xs.forEach((x, i) => {
+      const done = i === 0 ? clear >= 1 : false, unlocked = i === 0 || (i === 1 && open >= 1);
+      c.fillStyle = done ? ACC : '#0c1210'; c.strokeStyle = unlocked ? ACC : a(MUTED, .5); c.lineWidth = 2; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill(); c.stroke();
+      if (!unlocked) { c.strokeStyle = a(MUTED, .7); c.lineWidth = 1.6; c.beginPath(); c.arc(x, y - r * .15, r * .28, Math.PI, 0); c.stroke(); c.fillStyle = a(MUTED, .7); c.fillRect(x - r * .38, y - r * .1, r * .76, r * .55); }
+      if (i === 1 && open > 0 && open < 1) miniRing(c, x, y, open, r * 2.2, ACC, 2);
+      if (done) { c.strokeStyle = '#0c1210'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(x - r * .4, y); c.lineTo(x - r * .1, y + r * .3); c.lineTo(x + r * .45, y - r * .3); c.stroke(); }
+    });
+    // stars on the first level: one from the clear, two more from retries
+    [2.0, 4.0, 5.6].forEach((s, j) => miniStar(c, xs[0] + (j - 1) * r * .9, y - r * 1.9, r * .38, t > s));
+    if (t > 3.3 && t < 3.9 || t > 4.9 && t < 5.5) { const k = seg(t, t < 4 ? 3.3 : 4.9, t < 4 ? 3.9 : 5.5); c.strokeStyle = a(SUN, 1 - k); c.lineWidth = 2; c.beginPath(); c.arc(xs[0], y, r * (1 + k * .6), -Math.PI * .9, Math.PI * .6 * (1 - k)); c.stroke(); }
+  } }),
+};
+function miniGlyph(c, n, x, y, s, col) {
+  c.save(); c.translate(x, y); c.fillStyle = col; c.strokeStyle = col; c.lineWidth = Math.max(1.4, s * .14); c.lineCap = 'round';
+  if (n === 'stop') handIcon(c, 0, s * .05, s * 1.1, col);
+  if (n === 'heavy') { c.beginPath(); c.moveTo(-s * .35, -s * .1); c.lineTo(s * .35, -s * .1); c.lineTo(s * .45, s * .4); c.lineTo(-s * .45, s * .4); c.closePath(); c.fill(); c.fillRect(-s * .1, -s * .35, s * .2, s * .25); }
+  if (n === 'light') { c.beginPath(); c.moveTo(0, s * .45); c.lineTo(0, -s * .4); c.moveTo(-s * .3, -s * .1); c.lineTo(0, -s * .4); c.lineTo(s * .3, -s * .1); c.stroke(); }
+  if (n === 'carry') { c.beginPath(); c.moveTo(-s * .45, 0); c.lineTo(s * .4, 0); c.moveTo(s * .1, -s * .3); c.lineTo(s * .4, 0); c.lineTo(s * .1, s * .3); c.stroke(); }
+  if (n === 'fire') { c.beginPath(); c.moveTo(0, -s * .5); c.quadraticCurveTo(s * .45, -s * .05, s * .3, s * .3); c.quadraticCurveTo(0, s * .55, -s * .3, s * .3); c.quadraticCurveTo(-s * .4, 0, 0, -s * .5); c.fill(); }
+  c.restore();
+}
+
 function mount(root, scene) {
   if (!root) return () => {};
   const cv = root.querySelector('canvas'), ctx = cv.getContext('2d');
@@ -454,5 +602,5 @@ function mount(root, scene) {
   size();
   return () => { alive = false; cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); };
 }
-return { wopScene, wmScene, mount };
+return { wopScene, wmScene, mount, mini: MINI };
 })();

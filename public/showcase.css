@@ -438,3 +438,14 @@ body.nx-overview main{padding-top:24px}
 .nx-h-media .nx-history-mark{padding:5px}
 .nx-h-media .nx-history-mark img{border-radius:4px}
 .nx-h-media .nx-history-mark img[src$="club-mark.webp"]{transform:scale(.8)}
+/* design-intent clips */
+.nx-ps-clip{margin-top:16px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#121b16}
+.nx-ps-clip canvas{display:block;width:100%;aspect-ratio:16/9}
+/* flat colours: no decorative gradients */
+body,body[data-theme="wop"],body[data-theme="mage"]{background:var(--bg)!important}
+.project-visual:after{background:none!important}
+.ww .hero-image:after{background:#10171b99!important}
+.ai-section-panel{background:#16221b!important}
+.production-content{background:#16231b!important}
+.project-page.ww .production-content{background:#15222a!important}
+.nx-planet{background:var(--paper)!important}
