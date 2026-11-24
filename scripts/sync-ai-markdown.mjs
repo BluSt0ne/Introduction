@@ -9,5 +9,6 @@ const context={window:{}};
 vm.runInNewContext(fs.readFileSync(dataPath,'utf8'),context);
 const data=context.window.ARCHIVE_DATA;
 data.site.aiDevelopment.markdown=fs.readFileSync(path.join(root,'public/content/ai-development.md'),'utf8');
+for(const p of data.projects){const file=path.join(root,'public/content/'+p.id+'-production.md');if(fs.existsSync(file))p.productionMarkdown=fs.readFileSync(file,'utf8');}
 fs.writeFileSync(dataPath,'window.ARCHIVE_DATA = '+JSON.stringify(data,null,2)+';\n');
 console.log('Synced AI Markdown into public page data.');

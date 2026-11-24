@@ -111,3 +111,5 @@ AI 활용 페이지: 상단 AI 활용 또는 각 프로젝트의 AI 활용 과�
 2026-11-24 캡처: public/assets/screenshots/2026-11-24. WOP는 현재 소스의 Windows 빌드, WW는 기존 level-review 기능으로 캡처했습니다. WW 결과 이미지는 테스트 진행도이며 실제 클리어 기록이 아닙니다. 기존 상세 문서의 본문과 이전 리소스는 보존했습니다.
 
 AI 활용 상세 원고: public/content/ai-development.md. 사용 안내: Markdown_편집_안내.md. Markdown의 ## 제목은 탭, ### 제목은 펼침 항목, 협업 흐름은 단계 선택으로 표시됩니다. 원고를 직접 수정한 경우 node scripts/sync-ai-markdown.mjs 실행 후 페이지 데이터와 함께 커밋합니다. 편집 도구로 가져오면 페이지 데이터와 MD를 폴더/ZIP에 함께 저장합니다.
+
+게임 제작 원고는 public/content/wop-production.md, public/content/ww-production.md입니다. 편집기의 프로젝트 탭에서 갤러리와 제작 과정 Markdown을 수정·가져오기 할 수 있으며, 이미지 첨부·실시간 미리보기·폴더/ZIP 저장을 지원합니다.
