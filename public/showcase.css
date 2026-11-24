@@ -431,3 +431,7 @@ body.nx-overview main{padding-top:24px}
 .nx-intro{margin-bottom:0;padding-bottom:24px}
 #nx-play{margin-top:120px;clear:both;width:100%}
 @media (max-width:900px){#nx-play{margin-top:72px}}
+/* history: every mark sits on the same white tile */
+.nx-history-mark{background:#fff!important;padding:3px;box-sizing:border-box}
+.nx-history-mark img[src$="-pixel.svg"]{padding:0}
+.nx-h-media .nx-history-mark img[src$="club-mark.webp"]{transform:scale(.72);border-radius:6px}
