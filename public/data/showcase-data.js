@@ -101,12 +101,6 @@ window.SHOWCASE_DATA = {
         {
           "year": "2026",
           "text": "개인 개발",
-<<<<<<< HEAD
-          "pixel": [
-            "wop",
-            "ww",
-            "galactica"
-=======
           "images": [],
           "icon": "",
           "marks": [
@@ -122,17 +116,11 @@ window.SHOWCASE_DATA = {
               "src": "assets/history/galactica-pixel.svg",
               "label": "Galactica"
             }
->>>>>>> 63f61c2c32f85eff49e316b9d60d38429bbd157b
           ]
         },
         {
           "year": "2025",
-<<<<<<< HEAD
           "text": "개인 개발",
-          "pixel": [
-            "triple"
-=======
-          "text": "Triple Showdown",
           "images": [],
           "icon": "",
           "marks": [
@@ -140,23 +128,11 @@ window.SHOWCASE_DATA = {
               "src": "assets/history/triple-showdown-pixel.svg",
               "label": "Triple Showdown"
             }
->>>>>>> 63f61c2c32f85eff49e316b9d60d38429bbd157b
           ]
         },
         {
           "year": "2024",
           "text": "I2P X O2CUBE 기획, 팀장",
-<<<<<<< HEAD
-          "pixel": [
-            "lantern"
-          ]
-        },
-        {
-          "year": "2022",
-          "text": "정진 장학금",
-          "pixel": [
-            "medal"
-=======
           "images": [],
           "icon": "",
           "marks": [
@@ -168,16 +144,10 @@ window.SHOWCASE_DATA = {
               "src": "assets/history/lone-lantern-pixel.svg",
               "label": "Lone Lantern"
             }
->>>>>>> 63f61c2c32f85eff49e316b9d60d38429bbd157b
           ]
         },
         {
           "year": "2020",
-<<<<<<< HEAD
-          "text": "홍익대 게임학부 입학",
-          "pixel": [
-            "cap"
-=======
           "text": "홍익대 게임소프트웨어전공 입학",
           "images": [],
           "icon": "",
@@ -186,19 +156,11 @@ window.SHOWCASE_DATA = {
               "src": "assets/history/game-software-mark.webp",
               "label": "홍익대학교 게임소프트웨어전공"
             }
->>>>>>> 63f61c2c32f85eff49e316b9d60d38429bbd157b
           ]
         },
         {
           "year": "2019",
           "text": "넷마블 게임 아카데미 4기 팀장",
-<<<<<<< HEAD
-          "pixel": [
-            "defair"
-          ],
-          "logo": "assets/logos/netmarble-foundation.png",
-          "logoAlt": "넷마블문화재단"
-=======
           "images": [],
           "icon": "",
           "marks": [
@@ -211,7 +173,6 @@ window.SHOWCASE_DATA = {
               "label": "디페어"
             }
           ]
->>>>>>> 63f61c2c32f85eff49e316b9d60d38429bbd157b
         }
       ]
     }

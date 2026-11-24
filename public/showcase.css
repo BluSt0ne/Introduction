@@ -110,8 +110,8 @@
 .nx-play .nx-head{margin-bottom:18px}
 .nx-anim-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 .nx-anim{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper);display:flex;flex-direction:column}
-.nx-anim.wop{border-color:#4d6a49}
-.nx-anim.ww{border-color:#56604e;background:#151e23}
+.nx-anim.wop{border-radius:22px;border-color:#4d6a49}
+.nx-anim.ww{border-radius:4px;border-color:#56604e;background:#151e23}
 .nx-anim header{padding:18px 22px 14px}
 .nx-anim-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
 .nx-anim.ww .nx-anim-label{color:#d9b96e}
@@ -232,7 +232,7 @@
 @media (max-width:640px){.nx-issue dl>div{grid-template-columns:24px 1fr;gap:8px}}
 .nx-issue dt .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
 /* keep the animation card height stable while the active phase changes */
-.nx-anim-phases{flex-wrap:wrap;overflow:visible;white-space:normal;mask-image:none;gap:6px 0;color:#c9d6cb}
+.nx-anim-phases{flex-wrap:nowrap;overflow:hidden;white-space:nowrap;mask-image:linear-gradient(90deg,#000 88%,transparent)}
 .nx-anim-phases li,.nx-anim-phases li.on{font-weight:500}
 .nx-anim-stage{contain:strict}
 /* problem / solution cards */
@@ -247,8 +247,6 @@
 .nx-pj.ww .nx-ps h4.sol{background:#d9b96e}
 .nx-ps p{font-size:15px;line-height:1.75;color:#c9d6cb}
 .nx-ps p strong{color:var(--ink);font-weight:700}
-.nx-ps-reason{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
-.nx-ps-reason h4{color:var(--muted)}
 .nx-ps hr{border:0;border-top:1px solid var(--line);margin:16px 0}
 .nx-ps-shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:16px}
 .nx-ps-shots figure{margin:0}
@@ -257,10 +255,8 @@
 .nx-ps-shots figcaption{font-size:12px;color:var(--muted);margin-top:6px}
 .nx-pj{margin-top:26px}
 .nx-pj-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.nx-pj-mark{display:grid;place-items:center;width:48px;height:48px;flex:none;color:var(--accent);background:#fff;border-radius:8px;overflow:hidden}
-.nx-pj-mark img{width:100%;height:100%;object-fit:contain}
-.nx-pj-mark img[src$="-pixel.svg"],.nx-history-mark img[src$="-pixel.svg"]{image-rendering:pixelated}
-.nx-pj.ww .nx-pj-mark{color:#d9b96e}
+.nx-pj-mark{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);color:var(--accent)}
+.nx-pj.ww .nx-pj-mark{color:#d9b96e;border-radius:4px}
 .nx-pj-mark .nx-ico{width:22px;height:22px}
 .nx-pj-head h3{font-size:22px;font-weight:600;letter-spacing:-.04em}
 .nx-pj.ww .nx-pj-head h3{color:#e6d29e}
@@ -280,8 +276,6 @@
 .nx-lightbox button{position:absolute;top:18px;right:22px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:16px;cursor:pointer}
 .nx-ps-shots{grid-template-columns:repeat(var(--n,1),minmax(0,1fr))}
 .nx-ps-shots figure{min-width:0}
-.nx-ps-shots .nx-zoom{border:1px solid var(--line);border-radius:10px;background:#0c1210}
-.nx-ps-shots .nx-zoom img{border:0;border-radius:0}
 .nx-zoom{width:100%;box-sizing:border-box}
 
 /* ---------- project pages ---------- */
@@ -339,12 +333,22 @@
 /* ---- 2026-11-24 revision: no stats/nav, side scroll rail, AI way cards, tool shots ---- */
 .heading-dot{display:none}
 .nx-intro{grid-template-columns:minmax(0,1fr) auto;align-items:end;margin-bottom:64px}
-.nx-rail{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;align-items:center;pointer-events:none;opacity:.45;transition:opacity .4s}
+.nx-scroll-cue{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--muted);font-size:11px;letter-spacing:.22em;padding:6px 4px}
+.nx-scroll-cue i{position:relative;width:22px;height:36px;border:1.5px solid currentColor;border-radius:12px}
+.nx-scroll-cue i:after{content:'';position:absolute;left:50%;top:7px;width:3px;height:7px;margin-left:-1.5px;border-radius:2px;background:var(--accent);animation:nxCue 1.8s ease-in-out infinite}
+.nx-scroll-cue:hover{color:var(--ink)}
+@keyframes nxCue{0%{opacity:0;transform:translateY(0)}30%{opacity:1}80%{opacity:0;transform:translateY(12px)}100%{opacity:0}}
+.nx-rail{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none;transition:opacity .4s}
+.nx-rail span{writing-mode:vertical-rl;font-size:10px;letter-spacing:.3em;color:var(--muted)}
 .nx-rail i{position:relative;display:block;width:2px;height:120px;background:var(--line);border-radius:2px;overflow:hidden}
 .nx-rail b{position:absolute;left:0;top:0;width:100%;height:calc(var(--k,0)*100%);background:var(--accent);border-radius:2px}
+.nx-rail i:after{content:'';position:absolute;left:0;width:100%;height:24px;background:linear-gradient(transparent,var(--accent),transparent);animation:nxRail 2.2s linear infinite;opacity:.7}
+.nx-rail.done i:after{display:none}
 .nx-rail.done{opacity:.4}
+@keyframes nxRail{from{top:-24px}to{top:120px}}
 body:not(.nx-overview) .nx-rail{display:none}
-@media (max-width:900px){.nx-rail{display:none}.nx-intro{grid-template-columns:1fr}}
+@media (max-width:900px){.nx-rail{display:none}.nx-intro{grid-template-columns:1fr}.nx-scroll-cue{justify-self:start}}
+@media (prefers-reduced-motion:reduce){.nx-rail i:after,.nx-scroll-cue i:after{animation:none}}
 
 .nx-way-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .nx-way{border:1px solid var(--line);border-radius:16px;background:var(--paper);padding:26px 26px 24px;display:flex;flex-direction:column;gap:12px}
@@ -365,12 +369,8 @@ body:not(.nx-overview) .nx-rail{display:none}
 .nx-way p,.nx-ps p,.nx-ps h3,.nx-way h3,.nx-tool p,.nx-arc-body>span{word-break:keep-all;overflow-wrap:break-word}
 
 /* profile panel on the right of the intro */
-.nx-intro{grid-template-columns:minmax(0,1fr) minmax(0,500px);align-items:start;gap:56px}
-.nx-intro-copy{padding-top:24px}
-body.nx-overview main{padding-top:24px}
-.nx-intro{margin-top:0;padding-top:0;border-top:0}
-.nx-anim{min-width:0}
-.nx-anim header{min-height:54px;display:flex;align-items:center;padding:16px 22px}
+.nx-intro{grid-template-columns:minmax(0,1fr) minmax(0,500px);align-items:center;gap:56px}
+.nx-intro-copy .nx-scroll-cue{flex-direction:row;gap:12px;margin-top:40px;justify-self:start}
 .nx-profile{border:1px solid var(--line);border-radius:18px;background:var(--paper);padding:24px;display:flex;flex-direction:column;gap:20px}
 .nx-profile-id{display:flex;gap:18px;align-items:center}
 .nx-profile-id img{width:96px;height:124px;object-fit:cover;border-radius:12px;border:1px solid var(--line);flex:none}
@@ -389,7 +389,7 @@ body.nx-overview main{padding-top:24px}
 @media (max-width:900px){.nx-intro{grid-template-columns:1fr;gap:28px}}
 @media (max-width:480px){.nx-profile-id img{width:76px;height:98px}.nx-tools-list{grid-template-columns:1fr}}
 /* profile visuals */
-.nx-tool-tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.nx-tool-tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px}
 .nx-tool-tiles li{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border:1px solid var(--line);border-radius:10px;background:#0f1813}
 .nx-tool-tiles .nx-ico{width:22px;height:22px;color:var(--accent)}
 .nx-tool-tiles span{font-size:11px;color:var(--muted);white-space:nowrap}
@@ -401,9 +401,8 @@ body.nx-overview main{padding-top:24px}
 .nx-h-media i{width:52px;height:34px;display:grid;place-items:center;border-radius:6px;border:1px dashed var(--line);color:var(--accent)}
 .nx-h-media i .nx-ico{width:18px;height:18px}
 .nx-h-text{color:#c9d6cb;word-break:keep-all}
-.nx-tool-tiles .nx-logo{width:26px;height:26px;object-fit:contain;display:block;filter:grayscale(1) brightness(1.65)}
+.nx-tool-tiles .nx-logo{width:26px;height:26px;object-fit:contain;display:block}
 .nx-tool-tiles li{justify-content:center;min-height:62px}
-<<<<<<< HEAD
 /* pixel emblems */
 .nx-h-media i{width:34px;height:34px;border:0;border-radius:8px;background:#0f1813;outline:1px solid var(--line)}
 .nx-pix{width:26px;height:26px;display:block;image-rendering:pixelated}
@@ -411,17 +410,3 @@ body.nx-overview main{padding-top:24px}
 .nx-h-logo img{height:20px;width:auto;display:block}
 .nx-history li{grid-template-columns:40px auto 1fr}
 .nx-pix{stroke:none!important;stroke-width:0!important}
-=======
-.nx-tool-groups{display:grid;gap:9px}
-.nx-tool-group{display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;align-items:center}
-.nx-tool-group h3{font-size:12px;line-height:1.5;color:var(--muted);font-weight:500;margin:0;word-break:keep-all}
-.nx-tool-group .nx-tool-tiles{display:flex;flex-wrap:wrap;gap:6px}
-.nx-tool-group .nx-tool-tiles li{width:64px;min-height:58px;box-sizing:border-box;flex:0 0 64px;padding:7px 2px}
-.nx-tool-group .nx-logo{width:23px;height:23px}
-.nx-history{gap:10px}
-.nx-history li{grid-template-columns:40px auto minmax(0,1fr);gap:10px}
-.nx-h-media{gap:5px}
-.nx-history-mark{display:block;flex:none;width:42px;height:42px;overflow:hidden;border-radius:10px;border:0;background:transparent}
-.nx-h-media .nx-history-mark img{display:block;width:100%;height:100%;object-fit:contain;border:0;border-radius:0}
-@media(max-width:480px){.nx-tool-group{grid-template-columns:50px minmax(0,1fr);gap:8px}.nx-history li{grid-template-columns:36px auto minmax(0,1fr);gap:8px}.nx-history-mark{width:30px;height:30px}}
->>>>>>> 63f61c2c32f85eff49e316b9d60d38429bbd157b
