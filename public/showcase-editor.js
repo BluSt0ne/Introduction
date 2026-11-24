@@ -12,7 +12,7 @@ let history = [], saved = JSON.stringify(data) === JSON.stringify(PUBLISHED), fi
 const SECTIONS = [
   ['intro', '소개', 'nx-intro'], ['stats', '주요 수치', 'nx-intro'], ['nav', '상단 이동 메뉴', 'nx-intro'],
   ['play', '게임 흐름', 'nx-play'], ['role', '역할 분담', 'nx-split'], ['ai', 'AI 협업', 'nx-ai'],
-  ['cases', '플레이를 위해 고친 것', 'nx-verify'], ['tools', '제작 도구', 'nx-tools']
+  ['cases', '설계 인사이트', 'nx-verify'], ['tools', '제작 도구', 'nx-tools'], ['archive', '이전 프로젝트', 'nx-archive']
 ];
 const LABEL = {
   eyebrow: '작은 제목(영문)', title: '제목', lines: '제목 줄', highlight: '강조 문구', lead: '한 줄 소개(비우면 숨김)', tags: '태그',
@@ -22,6 +22,7 @@ const LABEL = {
   filters: '필터 버튼', metric: '큰 숫자', metricLabel: '숫자 설명', steps: '단계', k: '단계 이름', v: '내용',
   route: '수정 분기도', start: '시작', question: '질문', yes: '예 →', yesNote: '예 설명', no: '아니오 →', noNote: '아니오 설명', end: '끝',
   problem: '문제', solution: '해결 (**굵게** 표시 가능)', images: '스크린샷', src: '이미지 경로(썸네일)', full: '클릭 시 열 원본', caption: '캡션', name: '프로젝트 이름', projects: '프로젝트', 
+  more: '카드 버튼 문구', period: '기간', genre: '장르', team: '인원·역할', platform: '플랫폼', summary: '한 줄 소개', cover: '대표 이미지', videos: '유튜브 영상', url: '유튜브 링크', points: '핵심 설계',
   project: '프로젝트', planetLabel: '행성 카드 라벨', planetNote: '행성 카드 설명', planetButton: '행성 버튼'
 };
 const CHOICES = { tag: [['wop', 'World of Plant'], ['ww', 'Wordless Mage'], ['build', '빌드']], who: [['me', '직접'], ['ai', 'AI']] };

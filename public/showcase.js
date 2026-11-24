@@ -149,6 +149,36 @@ function tools() {
 </section>`;
 }
 
+/* earlier projects: a row of cards after the AI games; details open in a dialog */
+const ytId = u => (String(u).match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/) || [])[1];
+function archive() {
+  const A = D.archive || {}; if (!list(A.items).length) return '';
+  return `<section class="nx-section nx-reveal" id="nx-archive" data-nx>
+  ${head(A)}
+  <div class="nx-arc-grid">${list(A.items).map((it, i) => `<button type="button" class="nx-arc" data-arc="${i}">
+    <span class="nx-arc-img"><img src="${e(it.cover)}" alt="" loading="lazy">${list(it.videos).length ? `<span class="nx-arc-play" aria-hidden="true">▶</span>` : ''}</span>
+    <span class="nx-arc-body"><small>${e(it.period)}</small><b>${e(it.title)}</b><em>${e(it.genre)} · ${e(it.team)}</em><span>${e(it.summary)}</span><i>${e(A.more || '자세히 보기')} →</i></span>
+  </button>`).join('')}</div>
+</section>`;
+}
+function openArchive(i) {
+  const it = list(D.archive?.items)[i]; if (!it) return;
+  const vids = list(it.videos).map(v => ({ ...v, id: ytId(v.url) })).filter(v => v.id);
+  const dlg = document.createElement('dialog'); dlg.className = 'nx-arc-dialog';
+  dlg.innerHTML = `<header><div><small>${e(it.period)} · ${e(it.platform)}</small><h2>${e(it.title)}</h2><p>${e(it.genre)} · ${e(it.team)}</p></div><button type="button" class="nx-arc-close" aria-label="닫기">✕</button></header>
+    <p class="nx-arc-sum">${e(it.summary)}</p>
+    ${vids.length ? `<div class="nx-arc-video"><iframe src="https://www.youtube-nocookie.com/embed/${vids[0].id}" title="${e(vids[0].label || it.title)}" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>${vids.length > 1 ? `<div class="nx-arc-vtabs">${vids.map((v, k) => `<button type="button" data-vid="${v.id}" aria-pressed="${k === 0}">▶ ${e(v.label || '영상 ' + (k + 1))}</button>`).join('')}</div>` : ''}` : ''}
+    <ul class="nx-arc-points">${list(it.points).map(p => `<li><b>${e(p.title)}</b><span>${e(p.text)}</span></li>`).join('')}</ul>
+    ${list(it.images).length ? `<div class="nx-ps-shots" style="--n:${Math.min(list(it.images).length, 3)}">${list(it.images).map(im => `<figure><button type="button" class="nx-zoom" data-full="${e(im.src)}" data-cap="${e(im.caption)}" aria-label="${e(im.caption)} 크게 보기"><img src="${e(im.src)}" alt="${e(im.caption)}" loading="lazy"><span class="nx-zoom-ico" aria-hidden="true">⤢</span></button><figcaption>${e(im.caption)}</figcaption></figure>`).join('')}</div>` : ''}`;
+  document.body.append(dlg);
+  dlg.addEventListener('close', () => dlg.remove());
+  dlg.addEventListener('click', ev => {
+    if (ev.target === dlg || ev.target.closest('.nx-arc-close')) dlg.close();
+    const t = ev.target.closest('[data-vid]'); if (t) { $('iframe', dlg).src = 'https://www.youtube-nocookie.com/embed/' + t.dataset.vid; $$('[data-vid]', dlg).forEach(b => b.setAttribute('aria-pressed', b === t)); }
+  });
+  dlg.showModal();
+}
+
 /* ---------- behaviour ---------- */
 function countUp(root = document) {
   $$('[data-count]:not([data-done])', root).forEach(el => {
@@ -219,7 +249,7 @@ function mount(force) {
   const heading = $('.collection-heading', main), grid = $('.project-grid', main); if (!heading || !grid) return;
   heading.id = 'nx-projects';
   heading.insertAdjacentHTML('beforebegin', intro());
-  grid.insertAdjacentHTML('afterend', play() + split() + aiIssues() + verify() + tools());
+  grid.insertAdjacentHTML('afterend', play() + split() + aiIssues() + verify() + tools() + archive());
   if (window.NXAnim) cleanups.push(NXAnim.mount($('#nx-anim-wop'), NXAnim.wopScene()), NXAnim.mount($('#nx-anim-ww'), NXAnim.wmScene()));
   drawPlanet(0); countUp(); reveal();
   if (force) $$('.nx-reveal', main).forEach(n => n.classList.add('nx-in'));
@@ -242,6 +272,7 @@ document.addEventListener('click', ev => {
   const f = ev.target.closest('[data-nx-case]');
   if (f) { $$('[data-nx-case]').forEach(b => b.setAttribute('aria-pressed', b === f)); $$('.nx-case').forEach(c => c.hidden = !(f.dataset.nxCase === 'all' || c.dataset.tag === f.dataset.nxCase)); return; }
   if (ev.target.closest('#nx-planet-roll')) drawPlanet(++rolls);
+  const arc = ev.target.closest('[data-arc]'); if (arc) { openArchive(+arc.dataset.arc); return; }
   const z = ev.target.closest('.nx-zoom');
   if (z) {
     const ov = document.createElement('div'); ov.className = 'nx-lightbox'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', z.dataset.cap || '이미지');

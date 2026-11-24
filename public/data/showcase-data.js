@@ -27,6 +27,10 @@ window.SHOWCASE_DATA = {
     {
       "id": "nx-tools",
       "label": "제작 도구"
+    },
+    {
+      "id": "nx-archive",
+      "label": "이전 프로젝트"
     }
   ],
   "intro": {
@@ -362,5 +366,264 @@ window.SHOWCASE_DATA = {
     "planetLabel": "PLANET RULES",
     "planetNote": "유형 5종 · 희귀 5% · 행성 3,800개",
     "planetButton": "다른 행성 생성 ↻"
+  },
+  "archive": {
+    "eyebrow": "EARLIER WORK",
+    "title": "이전 프로젝트",
+    "more": "자세히 보기",
+    "items": [
+      {
+        "id": "galactica-pc",
+        "title": "Galactica PC",
+        "period": "2026.10 – 현재",
+        "genre": "싱글플레이 턴제 우주 전략",
+        "team": "1인 개발 · AI 활용",
+        "platform": "PC · Unity 6",
+        "summary": "공개 맵에서 행성을 확장하고 AI와 교전하는 턴제 우주 전략. 함선 부위 조준과 피해 예측, 8개 작전 캠페인.",
+        "cover": "assets/archive/galactica-pc-cover.webp",
+        "videos": [],
+        "points": [
+          {
+            "title": "세 가지 승리 전략",
+            "text": "300Cr 확보 · 보물 3개 전달 · 적 전멸 또는 본성 점령"
+          },
+          {
+            "title": "생산과 함대 운용",
+            "text": "아군 행성당 생산 1슬롯, 다음 자기 턴에 완성 · 기본 8척 운용"
+          },
+          {
+            "title": "공개 맵과 점령",
+            "text": "8·12·16 공개 맵 · 중립 행성 주둔 1회, 적 행성 2회 갱신 후 점령"
+          },
+          {
+            "title": "교전과 후퇴의 대가",
+            "text": "같은 칸 도착 시 교전 · 일반 후퇴에 기회공격 1회"
+          },
+          {
+            "title": "역할별 생산 비용",
+            "text": "기본 45 · 모함 70 · 전투기 65 · 탐사선 50 · 호위함 75Cr"
+          }
+        ],
+        "images": [
+          {
+            "src": "assets/archive/galactica-pc-cover.webp",
+            "caption": "공개 맵과 함대"
+          },
+          {
+            "src": "assets/archive/galactica-pc-1.webp",
+            "caption": "부위 조준과 예상 피해"
+          }
+        ]
+      },
+      {
+        "id": "triple",
+        "title": "Triple Showdown",
+        "period": "2025.05 – 2026",
+        "genre": "로그라이크 덱 빌딩",
+        "team": "1인 개발",
+        "platform": "Unity",
+        "summary": "카드 배치 순서와 주사위 배분이 공격·방어 결과를 바꾸는 로그라이크 전투.",
+        "cover": "assets/archive/triple-cover.webp",
+        "videos": [],
+        "points": [
+          {
+            "title": "카드 3장으로 한 턴",
+            "text": "배치 순서와 효과 연결로 적은 손패에서도 여러 조합"
+          },
+          {
+            "title": "주사위 소켓 배분",
+            "text": "카드별 소켓 1~3칸 · 높은 눈을 어디에 쓸지 선택"
+          },
+          {
+            "title": "증폭 카드는 단계형",
+            "text": "주사위 합계 4 / 8 / 12 이상 → +1 / +2 / +3"
+          },
+          {
+            "title": "성장과 전투 템포",
+            "text": "주사위 기본 3개 → 유물로 최대 9개"
+          },
+          {
+            "title": "적 스킬 예고",
+            "text": "방어 · 디버프 · 선제 처치 중 대응 선택"
+          }
+        ],
+        "images": [
+          {
+            "src": "assets/archive/triple-1.webp",
+            "caption": "카드 배치와 주사위 소켓"
+          },
+          {
+            "src": "assets/archive/triple-2.webp",
+            "caption": "경로 선택"
+          },
+          {
+            "src": "assets/archive/triple-3.webp",
+            "caption": "전투 중 선택 화면"
+          }
+        ]
+      },
+      {
+        "id": "lone-lantern",
+        "title": "Lone Lantern",
+        "period": "2024.04 – 2024.11",
+        "genre": "2D 퍼즐 어드벤처 RPG",
+        "team": "5인 · 기획 / 팀장",
+        "platform": "Unity",
+        "summary": "시야와 연결된 '밝기'를 소모 자원으로 써서 기믹을 푸는 퍼즐 어드벤처 RPG.",
+        "cover": "assets/archive/lone-lantern-cover.webp",
+        "videos": [],
+        "points": [
+          {
+            "title": "행동으로 배우는 튜토리얼",
+            "text": "화톳불 점화 → 시야 확장 · 광원이 이롭다는 규칙을 직접 확인"
+          },
+          {
+            "title": "목적지 선공개",
+            "text": "절벽 너머 핵심 오브젝트를 먼저 보여 지시 없이 경로 추론"
+          },
+          {
+            "title": "팀 작업 기준 유지",
+            "text": "Google Drive로 기획·코드·아트 자료 분류 · 회의록과 결정 사항 아카이빙"
+          }
+        ],
+        "images": [
+          {
+            "src": "assets/archive/lone-lantern-1.webp",
+            "caption": "인게임 화면"
+          },
+          {
+            "src": "assets/archive/lone-lantern-2.webp",
+            "caption": "튜토리얼 동선 설계"
+          }
+        ]
+      },
+      {
+        "id": "hook",
+        "title": "Hook Adventure",
+        "period": "2021.11 – 2021.12",
+        "genre": "3D 필드 탐색 플랫포머",
+        "team": "2인 · 기획 / 프로그래밍",
+        "platform": "Unity",
+        "summary": "훅샷 액션으로 3D 공간을 탐험하며 퀘스트를 수행. 1지역 레벨과 플레이어·포탈·이벤트·카메라 설계.",
+        "cover": "assets/archive/hook-cover.webp",
+        "videos": [],
+        "points": [
+          {
+            "title": "단계별 조작 학습",
+            "text": "1-1 점프·2단 점프 → 1-2 훅샷 → 1-3 상승 용암 → 1-4 불꽃 구체"
+          },
+          {
+            "title": "미니맵 추가",
+            "text": "테스트에서 리스폰 후 남은 마나 구슬 위치 파악이 어려워 탐색 부담을 줄임"
+          }
+        ],
+        "images": [
+          {
+            "src": "assets/archive/hook-1.webp",
+            "caption": "퀘스트 안내"
+          },
+          {
+            "src": "assets/archive/hook-2.webp",
+            "caption": "1지역 레벨 구성"
+          }
+        ]
+      },
+      {
+        "id": "galactica-board",
+        "title": "Galactica Board Game",
+        "period": "2021.03 – 2021.06",
+        "genre": "2:2 팀 전략 보드게임",
+        "team": "4인 팀",
+        "platform": "Tabletop Simulator",
+        "summary": "함선·함장 카드를 조합해 300Cr 축적 또는 보물 3개 운송으로 승리하는 2:2 우주 전략 보드게임.",
+        "cover": "assets/archive/galactica-board-cover.webp",
+        "videos": [
+          {
+            "url": "https://youtu.be/cZERSXZhfTY",
+            "label": "플레이 영상 1"
+          },
+          {
+            "url": "https://youtu.be/-53CEQUkygg",
+            "label": "플레이 영상 2"
+          }
+        ],
+        "points": [
+          {
+            "title": "승리 방식 분리",
+            "text": "재화 축적과 보물 운송 · 자원 확보와 중앙 교전 사이의 선택"
+          },
+          {
+            "title": "구매와 배치의 시차",
+            "text": "구매한 전력은 다음 턴에 배치 · 다음 턴 위치까지 고려"
+          },
+          {
+            "title": "보물 운송의 위험",
+            "text": "운반 중 이동 제한 · 귀환 경로를 두고 추격과 호위"
+          },
+          {
+            "title": "실질 생존력 밸런싱",
+            "text": "체력 ÷ (1 − 회피율) · 모선 23.0 · 전투함 21.6 · 호위함 22.5"
+          },
+          {
+            "title": "공개 정보와 카드 추첨",
+            "text": "배치·버린 카드로 남은 카드 확률 추정"
+          }
+        ],
+        "images": [
+          {
+            "src": "assets/archive/galactica-board-1.webp",
+            "caption": "Tabletop Simulator 플레이"
+          }
+        ]
+      },
+      {
+        "id": "defair",
+        "title": "Defair",
+        "period": "2019.03 – 2019.11",
+        "genre": "2D 횡스크롤 러닝 액션",
+        "team": "6인 · 기획 / 팀장 · 넷마블 게임 아카데미 4기",
+        "platform": "Unity",
+        "summary": "적 배치를 채보처럼 익히고, 색상별 대응으로 퍼펙트를 노리는 러닝 액션.",
+        "cover": "assets/archive/defair-cover.webp",
+        "videos": [
+          {
+            "url": "https://www.youtube.com/watch?v=LXx7EADXEOQ",
+            "label": "플레이 영상"
+          }
+        ],
+        "points": [
+          {
+            "title": "모바일 조작 단순화",
+            "text": "탭과 좌우 스와이프로 입력 제한 · 달리는 흐름 유지"
+          },
+          {
+            "title": "색상으로 공격 구분",
+            "text": "적 색상과 스와이프 방향을 1:1 연결"
+          },
+          {
+            "title": "플레이테스트 난이도 조정",
+            "text": "라인과 공격 유형 수를 조절해 부담 완화"
+          },
+          {
+            "title": "Speed Up 구간",
+            "text": "2배속 구간 · 자체 테스트 클리어율 80% 이상까지 조정"
+          },
+          {
+            "title": "채보 관리",
+            "text": "Google Sheets로 적 배치와 타이밍 공유"
+          }
+        ],
+        "images": [
+          {
+            "src": "assets/archive/defair-1.webp",
+            "caption": "색상별 적 배치"
+          },
+          {
+            "src": "assets/archive/defair-2.webp",
+            "caption": "Speed Up 구간"
+          }
+        ]
+      }
+    ]
   }
 };
