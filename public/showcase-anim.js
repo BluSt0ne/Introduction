@@ -261,15 +261,40 @@ function wmScene() {
       c.save(); c.translate(Math.sin(t * 90) * shake, Math.cos(t * 70) * shake);
       c.fillStyle = a(MUTED, .1); for (let x = S * .03; x < W; x += S * .04) for (let y = S * .03; y < G; y += S * .04) c.fillRect(x, y, 1, 1);
       c.strokeStyle = a(GOLD, .5); c.lineWidth = 1.2; c.beginPath(); c.moveTo(-10, G); c.lineTo(W + 10, G); c.stroke();
-      // fan
-      const FX = W * .76, R = Math.min((G - CEIL) / 2 * .92, W * .19), FY = G - R - H * .02;
+      // fan: set into a doorway, blades sweep across the walkway itself
+      const FX = W * .76, R = S * .13, FY = G - R * 1.04, DW = R * 1.32, TOP = FY - R * 1.14;
       const T0 = 8.0, SP = 8, target = -Math.PI / 2, a0 = target - (SP * T0 + SP * .5);
       const ang = t < T0 ? a0 + SP * t : t < T0 + 1 ? a0 + SP * T0 + SP * ((t - T0) - (t - T0) ** 2 / 2) : target;
-      const st = seg(t, T0, T0 + 1), fcol = st >= 1 ? GOLD : MUTED;
-      c.strokeStyle = a(st > 0 ? GOLD : MUTED, .5 + .4 * st); c.lineWidth = 1.4; c.beginPath(); c.arc(FX, FY, R, 0, TAU); c.stroke();
-      c.strokeStyle = fcol; c.lineWidth = S * .012; c.lineCap = 'round';
-      for (let k = 0; k < 3; k++) { const an = ang + k * TAU / 3; c.beginPath(); c.moveTo(FX + Math.cos(an) * R * .14, FY + Math.sin(an) * R * .14); c.lineTo(FX + Math.cos(an) * R * .88, FY + Math.sin(an) * R * .88); c.stroke(); }
-      c.lineCap = 'butt'; c.fillStyle = '#10171b'; c.strokeStyle = fcol; c.lineWidth = 1.4; c.beginPath(); c.arc(FX, FY, R * .1, 0, TAU); c.fill(); c.stroke();
+      const st = seg(t, T0, T0 + 1), fcol = st >= 1 ? GOLD : MUTED, spin = 1 - seg(t, T0, T0 + .9);
+      // wall above the passage (lintel), with a hazard edge and a ceiling run on both sides
+      c.fillStyle = '#18222a'; c.fillRect(FX - DW, -10, DW * 2, TOP + 10);
+      c.strokeStyle = a(MUTED, .45); c.lineWidth = 1;
+      for (let y = CEIL * .4; y < TOP - 4; y += S * .035) { c.beginPath(); c.moveTo(FX - DW, y); c.lineTo(FX + DW, y); c.stroke(); }
+      for (let y = CEIL * .4, r = 0; y < TOP - S * .035; y += S * .035, r++) for (let x = FX - DW + (r % 2 ? S * .03 : S * .06); x < FX + DW; x += S * .06) { c.beginPath(); c.moveTo(x, y); c.lineTo(x, y + S * .035); c.stroke(); }
+      c.save(); c.beginPath(); c.rect(FX - DW, TOP - S * .016, DW * 2, S * .016); c.clip();
+      c.fillStyle = '#2a2414'; c.fillRect(FX - DW, TOP - S * .016, DW * 2, S * .016); c.fillStyle = a(SUN, .75);
+      for (let x = FX - DW - S * .02; x < FX + DW; x += S * .028) { c.beginPath(); c.moveTo(x, TOP); c.lineTo(x + S * .014, TOP); c.lineTo(x + S * .03, TOP - S * .016); c.lineTo(x + S * .016, TOP - S * .016); c.closePath(); c.fill(); }
+      c.restore();
+      c.strokeStyle = a(MUTED, .7); c.lineWidth = 1.4; c.strokeRect(FX - DW, -10, DW * 2, TOP + 10);
+      // floor slot under the blades
+      c.fillStyle = '#0b1013'; c.fillRect(FX - R * 1.02, G, R * 2.04, S * .012);
+      // housing ring hung from the lintel by a bracket
+      c.strokeStyle = a(MUTED, .75); c.lineWidth = S * .008; c.beginPath(); c.moveTo(FX - R * .16, TOP); c.lineTo(FX, FY - R * .1); c.lineTo(FX + R * .16, TOP); c.stroke();
+      c.strokeStyle = a(st > 0 ? GOLD : MUTED, .55 + .4 * st); c.lineWidth = 2; c.beginPath(); c.arc(FX, FY, R, 0, TAU); c.stroke();
+      // spinning: blurred sweep across the whole opening
+      if (spin > 0) {
+        c.fillStyle = a(INK, .07 * spin); c.beginPath(); c.arc(FX, FY, R * .96, 0, TAU); c.fill();
+        for (let g = 1; g <= 4; g++) for (let k = 0; k < 3; k++) { const an = ang - g * .16 + k * TAU / 3; blade(an, a(INK, .12 * spin * (1 - g / 5))); }
+      }
+      function blade(an, col) {
+        const ca = Math.cos(an), sa = Math.sin(an), px = -sa, py = ca, r0 = R * .12, r1 = R * .94, w0 = R * .07, w1 = R * .17;
+        c.fillStyle = col; c.beginPath();
+        c.moveTo(FX + ca * r0 + px * w0, FY + sa * r0 + py * w0); c.lineTo(FX + ca * r1 + px * w1, FY + sa * r1 + py * w1);
+        c.quadraticCurveTo(FX + ca * R * 1.0, FY + sa * R * 1.0, FX + ca * r1 - px * w1 * .4, FY + sa * r1 - py * w1 * .4);
+        c.lineTo(FX + ca * r0 - px * w0, FY + sa * r0 - py * w0); c.closePath(); c.fill();
+      }
+      for (let k = 0; k < 3; k++) blade(ang + k * TAU / 3, st >= 1 ? GOLD : '#b9c6bb');
+      c.fillStyle = '#10171b'; c.strokeStyle = fcol; c.lineWidth = 1.4; c.beginPath(); c.arc(FX, FY, R * .12, 0, TAU); c.fill(); c.stroke();
       if (t > T0 && t < 10.2) { c.globalAlpha = 1 - seg(t, 9.4, 10.2); handIcon(c, FX, FY - R * .42, S * .05, GOLD); c.globalAlpha = 1; }
       const wind = 1 - seg(t, T0, T0 + .5);
       if (wind > 0) for (let i = 0; i < 10; i++) { const y = FY - R * .8 + (i * 37 % 100) / 100 * R * 1.6, sp = W * (.35 + (i % 3) * .1), x = FX - R - ((t * sp + i * 97) % (W * .45)); c.strokeStyle = a(INK, .28 * wind); c.lineWidth = 1; c.beginPath(); c.moveTo(x, y); c.lineTo(x + S * .04, y); c.stroke(); }
