@@ -417,9 +417,9 @@ window.SHOWCASE_DATA = {
             "solution": "슬롯을 **처음부터 3칸**으로 정하고, 같은 출처에서는 한 글자만 얻도록 제한했습니다.",
             "images": [
               {
-                "src": "assets/screenshots/2026-11-24-latest/ww-magic-selection.webp",
-                "full": "assets/screenshots/2026-11-24-latest/ww-magic-selection.webp",
-                "caption": "마법 선택과 슬롯"
+                "src": "assets/media/48d9a3cd08414a2c-thumb.webp",
+                "full": "assets/media/48d9a3cd08414a2c.png",
+                "caption": "마법 1개와 빈 슬롯 2개가 보이는 3칸 구성"
               }
             ],
             "reason": "들고 다닐 수 있는 양을 고정해야 소모성 마법을 얻고 쓰는 순서를 기준으로 레벨을 설계하기 쉬웠습니다. 슬롯 수를 늘리는 성장보다 제한된 마법의 사용 순서에 집중했습니다."

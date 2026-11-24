@@ -281,7 +281,7 @@
 .nx-ps-shots{grid-template-columns:repeat(var(--n,1),minmax(0,1fr))}
 .nx-ps-shots figure{min-width:0}
 .nx-ps-shots .nx-zoom{border:1px solid var(--line);border-radius:10px;background:#0c1210}
-.nx-ps-shots .nx-zoom img{border:0;border-radius:0}
+.nx-ps-shots .nx-zoom img{border:0;border-radius:0;object-fit:contain}
 .nx-zoom{width:100%;box-sizing:border-box}
 
 /* ---------- project pages ---------- */
