@@ -627,7 +627,7 @@ window.SHOWCASE_DATA = {
         "title": "Galactica Board Game",
         "period": "개발 4개월",
         "genre": "2:2 팀 전략 보드게임",
-        "team": "4인 팀",
+        "team": "4인 팀, 기획 · 팀장 · 구현",
         "platform": "Tabletop Simulator",
         "summary": "함선과 함장 카드를 조합해 300Cr 축적 또는 보물 3개 운송으로 승리하는 2:2 우주 전략 보드게임입니다.",
         "cover": "assets/archive/galactica-board-cover.webp",
