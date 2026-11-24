@@ -39,6 +39,10 @@ const ICON = {
   ai: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 15l2-6 2 6M9.3 13h2.4M15.5 9v6"/>',
   flower: '<circle cx="12" cy="10" r="2.5"/><path d="M12 7.5a3 3 0 1 1 2.6 1.6M12 7.5a3 3 0 1 0-2.6 1.6M9.5 10.5a3 3 0 1 0 2.5 2M14.5 10.5a3 3 0 1 1-2.5 2M12 13v8"/>',
   image: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-9 8"/>',
+  wave: '<path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 7v10M21 12h0"/>',
+  grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+  cap: '<path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5M22 9v6"/>',
+  medal: '<circle cx="12" cy="15" r="5"/><path d="M8.5 11 6 3h4l2 5 2-5h4l-2.5 8"/><path d="m12 13 .8 1.6 1.7.2-1.2 1.2.3 1.7-1.6-.8-1.6.8.3-1.7-1.2-1.2 1.7-.2z"/>',
   me: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
 };
 const ico = (k, cls = '') => `<svg class="nx-ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[k] || ''}</svg>`;
@@ -88,8 +92,8 @@ function profile(P) {
   if (!P) return '';
   return `<aside class="nx-profile">
     <div class="nx-profile-id">${P.photo ? `<img src="${e(P.photo)}" alt="${e(P.name)} 사진">` : ''}<div><b>${e(P.name)}</b><p>${e(P.sub).replace(/\n/g, '<br>')}</p></div></div>
-    <div class="nx-profile-block"><span class="eyebrow">${e(P.toolsTitle || 'TOOLS')}</span><dl class="nx-tools-list">${list(P.tools).map(t => `<dt>${e(t.group)}</dt><dd>${String(t.items || '').split(',').map(x => x.trim()).filter(Boolean).map(x => `<span>${e(x)}</span>`).join('')}</dd>`).join('')}</dl></div>
-    <div class="nx-profile-block"><span class="eyebrow">${e(P.historyTitle || 'HISTORY')}</span><ol class="nx-history">${list(P.history).map(h => `<li><time>${e(h.year)}</time><span>${e(h.text)}</span></li>`).join('')}</ol></div>
+    <div class="nx-profile-block"><span class="eyebrow">${e(P.toolsTitle || 'TOOLS')}</span><ul class="nx-tool-tiles">${list(P.tools).map(t => `<li>${t.logo ? `<img class="nx-logo" src="${e(t.logo)}" alt="" onerror="this.remove()">` : ''}<span>${e(t.name)}</span></li>`).join('')}</ul></div>
+    <div class="nx-profile-block"><span class="eyebrow">${e(P.historyTitle || 'HISTORY')}</span><ol class="nx-history">${list(P.history).map(h => `<li><time>${e(h.year)}</time><span class="nx-h-media">${list(h.images).length ? list(h.images).map(src => `<img src="${e(src)}" alt="" loading="lazy">`).join('') : `<i>${ico(h.icon || 'check')}</i>`}</span><span class="nx-h-text">${e(h.text)}</span></li>`).join('')}</ol></div>
   </aside>`;
 }
 

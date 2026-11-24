@@ -29,43 +29,98 @@ window.SHOWCASE_DATA = {
       "toolsTitle": "TOOLS",
       "tools": [
         {
-          "group": "개발",
-          "items": "Unity, C#, C++, Python"
+          "icon": "cube",
+          "name": "Unity",
+          "logo": "assets/logos/unity.svg"
         },
         {
-          "group": "AI",
-          "items": "ChatGPT, Claude, ElevenLabs Sounds"
+          "icon": "code",
+          "name": "C#",
+          "logo": "assets/logos/csharp.svg"
         },
         {
-          "group": "문서",
-          "items": "MS Office, Google Workspace"
+          "icon": "code",
+          "name": "C++",
+          "logo": "assets/logos/cpp.svg"
+        },
+        {
+          "icon": "code",
+          "name": "Python",
+          "logo": "assets/logos/python.svg"
+        },
+        {
+          "icon": "ai",
+          "name": "ChatGPT",
+          "logo": "assets/logos/chatgpt.svg"
+        },
+        {
+          "icon": "ai",
+          "name": "Claude",
+          "logo": "assets/logos/claude.svg"
+        },
+        {
+          "icon": "wave",
+          "name": "ElevenLabs",
+          "logo": "assets/logos/elevenlabs.svg"
+        },
+        {
+          "icon": "doc",
+          "name": "MS Office",
+          "logo": "assets/logos/microsoft-office.svg"
+        },
+        {
+          "icon": "grid",
+          "name": "Workspace",
+          "logo": "assets/logos/google-workspace.svg"
         }
       ],
       "historyTitle": "HISTORY",
       "history": [
         {
           "year": "2026",
-          "text": "World of Plant, Wordless Mage, Galactica PC 개인 개발"
+          "text": "개인 개발",
+          "images": [
+            "assets/screenshots/2026-11-24-latest/wop-production.webp",
+            "assets/screenshots/2026-11-24-latest/ww-magic-selection.webp",
+            "assets/archive/galactica-pc-cover.webp"
+          ],
+          "icon": ""
         },
         {
           "year": "2025",
-          "text": "Triple Showdown 개인 개발"
+          "text": "Triple Showdown",
+          "images": [
+            "assets/archive/triple-cover.webp"
+          ],
+          "icon": ""
         },
         {
           "year": "2024",
-          "text": "게임개발 중앙동아리 I2P X O2CUBE 기획, 팀장 (Lone Lantern)"
+          "text": "I2P X O2CUBE 기획, 팀장",
+          "images": [
+            "assets/archive/lone-lantern-cover.webp"
+          ],
+          "icon": ""
         },
         {
           "year": "2022",
-          "text": "홍익대학교 정진 장학금"
+          "text": "정진 장학금",
+          "images": [],
+          "icon": "medal"
         },
         {
           "year": "2020",
-          "text": "홍익대학교 게임학부 게임소프트웨어전공 입학"
+          "text": "홍익대 게임학부 입학",
+          "images": [],
+          "icon": "cap"
         },
         {
           "year": "2019",
-          "text": "넷마블 게임 아카데미 4기 기획, 팀장 (Defair)"
+          "text": "넷마블 게임 아카데미 4기 팀장",
+          "images": [
+            "assets/archive/defair-cover.webp"
+          ],
+          "icon": ""
         }
       ]
     }

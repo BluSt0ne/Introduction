@@ -388,3 +388,18 @@ body:not(.nx-overview) .nx-rail{display:none}
 .nx-history span{color:#c9d6cb;word-break:keep-all}
 @media (max-width:900px){.nx-intro{grid-template-columns:1fr;gap:28px}}
 @media (max-width:480px){.nx-profile-id img{width:76px;height:98px}.nx-tools-list{grid-template-columns:1fr}}
+/* profile visuals */
+.nx-tool-tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px}
+.nx-tool-tiles li{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border:1px solid var(--line);border-radius:10px;background:#0f1813}
+.nx-tool-tiles .nx-ico{width:22px;height:22px;color:var(--accent)}
+.nx-tool-tiles span{font-size:11px;color:var(--muted);white-space:nowrap}
+.nx-history{border-left:0;padding:0;gap:8px}
+.nx-history li{grid-template-columns:40px auto 1fr;align-items:center;padding-left:0;gap:12px}
+.nx-history li:before{display:none}
+.nx-h-media{display:flex;gap:4px}
+.nx-h-media img{width:52px;height:34px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.nx-h-media i{width:52px;height:34px;display:grid;place-items:center;border-radius:6px;border:1px dashed var(--line);color:var(--accent)}
+.nx-h-media i .nx-ico{width:18px;height:18px}
+.nx-h-text{color:#c9d6cb;word-break:keep-all}
+.nx-tool-tiles .nx-logo{width:26px;height:26px;object-fit:contain;display:block}
+.nx-tool-tiles li{justify-content:center;min-height:62px}
