@@ -516,7 +516,7 @@ window.SHOWCASE_DATA = {
         "genre": "로그라이크 덱 빌딩",
         "team": "1인 개발",
         "platform": "Unity",
-        "summary": "카드 배치 순서와 주사위 배분으로 공격과 방어 결과가 바뀌는 로그라이크 전투입니다.",
+        "summary": "카드 배치 순서와 주사위 배분으로 공격과 방어 결과가 바뀌는 로그라이크 덱빌딩 게임입니다.",
         "cover": "assets/archive/triple-cover.webp",
         "videos": [],
         "points": [
