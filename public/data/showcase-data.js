@@ -182,11 +182,11 @@ window.SHOWCASE_DATA = {
     "title": "게임 흐름",
     "wop": {
       "label": "World of Plant",
-      "video": ""
+      "video": "https://youtu.be/xB7qTktxO6Y"
     },
     "ww": {
       "label": "Wordless Mage",
-      "video": ""
+      "video": "https://youtu.be/o7OZYTgfOGo"
     }
   },
   "role": {

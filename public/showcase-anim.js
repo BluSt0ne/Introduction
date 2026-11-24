@@ -555,50 +555,44 @@ const MINI = {
       if (k > 0 && k < 1) miniGlyph(c, 'stop', x, lerp(H * .08, sy, ease(k)), ss * .55, GOLD);
     }
   } }),
-  // a fork in the road: take the door now, or climb for the star; a retry comes back for the star
-  'ww-goal': () => {
-    const D = 13;
-    // [time, x, y] keyframes for the two runs (y: 0 ground, 1 ledge)
-    const RUN1 = [[0, .07, 0], [1.2, .34, 0], [2.9, .34, 0], [4.4, .87, 0]];
-    const RUN2 = [[6.2, .07, 0], [7.2, .34, 0], [8.0, .34, 0], [8.3, .40, 0], [9.0, .40, 1], [9.2, .43, 1], [10.0, .66, 1], [10.3, .71, 0], [11.1, .87, 0]];
-    const at = (K, t) => { if (t <= K[0][0]) return [K[0][1], K[0][2], false]; for (let i = 1; i < K.length; i++) if (t < K[i][0]) { const p = K[i - 1], q = K[i], k = seg(t, p[0], q[0]); return [lerp(p[1], q[1], k), lerp(p[2], q[2], q[2] < p[2] ? ease(k) : k), p[1] !== q[1] || p[2] !== q[2]]; } const e = K[K.length - 1]; return [e[1], e[2], false]; };
-    return { duration: D, steps: [[0, '']], draw(c, W, H, t) {
-      miniBase(c, W, H); const S = Math.min(W, H), gy = H * .84, ly = H * .5, mh = S * .2, run2 = t > 6;
-      const X = u => W * u;
-      // ground, a ladder up to the ledge, the door
-      c.fillStyle = '#1c2620'; c.fillRect(X(.04), gy, X(.92), S * .03); c.fillRect(X(.42), ly, X(.24), S * .03);
-      c.strokeStyle = a(MUTED, .5); c.lineWidth = 1.2; c.beginPath(); c.moveTo(X(.04), gy); c.lineTo(X(.96), gy); c.moveTo(X(.42), ly); c.lineTo(X(.66), ly); c.stroke();
-      c.strokeStyle = a(MUTED, .7); c.lineWidth = 1.6; const lx = X(.40), lw = S * .05; c.beginPath(); c.moveTo(lx - lw / 2, gy); c.lineTo(lx - lw / 2, ly - S * .02); c.moveTo(lx + lw / 2, gy); c.lineTo(lx + lw / 2, ly - S * .02); for (let i = 1; i < 6; i++) { const yy = lerp(gy, ly, i / 6); c.moveTo(lx - lw / 2, yy); c.lineTo(lx + lw / 2, yy); } c.stroke();
-      const inDoor = run2 ? seg(t, 11.0, 11.4) : seg(t, 4.3, 4.7), dw = S * .13, dh = mh * 1.25, dx = X(.89);
-      c.fillStyle = inDoor > 0 ? a(ACC, .25 + .5 * inDoor) : '#0c1210'; c.strokeStyle = a(INK, .7); c.lineWidth = 1.6;
-      c.beginPath(); c.moveTo(dx - dw / 2, gy); c.lineTo(dx - dw / 2, gy - dh + dw / 2); c.arc(dx, gy - dh + dw / 2, dw / 2, Math.PI, 0); c.lineTo(dx + dw / 2, gy); c.closePath(); c.fill(); c.stroke();
-      // the star sits on the ledge until the second run picks it up
-      const got = run2 && t > 9.5, sx = X(.55), sy = ly - mh * .45;
-      if (!got) miniStar(c, sx, sy + Math.sin(t * 3) * S * .006, S * .045, true);
-      if (run2) miniRing(c, sx, sy, seg(t, 9.5, 10.2), S * .14, SUN, 2);
-      // mage
-      const [u, v, moving] = at(run2 ? RUN2 : RUN1, t), mx = X(u), bob = moving ? Math.abs(Math.sin(t * 9)) * S * .006 : 0, my = lerp(gy, ly, v) - bob;
-      c.globalAlpha = 1 - inDoor; miniMage(c, mx, my, mh); c.globalAlpha = 1;
-      // thinking at the fork: the bubble flips between the two goals
-      const think = run2 ? [7.2, 8.0] : [1.2, 2.9];
-      if (t > think[0] && t < think[1]) {
-        const k = pop(seg(t, think[0], think[0] + .3)), bx = mx + mh * .45, by = my - mh * 1.35, bw = S * .15 * k, bh = S * .12 * k;
-        c.fillStyle = '#f4f1e6'; c.beginPath(); c.roundRect(bx - bw / 2, by - bh / 2, bw, bh, 6); c.fill();
-        c.beginPath(); c.arc(mx + mh * .2, my - mh * 1.08, S * .012 * k, 0, TAU); c.fill();
-        if (k > .8) { const pick = run2 ? 1 : Math.floor((t - think[0]) / .42) % 2; if (pick) miniStar(c, bx, by, S * .038, true); else { c.fillStyle = '#29333b'; c.beginPath(); c.moveTo(bx - S * .025, by + S * .035); c.lineTo(bx - S * .025, by - S * .01); c.arc(bx, by - S * .01, S * .025, Math.PI, 0); c.lineTo(bx + S * .025, by + S * .035); c.closePath(); c.fill(); } }
+  // On the world map, weigh moving forward against returning for a missing star.
+  'ww-goal': () => ({ duration: 14, steps: [[0, '']], draw(c, W, H, t) {
+    miniBase(c, W, H);
+    const S = Math.min(W, H), R = S * .065;
+    const nodes = [[.12,.60],[.31,.47],[.5,.60],[.69,.47],[.88,.60]].map(([x,y])=>[W*x,H*y]);
+    const returning = t >= 7, local = t % 7;
+    const target = returning ? 1 : 3, move = ease(seg(local, 3.7, 5.5));
+    const [cx,cy] = nodes[2], [tx,ty] = nodes[target];
+    // The same map remains visible for both decisions.
+    c.strokeStyle = LINE; c.lineWidth = 2; c.setLineDash([4,6]);
+    c.beginPath(); nodes.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y)); c.stroke(); c.setLineDash([]);
+    const focus = local < 3.7 ? (Math.floor(local / .85) % 2 ? 1 : 3) : target;
+    c.strokeStyle = a(focus === 1 ? SUN : ACC, .75); c.lineWidth = 2.5;
+    c.beginPath(); c.moveTo(cx,cy); c.lineTo(...nodes[focus]); c.stroke();
+    nodes.forEach(([x,y],i)=>{
+      const complete = i <= 2 || (!returning && i === 3 && move === 1);
+      c.fillStyle = complete ? '#23342b' : '#111b19'; c.strokeStyle = i === focus ? (i===1?SUN:ACC) : LINE; c.lineWidth = i === focus ? 2.5 : 1.5;
+      c.beginPath(); c.arc(x,y,R,0,TAU); c.fill(); c.stroke();
+      label(c, String(i+1),x,y,Math.max(12,S*.045),i===4?MUTED:INK,'center');
+      if(i <= 2) {
+        const earned = i !== 1 || (returning && move === 1);
+        miniStar(c,x,y+R*1.75,R*.43,earned);
       }
-      // result in the corner: clear alone, then clear with the star
-      const res = run2 ? seg(t, 11.3, 11.7) : seg(t, 4.6, 5.0), out = run2 ? 1 - seg(t, 12.6, 13) : 1 - seg(t, 5.8, 6.1);
-      if (res > 0) {
-        c.globalAlpha = res * out; const cx = W * .78, cy = H * .17, r = S * .055;
-        c.fillStyle = ACC; c.beginPath(); c.arc(cx, cy, r, 0, TAU); c.fill();
-        c.strokeStyle = '#0c1210'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(cx - r * .4, cy); c.lineTo(cx - r * .1, cy + r * .3); c.lineTo(cx + r * .45, cy - r * .3); c.stroke();
-        miniStar(c, cx + r * 2.4, cy, r * .9, run2); c.globalAlpha = 1;
-      }
-      // retry between the runs
-      const rt = seg(t, 6.0, 6.6); if (rt > 0 && rt < 1) { c.globalAlpha = Math.sin(rt * Math.PI); c.strokeStyle = INK; c.lineWidth = 2; const R = S * .06; c.beginPath(); c.arc(W * .5, H * .3, R, -Math.PI * .3, Math.PI * 1.4); c.stroke(); c.globalAlpha = 1; }
-    } };
-  },
+    });
+    label(c,'이전 레벨 재도전',nodes[1][0],H*.23,Math.max(12,S*.038),focus===1?SUN:MUTED,'center');
+    label(c,'다음 레벨로',nodes[3][0],H*.23,Math.max(12,S*.038),focus===3?ACC:MUTED,'center');
+    const mx=lerp(cx,tx,move), my=lerp(cy,ty,move)-R*1.35;
+    miniMage(c,mx,my-(move>0&&move<1?Math.abs(Math.sin(t*9))*S*.007:0),S*.16);
+    // A thought bubble alternates between the next level and the unearned star.
+    if(local<3.7) {
+      const bx=cx, by=H*.17, bw=S*.18,bh=S*.12;
+      c.fillStyle='#edf2e9'; c.beginPath(); c.roundRect(bx-bw/2,by-bh/2,bw,bh,8); c.fill();
+      c.beginPath(); c.arc(cx,by+bh*.8,S*.011,0,TAU); c.fill();
+      if(focus===1) miniStar(c,bx,by,S*.035,true);
+      else { c.strokeStyle='#28392d'; c.lineWidth=2; c.beginPath(); c.moveTo(bx-S*.035,by); c.lineTo(bx+S*.035,by); c.moveTo(bx+S*.01,by-S*.025); c.lineTo(bx+S*.035,by); c.lineTo(bx+S*.01,by+S*.025); c.stroke(); }
+    }
+    if(returning && local>5.5) miniRing(c,tx,ty+R*1.75,seg(local,5.5,6.4),R*2,SUN,2);
+  } }),
 };
 // the game's own spell glyphs (white masks), tinted on demand; vector shapes only until they load
 const GLYPH_SRC = { stop: 'stop', heavy: 'heavy', light: 'light', carry: 'carry', fire: 'fire' }, GLYPH = {}, GLYPH_TINT = {};
