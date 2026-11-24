@@ -127,7 +127,7 @@ function wopScene() {
   // the copy on the new planet: devices first, then the emitter wave wakes the flowers by distance — same rule as home
   const COPY_DEV = 10.9, COPY_WAVE = 11.3, WAVE_SPEED = 1.15;
   const copyBloom = i => COPY_WAVE + Math.hypot(slots[i].x - devs[0].x, slots[i].y - devs[0].y) / WAVE_SPEED;
-  const SPEND = [[3.5, 0, 10], [4.5, 1, 8], [7.7, 'pad', 14]];
+  const SPEND = [[3.5, 0, 10], [4.5, 1, 8], [6.75, 'pad', 14]]; // all rocket energy lands (by ~8.1s) before lift-off at 8.3s
   const MAX = 40;
   return {
     duration: 24,
@@ -204,6 +204,8 @@ function wopScene() {
         let ang = 0; if (fly > 0 && fly < 1) { const dx = q(Math.min(1, fly + .02), 0) - x, dy = q(Math.min(1, fly + .02), 1) - y; ang = Math.atan2(dx, -dy) * Math.sin(fly * Math.PI); }
         c.globalAlpha = 1 - touch; rocket(c, x, y - S * .03, ang, S * .06 * pop(app), t > 8.2 && t < 10.2 ? 1 : 0); c.globalAlpha = 1;
       }
+      // rocket fully charged: one pulse on the pad right before lift-off
+      ring(pad[0], pad[1] - S * .03, seg(t, 8.05, 8.45), S * .06, SUN);
       // new planet: identical layout, same automation rule
       if (t > 10.2) {
         ring(land[0], land[1], seg(t, 10.2, 10.8), S * .07, SUN);
