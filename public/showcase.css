@@ -247,6 +247,8 @@
 .nx-pj.ww .nx-ps h4.sol{background:#d9b96e}
 .nx-ps p{font-size:15px;line-height:1.75;color:#c9d6cb}
 .nx-ps p strong{color:var(--ink);font-weight:700}
+.nx-ps-reason{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.nx-ps-reason h4{color:var(--muted)}
 .nx-ps hr{border:0;border-top:1px solid var(--line);margin:16px 0}
 .nx-ps-shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:16px}
 .nx-ps-shots figure{margin:0}

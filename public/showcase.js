@@ -124,6 +124,7 @@ function psCard(it, extra = '', L = {}) {
     <h4>${e(L.problem || '문제')}</h4><p>${rich(it.problem)}</p>
     <hr>
     <h4 class="sol">${e(L.solution || '해결')}</h4><p>${rich(it.solution)}</p>
+    ${it.reason ? `<div class="nx-ps-reason"><h4>${e(L.reason || '수정 사유')}</h4><p>${rich(it.reason)}</p></div>` : ''}
     ${list(it.images).length ? `<div class="nx-ps-shots" style="--n:${Math.min(list(it.images).length, 2)}">${list(it.images).map(im => `<figure><button type="button" class="nx-zoom" data-full="${e(im.full || im.src)}" data-cap="${e(im.caption)}" aria-label="${e(im.caption)} 크게 보기"><img src="${e(im.src)}" alt="${e(im.caption)}" loading="lazy"><span class="nx-zoom-ico" aria-hidden="true">⤢</span></button><figcaption>${e(im.caption)}</figcaption></figure>`).join('')}</div>` : ''}
   </article>`;
 }
