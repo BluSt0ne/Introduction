@@ -155,7 +155,7 @@ function play() {
   return `<section class="nx-play" id="nx-play">
   <header class="nx-head"><span class="eyebrow">GAME FLOW</span><h2>게임 흐름</h2></header>
   <div class="nx-anim-grid">
-    ${animCard('nx-anim-wop', 'wop', 'World of Plant', '꽃에서 행성으로', '커서 파동으로 꽃을 깨우고 장치로 생산을 자동화합니다. 완성한 배치를 블루프린트에 담아 로켓으로 보내고, 다른 행성으로 생산을 이어 갑니다.', A ? A.wopScene().steps : [])}
+    ${animCard('nx-anim-wop', 'wop', 'World of Plant', '꽃에서 은하로', '커서 파동으로 꽃을 깨우고 장치로 생산을 자동화합니다. 블루프린트를 로켓으로 보내 새 행성을 개척한 뒤, 은하로 시야를 넓혀 행성 간 운송망을 연결합니다.', A ? A.wopScene().steps : [])}
     ${animCard('nx-anim-ww', 'ww', 'Wordless Mage', '로봇 처치에서 길 열기까지', '정지 신호를 보낸 로봇을 처치해 떨어진 마법을 획득합니다. 마법 휠에서 정지를 선택하고 거대 팬에 발동한 뒤, 멈춘 날개 사이로 통과합니다.', A ? A.wmScene().steps : [])}
   </div>
 </section>`;
