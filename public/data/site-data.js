@@ -130,7 +130,8 @@ window.ARCHIVE_DATA = {
           "title": "꽃밭에서 생산 구조로",
           "caption": "식물, 장치, 로봇과 자원 현황이 함께 보이는 생산 화면입니다."
         }
-      ]
+      ],
+      "developmentPeriod": "2주 개발"
     },
     {
       "id": "ww",
@@ -232,7 +233,8 @@ window.ARCHIVE_DATA = {
           "title": "자신에게 마법 적용",
           "caption": "캐릭터 자신을 대상으로 마법을 선택합니다."
         }
-      ]
+      ],
+      "developmentPeriod": "2주 개발"
     }
   ],
   "documents": [

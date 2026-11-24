@@ -281,7 +281,7 @@ window.SHOWCASE_DATA = {
       {
         "id": "wop",
         "name": "World of Plant",
-        "sub": "증분형 경영과 자동화",
+        "sub": "증분형 경영과 자동화 · 2주 개발",
         "items": [
           {
             "title": "커서를 올리면 파동이 나가도록",
@@ -345,7 +345,7 @@ window.SHOWCASE_DATA = {
       {
         "id": "ww",
         "name": "Wordless Mage",
-        "sub": "마법 조합 환경 퍼즐",
+        "sub": "마법 조합 환경 퍼즐 · 2주 개발",
         "items": [
           {
             "title": "마법은 로봇의 대사에서 얻도록",
