@@ -296,15 +296,14 @@ function wmScene() {
       for (let k = 0; k < 3; k++) blade(ang + k * TAU / 3, st >= 1 ? GOLD : '#b9c6bb');
       c.fillStyle = '#10171b'; c.strokeStyle = fcol; c.lineWidth = 1.4; c.beginPath(); c.arc(FX, FY, R * .12, 0, TAU); c.fill(); c.stroke();
       if (t > T0 && t < 10.2) { c.globalAlpha = 1 - seg(t, 9.4, 10.2); handIcon(c, FX, FY - R * .42, S * .05, GOLD); c.globalAlpha = 1; }
-      // stop-magic duration shown above the fan, running down like the in-game timer
+      // stop-magic duration: a ring timer above the fan, running down like the in-game one
       if (t > T0 + .9) {
         const show = seg(t, T0 + .9, T0 + 1.2), left = Math.max(0, 1 - (t - (T0 + 1)) / 6.2), low = left < .3, blink = low ? (Math.sin(t * 14) > 0 ? 1 : .35) : 1;
-        const bw = S * .17, bh = S * .042, bx = FX - bw / 2, byy = TOP - S * .016 - bh - S * .014;
-        c.globalAlpha = show; c.fillStyle = '#0d1418'; c.strokeStyle = a(GOLD, .7); c.lineWidth = 1.2; c.beginPath(); c.roundRect(bx, byy, bw, bh, bh / 2); c.fill(); c.stroke();
-        c.globalAlpha = show * blink; handIcon(c, bx + bh * .55, byy + bh / 2, bh * .62, low ? '#ff6b5a' : GOLD);
-        const tx = bx + bh * 1.05, tw = bw - bh * 1.35, th = bh * .3, ty = byy + bh / 2 - th / 2;
-        c.fillStyle = a(MUTED, .3); c.beginPath(); c.roundRect(tx, ty, tw, th, th / 2); c.fill();
-        c.fillStyle = low ? '#ff6b5a' : GOLD; c.beginPath(); c.roundRect(tx, ty, Math.max(th, tw * left), th, th / 2); c.fill();
+        const col = low ? '#ff6b5a' : GOLD, rr = S * .034, cx = FX, cy = TOP - S * .016 - rr - S * .02;
+        c.globalAlpha = show; c.fillStyle = '#0d1418'; c.beginPath(); c.arc(cx, cy, rr + S * .006, 0, TAU); c.fill();
+        c.strokeStyle = a(MUTED, .3); c.lineWidth = S * .007; c.beginPath(); c.arc(cx, cy, rr, 0, TAU); c.stroke();
+        c.strokeStyle = col; c.lineCap = 'round'; c.beginPath(); c.arc(cx, cy, rr, -Math.PI / 2, -Math.PI / 2 + TAU * left); c.stroke(); c.lineCap = 'butt';
+        c.globalAlpha = show * blink; handIcon(c, cx, cy, rr * 1.05, col);
         c.globalAlpha = 1;
       }
       const wind = 1 - seg(t, T0, T0 + .5);
