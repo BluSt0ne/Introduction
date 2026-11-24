@@ -38,12 +38,14 @@ function rocket(c, x, y, ang, s) {
 }
 function wopScene() {
   const slots = []; for (let i = 0; i < 10; i++) { const an = i * 2.399, d = .25 + .62 * Math.sqrt((i + .5) / 10); slots.push({ x: Math.cos(an) * d, y: Math.sin(an) * d, c: PET[i % 3] }); }
-  const devs = [{ x: -.15, y: .12, t: 4.2 }, { x: .32, y: -.28, t: 5.2 }];
+  const devs = [{ x: -.12, y: -.12, t: 4.2 }, { x: .05, y: .3, t: 5.2 }];
   const bt = i => .3 + i * .28, bt2 = i => 10.4 + i * .12;
   const SPEND = [[3.5, devs[0], 10], [4.5, devs[1], 8], [7.6, null, 16]];
   const MAX = 40;
   return {
     duration: 13.5,
+    // positions in planet-radius units, used by scripts/test.mjs to keep devices off the flowers
+    layout: { flowers: slots.map(s => ({ x: s.x * .8, y: s.y * .8 })), devices: devs.map(d => ({ x: d.x * .8, y: d.y * .8 })), flowerRadius: .12, deviceRadius: .17 },
     steps: [[0, '꽃 기르기'], [1.2, '에너지 수집'], [3.5, '장치 설치'], [6.0, '블루프린트'], [7.6, '로켓 발사'], [10.0, '새 행성']],
     draw(c, W, H, t) {
       const S = Math.min(W, H * 1.6), fr = S * .026;
@@ -129,6 +131,8 @@ function stopIcon(c, x, y, s, col) { c.fillStyle = col; c.fillRect(x - s * .32, 
 function wmScene() {
   return {
     duration: 14.5,
+    // story order, checked by scripts/test.mjs
+    stateAt: t => ({ robotAlive: t < 3.3, defeated: t >= 3.9, drop: t >= 3.9 && t < 6.0, collected: t >= 6.0, fanStopped: t >= 9.6 }),
     steps: [[0, '로봇 반응'], [2.6, '처치'], [4.0, '마법 획득'], [6.4, '팬 정지'], [9.6, '통과']],
     draw(c, W, H, t) {
       const S = Math.min(W, H * 1.6), G = H * .8;
