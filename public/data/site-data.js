@@ -59,8 +59,8 @@ window.ARCHIVE_DATA = {
       "id": "wop",
       "name": "World of Plant",
       "short": "WOP",
-      "genre": "증분형 경영, 자동화",
-      "description": "커서로 꽃을 깨우고, 생산을 자동화해 다른 행성까지 정원을 넓힙니다.",
+      "genre": "증분형 경영 · 자동화",
+      "description": "커서 하나로 꽃을 깨우고, 생산과 자동화를 거쳐 다른 행성으로 정원을 넓혀 갑니다.",
       "loop": [
         "파동",
         "생산",
@@ -76,8 +76,8 @@ window.ARCHIVE_DATA = {
           "Plant"
         ],
         "label": "INCREMENTAL · AUTOMATION",
-        "tagline": "커서로 꽃을 깨우고, 장치와 로켓으로 정원을 넓힙니다.",
-        "concept": "커서의 파동으로 꽃을 깨우고, 생산을 자동화해 다른 행성까지 정원을 넓히는 증분형 게임입니다.",
+        "tagline": "커서로 피운 꽃밭을, 자동으로 돌아가는 행성으로.",
+        "concept": "커서의 파동으로 꽃을 깨우고, 생산을 자동화해 다른 행성까지 정원을 넓히는 증분형 게임.",
         "points": [
           "커서가 닿으면 시작되는 생산",
           "범위와 빈도로 보이는 성장",
@@ -117,7 +117,7 @@ window.ARCHIVE_DATA = {
           "wop-04"
         ]
       },
-      "cardText": "꽃을 깨우고 행성으로 넓히는 정원",
+      "cardText": "꽃에서 시작해 더 넓은 우주로",
       "coverLayout": {
         "fit": "cover",
         "positionX": 50,
@@ -136,8 +136,8 @@ window.ARCHIVE_DATA = {
       "id": "ww",
       "name": "Wordless Mage",
       "short": "WW",
-      "genre": "마법 조합, 환경 퍼즐",
-      "description": "로봇의 대사에서 마법을 얻고, 대상의 시간, 무게, 위치를 바꾸어 길을 만듭니다.",
+      "genre": "마법 조합 · 환경 퍼즐",
+      "description": "로봇의 행동에서 마법 문자를 얻고, 대상의 시간·무게·위치를 바꾸어 길을 만듭니다.",
       "loop": [
         "관찰",
         "행동 유도",
@@ -153,8 +153,8 @@ window.ARCHIVE_DATA = {
           "Mage"
         ],
         "label": "MAGIC · ENVIRONMENTAL PUZZLE",
-        "tagline": "로봇의 대사에서 마법을 얻고, 대상의 상태를 바꿔 길을 찾습니다.",
-        "concept": "로봇의 대사에서 마법을 얻고, 시간, 무게, 위치를 바꾸어 환경 퍼즐을 푸는 게임입니다.",
+        "tagline": "말을 빼앗아 마법으로, 마법을 조합해 새로운 길로.",
+        "concept": "로봇의 대사에서 마법 문자를 얻고, 시간·무게·위치를 바꾸어 환경 퍼즐을 푸는 게임.",
         "points": [
           "관찰과 유도로 얻는 마법",
           "서로 다른 효과의 조합",
@@ -194,7 +194,7 @@ window.ARCHIVE_DATA = {
           "ww-15"
         ]
       },
-      "cardText": "로봇의 대사로 마법을 얻어 길을 찾는 퍼즐",
+      "cardText": "마법으로 바꾸는 환경의 규칙.",
       "coverLayout": {
         "fit": "cover",
         "positionX": 50,
