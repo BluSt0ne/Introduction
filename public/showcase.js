@@ -7,100 +7,101 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const e = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+
 /* ---------- content ---------- */
 const STATS = [
-  [2, '', '플레이 가능한 개인 게임', 'World of Plant · Wordless Mage'],
-  [3800, '', '절차 생성 행성', '5개 유형 규칙 + 희귀 변형 5%'],
-  [5, '종', '마법', '슬롯 3개 안에서 조합'],
-  [6, '단계', 'AI 협업 루프', '설계부터 문서 대조까지']
+  [2, '', '혼자 만든 게임', 'World of Plant · Wordless Mage'],
+  [3800, '', '은하의 행성 수', '유형 5개, 희귀 변형 5%'],
+  [5, '종', '마법', '슬롯 3칸에 넣어서 씀'],
+  [4, '개', '직접 만든 툴', '밸런스·레벨·프로파일러·검수']
 ];
 
-const STAGES = ['설계', '요청', '구현', '플레이', '조정', '기록'];
+const STAGES = ['기획', '요청', '구현', '플레이', '조정', '정리'];
 const SPLIT = {
   wop: {
     name: 'World of Plant',
     rows: [
-      { me: ['커서 파동 → 꽃 → 장치 → 로봇 → 로켓으로 이어지는 성장 단계 결정', '자원 3단계(에너지·원석·제련)와 업그레이드 트리의 연결 설계'],
-        ai: ['규칙 문서를 바탕으로 시스템 구조와 데이터 테이블 초안 제안'], out: '핵심 규칙 · 업그레이드 노드 표' },
-      { me: ['바꿀 것과 유지할 것을 나눠 요청 작성', '예외 조건(에너지 부족, 설치 대기, 중복 차감)을 요청에 포함'],
-        ai: ['요청을 작업 단위로 쪼개 변경 범위 제시'], out: '목적 · 조건 · 예외 · 확인 항목' },
-      { me: ['큰 구조 변경만 AI에 맡기고 결과 코드 검토'],
-        ai: ['GPU 인스턴싱 렌더링, 은하 3,800개 행성, 로봇 작업 배정 구현', '행성 외형 생성 규칙을 C#과 셰이더에 동일하게 구현'], out: 'Unity 6 URP 빌드' },
-      { me: ['빌드를 직접 플레이하며 끊김·동선·가독성 확인', '체감 문제를 인게임 프로파일러로 수치화'],
-        ai: ['프로파일러 로그에서 스파이크 구간 분류'], out: '0.1초 이상 프레임 기록 로그' },
-      { me: ['비용·배수·주기는 밸런스 툴에서 직접 조정', '플레이 피드백으로 규칙 변경: 업그레이드 비용을 기본 원석으로, 로봇 속도 업그레이드 추가'],
-        ai: ['조정된 규칙을 코드·UI 문구에 반영'], out: '로봇 속도 Lv당 +25%, 최대 8레벨' },
-      { me: ['문서와 실제 빌드를 대조해 폐기된 설계(생태 시뮬레이션) 분리'],
-        ai: ['기획서·포트폴리오 문서 정리'], out: '게임 기획서 · 이 페이지' }
+      { me: ['커서 → 꽃 → 장치 → 로봇 → 로켓 순서로 손이 덜 가게 되는 흐름을 잡음', '자원은 에너지·원석·제련 세 단계, 업그레이드 트리 연결'],
+        ai: ['규칙 문서 보고 구조랑 데이터 표 초안'], out: '핵심 규칙, 업그레이드 노드 표' },
+      { me: ['바꿀 것과 건드리면 안 되는 것을 나눠서 적음', '에너지 부족·설치 대기·비용 두 번 빠짐 같은 예외도 같이 적음'],
+        ai: ['작업 단위로 쪼개서 어디를 고칠지 먼저 알려 줌'], out: '요청서 (목적 / 조건 / 예외 / 확인)' },
+      { me: ['큰 구조 바꿀 때만 맡기고, 나온 코드는 읽어 보고 받음'],
+        ai: ['GPU 인스턴싱 렌더링, 행성 3,800개 은하, 로봇 작업 배정', '행성 외형 규칙을 C#이랑 셰이더 양쪽에 똑같이'], out: 'Unity 6 URP 빌드' },
+      { me: ['빌드 돌려 보면서 끊김, 로봇 동선, 화면 읽히는지 확인', '느낌으로 끊기는 건 프로파일러 붙여서 숫자로 봄'],
+        ai: ['로그에서 튀는 구간 분류'], out: '0.1초 넘은 프레임 기록' },
+      { me: ['비용·배수·주기는 밸런스 툴에서 직접 만짐', '플레이해 보고 규칙 변경: 업그레이드는 원석으로, 로봇 속도 업그레이드 추가'],
+        ai: ['바뀐 규칙을 코드랑 UI 문구에 반영'], out: '로봇 속도 레벨당 +25%, 최대 8' },
+      { me: ['문서랑 실제 빌드 비교해서 접은 기획(생태 시뮬레이션) 따로 뺌'],
+        ai: ['기획서, 이 페이지 정리'], out: '게임 기획서' }
     ]
   },
   ww: {
     name: 'Wordless Mage',
     rows: [
-      { me: ['로봇의 대사에서 마법을 얻는다는 핵심 규칙 결정', '자모 조합 대신 마법 5종 · 슬롯 3개로 범위 조정'],
-        ai: ['마법과 대상의 반응 규칙을 표로 정리'], out: '마법 × 대상 반응표' },
-      { me: ['조준 안내와 실제 결과가 일치해야 한다는 기준을 요청에 명시'],
-        ai: ['공통 장애물 판정 구조 제안'], out: '조준 · 충돌 판정 기준' },
-      { me: ['레벨 구조와 학습 순서를 정하고 구현 결과 검토'],
-        ai: ['로봇 AI, 마법 효과, 레벨 에디터 구현'], out: '레벨 · 지도 · 결과 화면' },
-      { me: ['직접 플레이로 퍼즐 전달과 조작감 확인', '자동 검증과 직접 플레이를 구분해 기록'],
-        ai: ['level-review 기능으로 해금·재도전·별 조건 자동 점검'], out: '검증 보고서 + 캡처' },
-      { me: ['레벨 에디터로 장치·지형 배치를 직접 수정', '체력·효과·도전 조건 수치 조정'],
-        ai: ['구조 변경이 필요할 때만 코드 수정'], out: '조정된 레벨 데이터' },
-      { me: ['실제 화면과 설명이 일치하는지 확인'],
+      { me: ['로봇이 한 말을 뺏어서 마법으로 쓴다는 규칙', '자모 조합은 접고 마법 5종 + 슬롯 3칸으로 줄임'],
+        ai: ['마법이랑 대상 반응을 표로 정리'], out: '마법 × 대상 반응표' },
+      { me: ['조준선에 보이는 대로 맞아야 한다는 기준을 요청에 박아 둠'],
+        ai: ['조준·충돌을 한 판정으로 묶는 구조 제안'], out: '조준·충돌 기준' },
+      { me: ['레벨 순서랑 배울 순서 정하고 결과 확인'],
+        ai: ['로봇 AI, 마법 효과, 레벨 에디터'], out: '레벨, 지도, 결과 화면' },
+      { me: ['직접 깨 보면서 퍼즐이 읽히는지, 조작이 답답한지 봄', '자동 검사 결과랑 직접 플레이한 결과는 따로 적음'],
+        ai: ['level-review로 해금·재도전·별 조건 자동 점검'], out: '검수 기록 + 캡처' },
+      { me: ['장치·지형 배치는 레벨 에디터에서 직접', '체력, 효과 시간, 도전 조건 숫자 조정'],
+        ai: ['구조를 바꿔야 할 때만 코드 수정'], out: '레벨 데이터' },
+      { me: ['화면이랑 설명이 맞는지 다시 확인'],
         ai: ['기획서 형식 정리'], out: '게임 기획서' }
     ]
   }
 };
 
 const CASES = [
-  { tag: 'wop', label: 'WoP · 최적화', title: '행성이 늘수록 생기는 끊김', metric: '360', unit: 'ms', mlabel: '개선 전 최대 스파이크',
+  { tag: 'wop', label: 'WoP · 최적화', title: '행성이 많아지면 끊김', metric: '360', unit: 'ms', mlabel: '고치기 전 제일 길게 멈춘 프레임',
     steps: [
-      ['증상', '행성 수가 늘자 플레이 중 주기적으로 화면이 멈칫했습니다. 체감만으로는 원인을 특정할 수 없었습니다.'],
-      ['측정', '게임 안에 프레임 프로파일러를 직접 넣어 0.1초 이상 걸린 프레임과 구간을 기록했습니다. 로봇 작업 배정이 100~360ms, 53MB 세이브 저장이 약 280ms였습니다.'],
-      ['조치', '작업 배정에 프레임당 검사 예산을 두고, 자주 쓰는 집계는 2초 캐시로 바꾸고, 매 프레임 생기던 메모리 할당을 없앴습니다.'],
-      ['결과', '작업 배정 스파이크는 사라졌습니다. 30초마다 생기는 저장 끊김은 남아 있어, 행성별 분할 저장을 다음 과제로 두었습니다.']
+      ['증상', '행성이 늘어나니까 몇 초마다 화면이 툭툭 멈췄습니다. 어디서 멈추는지는 눈으로는 알 수가 없었습니다.'],
+      ['확인', '게임 안에 프로파일러를 직접 붙여서 0.1초 넘는 프레임만 남겼습니다. 로봇 작업 배정이 100~360ms, 53MB짜리 저장이 280ms 정도 걸리고 있었습니다.'],
+      ['수정', '작업 배정은 한 프레임에 검사할 양을 정해 두고, 자주 세는 값은 2초에 한 번만 다시 세고, 매 프레임 새로 만들던 메모리를 없앴습니다.'],
+      ['남은 것', '배정 때문에 멈추는 건 없어졌습니다. 30초마다 저장할 때 끊기는 건 아직 남아 있어서, 행성별로 나눠 저장하는 쪽으로 고칠 예정입니다.']
     ] },
-  { tag: 'wop', label: 'WoP · 회귀 버그', title: '최적화 뒤 로봇이 건설을 멈춤', metric: '705', unit: '건', mlabel: '대기 작업 · 출동 로봇 0',
+  { tag: 'wop', label: 'WoP · 수정 후 버그', title: '최적화하고 나니 로봇이 안 움직임', metric: '705', unit: '건', mlabel: '쌓인 작업 / 나간 로봇 0대',
     steps: [
-      ['증상', '어느 시점부터 로봇이 땅을 열거나 설치하지 않았습니다.'],
-      ['원인', '앞선 최적화에서 넣은 검사 횟수 제한(16회)과 재시도 지연이 겹쳐, 대기 작업 705건이 쌓이는 동안 배정이 한 건도 일어나지 않았습니다.'],
-      ['조치', '행성마다 한 건씩 공평하게 배정하고 검사 예산을 32로 늘렸습니다. 자리를 못 찾은 작업만 3초 뒤 재시도하고, 가까운 칸부터 짓도록 순서를 바꿨습니다.'],
-      ['배운 점', '성능 개선이 게임 규칙을 깨지 않는지 다시 플레이로 확인하는 단계를 루프에 추가했습니다.']
+      ['증상', '어느 순간부터 로봇이 땅을 안 열고 설치도 안 했습니다.'],
+      ['원인', '위에서 끊김 잡으려고 넣은 검사 제한(16번)이랑 재시도 대기가 겹쳐서, 작업이 705건 쌓이는 동안 하나도 배정이 안 되고 있었습니다.'],
+      ['수정', '행성마다 하나씩 돌아가며 배정하고 검사 한도를 32로 올렸습니다. 자리 못 찾은 작업만 3초 뒤 다시 보고, 가까운 칸부터 짓게 바꿨습니다.'],
+      ['이후', '성능 손본 다음에는 꼭 다시 플레이해서 게임 규칙이 안 깨졌는지 보는 걸 순서에 넣었습니다.']
     ] },
-  { tag: 'build', label: 'WoP · 빌드', title: '빌드에서만 꽃과 장치가 보이지 않음', metric: '0', unit: '개', mlabel: '빌드에서 보인 설치물',
+  { tag: 'build', label: 'WoP · 빌드', title: '빌드하면 꽃이랑 장치가 안 보임', metric: '0', unit: '개', mlabel: '빌드에서 보인 설치물',
     steps: [
-      ['증상', '에디터에서는 정상인데, 빌드에서는 설치한 꽃과 장치가 모두 보이지 않았습니다. 에너지는 계속 모였습니다.'],
-      ['범위 좁히기', '로직은 돌고 있으니 렌더링 문제로 범위를 좁혔습니다.'],
-      ['원인', '빌드 과정에서 GPU 인스턴싱용 셰이더 변형이 제거되고 있었습니다. 이전 기획의 씬이 첫 씬으로 잡혀 있던 문제도 함께 찾았습니다.'],
-      ['조치', '인스턴싱 변형을 유지하도록 설정하고, 에디터 스크립트가 씬 순서와 설정을 자동으로 복구하게 했습니다.']
+      ['증상', '에디터에선 멀쩡한데 빌드하면 설치한 게 전부 안 보였습니다. 그런데 에너지는 계속 들어왔습니다.'],
+      ['좁히기', '로직은 돌고 있으니 그리는 쪽 문제라고 보고 렌더링만 봤습니다.'],
+      ['원인', '빌드할 때 GPU 인스턴싱용 셰이더가 빠지고 있었습니다. 첫 씬도 예전 기획 씬으로 잡혀 있었습니다.'],
+      ['수정', '인스턴싱 셰이더가 빠지지 않게 설정하고, 에디터 스크립트가 씬 순서랑 설정을 알아서 되돌리게 했습니다.']
     ] },
-  { tag: 'ww', label: 'WM · 범위 판단', title: '자모 조합 마법 → 마법 5종', metric: '5', unit: '종', mlabel: '최종 마법 수 · 슬롯 3개',
+  { tag: 'ww', label: 'WM · 범위', title: '자모 조합 마법을 5종으로 줄임', metric: '5', unit: '종', mlabel: '최종 마법 수, 슬롯 3칸',
     steps: [
-      ['초안', '처음에는 대사에서 자모를 모아 마법을 조합하는 구조였습니다.'],
-      ['문제', '조합 경우의 수가 늘수록 퍼즐마다 확인할 예외가 늘어, 개인 제작 기간 안에 레벨을 설계·검증하기 어려웠습니다.'],
-      ['판단', '문자 조합이 아니라 효과가 분명한 마법 5종으로 줄이고, 슬롯 3개 안에서 고르는 구조로 바꿨습니다.'],
-      ['결과', '마법마다 역할(시간·무게·위치·제거)이 분리되어, 조합할 이유가 레벨 안에서 드러나게 되었습니다.']
+      ['처음', '로봇 대사에서 자모를 모아서 마법을 조합하는 구조였습니다.'],
+      ['문제', '조합 수가 늘수록 퍼즐마다 확인할 예외가 늘어서, 혼자서 정해진 기간 안에 레벨을 만들고 검수하기 어려웠습니다.'],
+      ['결정', '효과가 확실한 마법 5종으로 줄이고, 슬롯 3칸 안에서 고르게 했습니다.'],
+      ['결과', '시간·무게·위치·제거로 역할이 나뉘니까 레벨 안에서 뭘 써야 할지가 보이게 됐습니다.']
     ] },
-  { tag: 'ww', label: 'WM · 일관성', title: '조준선과 실제 결과 일치', metric: '3', unit: '곳', mlabel: '같은 판정을 쓰게 한 곳 · 대상·조준선·투사체',
+  { tag: 'ww', label: 'WM · 판정', title: '조준선이랑 실제로 맞는 곳이 다름', metric: '3', unit: '곳', mlabel: '판정을 하나로 묶은 곳 (대상·조준선·투사체)',
     steps: [
-      ['기준', '플레이어가 본 조준 안내와 실제 마법 결과가 같아야 퍼즐 규칙을 신뢰할 수 있습니다.'],
-      ['조치', '대상 판정·조준선·투사체가 같은 장애물 판정을 쓰게 했습니다. 벽에 막히면 안내와 투사체가 모두 벽에서 멈춥니다.'],
-      ['예외', '트리거와 대상 자신의 콜라이더는 벽으로 보지 않고, 컨베이어에는 별도 조준 지점을 두었습니다.']
+      ['기준', '조준선에 보인 대로 맞아야 퍼즐을 믿고 풀 수 있습니다.'],
+      ['수정', '대상 판정, 조준선, 투사체가 같은 장애물 판정을 쓰게 했습니다. 벽에 막히면 조준선도 투사체도 벽에서 멈춥니다.'],
+      ['예외', '트리거나 대상 자기 콜라이더는 벽으로 안 치고, 컨베이어는 조준점을 따로 뒀습니다.']
     ] },
-  { tag: 'wop', label: 'WoP · 플레이 피드백', title: '비효율적인 로봇 동선', metric: '25', unit: '%', mlabel: '로봇 속도 업그레이드 Lv당',
+  { tag: 'wop', label: 'WoP · 플레이 피드백', title: '로봇이 멀리 왔다 갔다 함', metric: '25', unit: '%', mlabel: '로봇 속도 업그레이드 1레벨당',
     steps: [
-      ['관찰', '로봇이 멀리 떨어진 칸을 오가며 지어 건설이 느리게 느껴졌습니다.'],
-      ['조치', '현재 위치에서 가까운 칸부터 순서대로 짓게 하고, 로봇 속도 업그레이드(Lv당 +25%, 최대 8레벨)를 추가했습니다.'],
-      ['함께 바꾼 규칙', '업그레이드 비용을 제련 자원이 아닌 기본 원석으로 바꿔, 초반 성장 흐름이 막히지 않게 했습니다.']
+      ['본 것', '로봇이 멀리 떨어진 칸을 오가면서 지어서 건설이 느리게 느껴졌습니다.'],
+      ['수정', '지금 있는 곳에서 가까운 칸부터 짓게 하고, 로봇 속도 업그레이드(레벨당 +25%, 최대 8)를 넣었습니다.'],
+      ['같이 바꾼 것', '업그레이드 비용을 제련 자원 말고 기본 원석으로 받게 해서 초반에 막히지 않게 했습니다.']
     ] }
 ];
 
 const TOOLS = [
-  ['balance', '밸런스 툴', 'World of Plant', '비용·배수·주기·사거리를 실시간으로 조정하고 바로 플레이로 확인합니다. 수치 조정에는 토큰을 쓰지 않습니다.'],
-  ['editor', '레벨 에디터', 'Wordless Mage', '장치·지형·로봇 배치를 직접 수정합니다. 레벨 구조 변경만 AI에 요청합니다.'],
-  ['profiler', '프레임 프로파일러', 'World of Plant', '0.1초 이상 걸린 프레임을 구간별로 기록합니다. 끊김의 원인을 감이 아니라 로그로 판단합니다.'],
-  ['review', 'level-review', 'Wordless Mage', '해금·재도전 초기화·별 조건을 자동으로 점검합니다. 결과는 직접 플레이와 구분해 기록합니다.']
+  ['balance', '밸런스 툴', 'World of Plant', '비용, 배수, 주기, 사거리를 켜 둔 채로 바꾸고 바로 플레이해 봅니다. 숫자 하나 바꾸는 데 AI는 안 씁니다.'],
+  ['editor', '레벨 에디터', 'Wordless Mage', '장치, 지형, 로봇 위치는 여기서 직접 옮깁니다. 레벨 구조 자체를 바꿀 때만 AI에 요청합니다.'],
+  ['profiler', '프레임 프로파일러', 'World of Plant', '0.1초 넘게 걸린 프레임을 구간별로 남깁니다. 끊김 잡을 때 이 로그부터 봤습니다.'],
+  ['review', 'level-review', 'Wordless Mage', '해금, 재도전 초기화, 별 조건을 자동으로 돌려 봅니다. 직접 해 본 결과랑은 따로 적어 둡니다.']
 ];
 
 const PLANETS = [
@@ -111,58 +112,71 @@ const PLANETS = [
   { name: 'Ember Garden', kind: '용암', a: '#231512', b: '#4a2318', c: '#ff8a3c', sea: null, clouds: 0, lava: true }
 ];
 
-const TIMELINE = [
-  ['2026', '2026.11', 'World of Plant', '개인 · Unity', '커서 파동 증분형 게임. 기획, AI 협업 구현, 최적화와 밸런스를 직접 진행.', 'wop'],
-  ['2026', '2026.11', 'Wordless Mage', '개인 · Unity', '로봇의 대사에서 마법을 얻는 환경 퍼즐. 레벨 에디터로 레벨 설계.', 'ww'],
-  ['2026', '2026.10 – 11', 'Galactica', '개인', '개인 프로젝트.', ''],
-  ['2024', '2024.04 – 11', 'Lone Lantern', 'O2CUBE · 학과 게임 개발 동아리', '동아리 팀 프로젝트.', ''],
-  ['2019', '2019.03 – 11', '디페어', '넷마블게임아카데미 4기', '아카데미 팀 프로젝트.', '']
-];
 
 /* ---------- markup ---------- */
 function hero() {
   return `<section class="nx-hero" id="nx-hero">
   <div class="nx-hero-copy">
-    <span class="eyebrow">GAME DESIGNER × AI</span>
-    <h1>규칙은 제가 정하고,<br>구현은 AI와 함께,<br><em>판단은 플레이로.</em></h1>
-    <p class="nx-lead">두 개의 게임을 혼자 기획하고 AI와 함께 만들었습니다. 큰 구조 변경은 AI에 맡기고, 세부 수치는 직접 만든 툴로 조정하며, 결과는 측정과 플레이로 확인합니다.</p>
+    <span class="eyebrow">GAME DESIGN · AI</span>
+    <h1>기획한 게임을<br>AI랑 끝까지<br><em>만들어 봤습니다.</em></h1>
+    <p class="nx-lead">World of Plant와 Wordless Mage 둘 다 혼자 기획하고 AI랑 같이 구현했습니다. 구조를 크게 바꿀 때만 AI한테 맡기고, 숫자나 레벨 배치는 직접 만든 툴로 맞췄습니다. 끊기거나 이상하면 로그부터 찍어 봤습니다.</p>
     <div class="nx-actions">
-      <a class="button primary" href="#" data-scroll="nx-projects">프로젝트 보기</a>
-      <a class="button quiet" href="#" data-scroll="nx-verify">검증 사례</a>
-      <a class="button quiet" href="#ai-development">AI 활용 과정 →</a>
+      <a class="button primary" href="#" data-scroll="nx-play">게임 흐름 보기</a>
+      <a class="button quiet" href="#" data-scroll="nx-verify">고친 문제들</a>
+      <a class="button quiet" href="#ai-development">AI 활용 →</a>
     </div>
   </div>
-  <figure class="nx-toy" aria-label="World of Plant의 파동 규칙을 축소한 체험">
+  <figure class="nx-toy" aria-label="World of Plant 파동 체험">
     <canvas id="nx-toy-canvas"></canvas>
-    <figcaption><span class="nx-dot"></span><span id="nx-toy-hint">커서를 움직이거나 터치해 보세요</span><b><span id="nx-bloom">0</span> 송이</b></figcaption>
+    <figcaption><span class="nx-dot"></span><span id="nx-toy-hint">마우스를 움직이면 꽃이 핍니다</span><b><span id="nx-bloom">0</span> 송이</b></figcaption>
   </figure>
 </section>
-<section class="nx-stats" aria-label="주요 수치">${STATS.map(([n, u, l, s]) => `<div class="nx-stat nx-reveal"><strong><span data-count="${n}">0</span>${u ? `<small>${u}</small>` : ''}</strong><span>${l}</span><em>${s}</em></div>`).join('')}</section>
-<nav class="nx-jump" aria-label="소개 페이지 내 이동">${[['nx-projects','프로젝트'],['nx-split','나와 AI'],['nx-verify','검증 사례'],['nx-tools','툴과 생성 규칙'],['nx-career','이력']].map(([id, t], i) => `<a href="#" data-scroll="${id}"><span>${String(i + 1).padStart(2, '0')}</span>${t}</a>`).join('')}</nav>`;
+<section class="nx-stats" aria-label="숫자로 보기">${STATS.map(([n, u, l, s]) => `<div class="nx-stat nx-reveal"><strong><span data-count="${n}">0</span>${u ? `<small>${u}</small>` : ''}</strong><span>${l}</span><em>${s}</em></div>`).join('')}</section>
+<nav class="nx-jump" aria-label="페이지 안 이동">${[['nx-play','게임 흐름'],['nx-projects','프로젝트'],['nx-split','나 / AI'],['nx-verify','고친 문제들'],['nx-tools','툴']].map(([id, t], i) => `<a href="#" data-scroll="${id}"><span>${String(i + 1).padStart(2, '0')}</span>${t}</a>`).join('')}</nav>`;
+}
+
+function animCard(id, cls, label, title, desc, steps) {
+  return `<article class="nx-anim ${cls}" id="${id}">
+    <header><div><span class="nx-anim-label">${label}</span><h3>${title}</h3></div><button type="button" class="nx-anim-play" data-anim-play aria-pressed="false">일시정지</button></header>
+    <div class="nx-anim-stage"><canvas aria-label="${e(title)} 진행 애니메이션"></canvas></div>
+    <div class="nx-anim-bar" aria-hidden="true"><i></i></div>
+    <ol class="nx-anim-steps">${steps.map(([, s], i) => `<li><button type="button" data-step="${i}"><span>${String(i + 1).padStart(2, '0')}</span>${s}</button></li>`).join('')}</ol>
+    <p>${desc}</p>
+  </article>`;
+}
+function play() {
+  const W = window.NXAnim;
+  return `<section class="nx-section nx-play nx-reveal" id="nx-play">
+  <header class="nx-head"><span class="eyebrow">HOW IT PLAYS</span><h2>두 게임, 한 판 흐름</h2><p>단계 이름을 누르면 그 장면으로 넘어갑니다.</p></header>
+  <div class="nx-anim-grid">
+    ${animCard('nx-anim-wop', 'wop', 'World of Plant', '꽃밭이 다른 행성으로 퍼질 때까지', '꽃을 키워 모은 자원으로 배치를 블루프린트로 저장하고, 로켓에 실어 다른 행성에 그대로 깔아요. 행성이 늘수록 손은 덜 갑니다.', W ? W.wopScene().steps : [])}
+    ${animCard('nx-anim-ww', 'ww', 'Wordless Mage', '로봇의 말로 거대 팬 멈추기', '로봇을 쓰러뜨리면 걔가 하던 말("멈춰!")이 마법이 됩니다. 그걸로 길을 막던 회전 팬을 세우고 날개 사이로 지나갑니다.', W ? W.wmScene().steps : [])}
+  </div>
+</section>`;
 }
 
 function split() {
   return `<section class="nx-section nx-reveal" id="nx-split">
-  <header class="nx-head"><span class="eyebrow">ROLE SPLIT</span><h2>무엇을 제가 하고, 무엇을 AI에 맡겼나</h2><p>단계를 눌러 프로젝트별 역할과 산출물을 확인하세요.</p></header>
+  <header class="nx-head"><span class="eyebrow">ROLE SPLIT</span><h2>제가 한 것, AI가 한 것</h2><p>프로젝트랑 단계를 바꿔 가며 보세요.</p></header>
   <div class="nx-split-controls">
     <div class="nx-seg" role="group" aria-label="프로젝트 선택">${Object.entries(SPLIT).map(([id, p], i) => `<button type="button" data-nx-proj="${id}" aria-pressed="${i === 0}" class="${id}">${p.name}</button>`).join('')}</div>
-    <ol class="nx-stages" role="group" aria-label="협업 단계">${STAGES.map((s, i) => `<li><button type="button" data-nx-stage="${i}" aria-pressed="${i === 0}"><span>${String(i + 1).padStart(2, '0')}</span>${s}</button></li>`).join('')}</ol>
+    <ol class="nx-stages" role="group" aria-label="작업 단계">${STAGES.map((s, i) => `<li><button type="button" data-nx-stage="${i}" aria-pressed="${i === 0}"><span>${String(i + 1).padStart(2, '0')}</span>${s}</button></li>`).join('')}</ol>
   </div>
   <div class="nx-split-panel" id="nx-split-panel" aria-live="polite"></div>
 </section>`;
 }
 function splitPanel(proj, stage) {
   const r = SPLIT[proj].rows[stage];
-  return `<article class="nx-col me"><header><span class="nx-who">ME</span><h3>직접 판단</h3></header><ul>${r.me.map(t => `<li>${e(t)}</li>`).join('')}</ul></article>
+  return `<article class="nx-col me"><header><span class="nx-who">ME</span><h3>제가 한 것</h3></header><ul>${r.me.map(t => `<li>${e(t)}</li>`).join('')}</ul></article>
   <div class="nx-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></div>
-  <article class="nx-col ai"><header><span class="nx-who">AI</span><h3>AI에 맡긴 작업</h3></header><ul>${r.ai.map(t => `<li>${e(t)}</li>`).join('')}</ul></article>
-  <p class="nx-out"><span>산출물</span>${e(r.out)}</p>`;
+  <article class="nx-col ai"><header><span class="nx-who">AI</span><h3>AI가 한 것</h3></header><ul>${r.ai.map(t => `<li>${e(t)}</li>`).join('')}</ul></article>
+  <p class="nx-out"><span>남은 것</span>${e(r.out)}</p>`;
 }
 
 function verify() {
   return `<section class="nx-section nx-reveal" id="nx-verify">
-  <header class="nx-head"><span class="eyebrow">VERIFY & PROBLEM SOLVING</span><h2>문제를 숫자로 확인하고 고쳤습니다</h2><p>카드를 열면 증상 → 원인 → 조치 → 결과 순서로 볼 수 있습니다.</p></header>
-  <div class="nx-filter" role="group" aria-label="사례 분류">${[['all','전체'],['wop','World of Plant'],['ww','Wordless Mage'],['build','빌드']].map(([id, t], i) => `<button type="button" data-nx-case="${id}" aria-pressed="${i === 0}">${t}</button>`).join('')}</div>
+  <header class="nx-head"><span class="eyebrow">PROBLEMS</span><h2>만들다가 막혔던 것들</h2><p>카드를 누르면 어떻게 찾고 고쳤는지 나옵니다.</p></header>
+  <div class="nx-filter" role="group" aria-label="분류">${[['all','전체'],['wop','World of Plant'],['ww','Wordless Mage'],['build','빌드']].map(([id, t], i) => `<button type="button" data-nx-case="${id}" aria-pressed="${i === 0}">${t}</button>`).join('')}</div>
   <div class="nx-cases">${CASES.map((c, i) => `<article class="nx-case ${c.tag}" data-tag="${c.tag}">
     <button type="button" class="nx-case-top" aria-expanded="false" aria-controls="nx-case-${i}">
       <span class="nx-case-label">${e(c.label)}</span>
@@ -178,30 +192,20 @@ function verify() {
 
 function tools() {
   return `<section class="nx-section nx-reveal" id="nx-tools">
-  <header class="nx-head"><span class="eyebrow">TOOLS & RULES</span><h2>큰 변경은 AI로, 세부 조정은 직접 만든 툴로</h2><p>토큰은 구조를 바꿀 때만 씁니다. 수치와 배치는 툴에서 바로 고치고 플레이로 확인합니다.</p></header>
-  <div class="nx-route" aria-label="변경 요청 분기">
-    <div class="nx-node">변경이 필요함</div><span class="nx-line"></span>
-    <div class="nx-node q">구조가 바뀌는가?</div>
-    <div class="nx-fork"><div class="nx-branch"><span>예</span><div class="nx-node ai">AI에 요청<small>목적 · 조건 · 예외 · 확인</small></div></div><div class="nx-branch"><span>아니오</span><div class="nx-node me">툴에서 직접 조정<small>수치 · 배치 · 주기</small></div></div></div>
-    <span class="nx-line"></span><div class="nx-node end">직접 플레이로 확인</div>
+  <header class="nx-head"><span class="eyebrow">TOOLS</span><h2>숫자는 툴로, 구조는 AI로</h2><p>수치 하나 바꾸자고 AI를 부르진 않았습니다. 구조를 바꿔야 할 때만 요청하고, 나머지는 툴에서 고쳐서 바로 돌려 봤습니다.</p></header>
+  <div class="nx-route" aria-label="수정할 때 고르는 길">
+    <div class="nx-node">고칠 게 생김</div><span class="nx-line"></span>
+    <div class="nx-node q">구조가 바뀌나?</div>
+    <div class="nx-fork"><div class="nx-branch"><span>예</span><div class="nx-node ai">AI에 요청<small>목적 · 조건 · 예외 · 확인</small></div></div><div class="nx-branch"><span>아니오</span><div class="nx-node me">툴에서 직접<small>수치 · 배치 · 주기</small></div></div></div>
+    <span class="nx-line"></span><div class="nx-node end">플레이해서 확인</div>
   </div>
   <div class="nx-tool-wrap">
     <div class="nx-tool-grid">${TOOLS.map(([k, t, p, d]) => `<article class="nx-tool ${k}"><span class="nx-tool-proj">${p}</span><h3>${t}</h3><p>${d}</p></article>`).join('')}</div>
     <figure class="nx-planet">
-      <canvas id="nx-planet-canvas" width="320" height="320" aria-label="절차 생성 행성 미리보기"></canvas>
-      <figcaption><span class="eyebrow">PLANET RULES</span><h3 id="nx-planet-name">—</h3><p id="nx-planet-meta">World of Plant 행성은 5개 유형 규칙과 5% 희귀 변형으로 만들어집니다. 외부 외형과 내부 타일이 같은 노이즈를 씁니다.</p><button type="button" class="button" id="nx-planet-roll">다른 행성 생성 ↻</button></figcaption>
+      <canvas id="nx-planet-canvas" width="320" height="320" aria-label="행성 생성 미리보기"></canvas>
+      <figcaption><span class="eyebrow">PLANET RULES</span><h3 id="nx-planet-name">—</h3><p id="nx-planet-meta"></p><button type="button" class="button" id="nx-planet-roll">다른 행성 뽑기 ↻</button></figcaption>
     </figure>
   </div>
-</section>`;
-}
-
-function career() {
-  const years = [...new Set(TIMELINE.map(r => r[0]))];
-  return `<section class="nx-section nx-reveal" id="nx-career">
-  <header class="nx-head"><span class="eyebrow">TIMELINE</span><h2>이력</h2></header>
-  <div class="nx-filter" role="group" aria-label="연도 선택"><button type="button" data-nx-year="all" aria-pressed="true">전체</button>${years.map(y => `<button type="button" data-nx-year="${y}" aria-pressed="false">${y}</button>`).join('')}</div>
-  <ol class="nx-timeline">${TIMELINE.map(([y, d, t, org, desc, link]) => `<li data-year="${y}"><time>${d}</time><div><h3>${link ? `<a href="#project/${link}">${e(t)} <span aria-hidden="true">→</span></a>` : e(t)}</h3><span class="nx-org">${e(org)}</span><p>${e(desc)}</p></div></li>`).join('')}</ol>
-  <div class="nx-contact"><p>함께 이야기할 기회를 기다리고 있습니다.</p><a class="button primary" href="mailto:dngus0822@gmail.com">dngus0822@gmail.com</a></div>
 </section>`;
 }
 
@@ -299,7 +303,7 @@ function drawPlanet(count) {
   }
   ctx.clearRect(0, 0, S, S); ctx.putImageData(img, 0, 0);
   $('#nx-planet-name').textContent = type.name + (rare ? ' · 희귀 변형' : '');
-  $('#nx-planet-meta').textContent = `${type.kind} 유형 · 시드 ${Math.round(seed)}. 실제 게임은 5개 유형 규칙과 5% 희귀 변형으로 행성 3,800개를 만들고, 외형과 내부 타일이 같은 노이즈를 씁니다.`;
+  $('#nx-planet-meta').textContent = `${type.kind} · 시드 ${Math.round(seed)}. 게임에선 이런 규칙 5개에 5% 확률 희귀 변형을 섞어서 행성 3,800개를 만듭니다. 밖에서 본 모습이랑 안에 들어갔을 때 타일이 같은 노이즈를 써서 맞아떨어집니다.`;
 }
 
 function mount() {
@@ -310,7 +314,9 @@ function mount() {
   if (toyStop) toyStop();
   heading.id = 'nx-projects';
   heading.insertAdjacentHTML('beforebegin', hero());
-  grid.insertAdjacentHTML('afterend', split() + verify() + tools() + career());
+  heading.insertAdjacentHTML('beforebegin', play());
+  grid.insertAdjacentHTML('afterend', split() + verify() + tools());
+  if (window.NXAnim) { NXAnim.mount($('#nx-anim-wop'), NXAnim.wopScene()); NXAnim.mount($('#nx-anim-ww'), NXAnim.wmScene()); }
   $('#nx-split-panel').innerHTML = splitPanel(state.proj, state.stage);
   toyStop = startToy(); drawPlanet(0); countUp(); reveal();
 }
@@ -329,8 +335,6 @@ document.addEventListener('click', ev => {
   if (top) { const open = top.getAttribute('aria-expanded') !== 'true'; top.setAttribute('aria-expanded', open); $('#' + top.getAttribute('aria-controls')).hidden = !open; top.closest('.nx-case').classList.toggle('open', open); return; }
   const f = ev.target.closest('[data-nx-case]');
   if (f) { $$('[data-nx-case]').forEach(b => b.setAttribute('aria-pressed', b === f)); $$('.nx-case').forEach(c => c.hidden = !(f.dataset.nxCase === 'all' || c.dataset.tag === f.dataset.nxCase)); return; }
-  const y = ev.target.closest('[data-nx-year]');
-  if (y) { $$('[data-nx-year]').forEach(b => b.setAttribute('aria-pressed', b === y)); $$('.nx-timeline li').forEach(li => li.hidden = !(y.dataset.nxYear === 'all' || li.dataset.year === y.dataset.nxYear)); return; }
   if (ev.target.closest('#nx-planet-roll')) drawPlanet(++rolls);
 });
 document.addEventListener('keydown', ev => {
