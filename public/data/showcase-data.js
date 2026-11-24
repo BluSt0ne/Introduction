@@ -120,7 +120,7 @@ window.SHOWCASE_DATA = {
         },
         {
           "year": "2025",
-          "text": "개인 개발",
+          "text": "Triple Showdown",
           "images": [],
           "icon": "",
           "marks": [
