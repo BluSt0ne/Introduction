@@ -61,6 +61,41 @@ function rocket(c, x, y, ang, s, flame) {
   c.restore();
 }
 
+/* galaxy view: neighbouring planets colonised one after another by rocket */
+const GAL = (() => { const r = rnd(21), list = []; for (let i = 0; i < 16; i++) { const an = i * 2.4 + r() * .6, d = .55 + .5 * Math.sqrt((i + 1) / 16) + r() * .12; list.push({ an, d, s: .5 + r() * .7, kind: i % 3 }); } return list; })();
+function galaxyPlan(W, H, S, P0, P1) {
+  const CX = W * .6, CY = H * .56, pts = GAL.map(g => ({ x: CX + Math.cos(g.an) * g.d * W * 1.45, y: CY + Math.sin(g.an) * g.d * H * 1.45, r: S * .045 * g.s * 2.2, kind: g.kind }));
+  const owned = [{ x: P0.x, y: P0.y }, { x: P1.x, y: P1.y }], routes = [], left = pts.map((p, i) => i);
+  for (let k = 0; k < pts.length; k++) {
+    let best = null; left.forEach(i => owned.forEach(o => { const d = Math.hypot(pts[i].x - o.x, pts[i].y - o.y); if (!best || d < best.d) best = { i, o, d }; }));
+    const t0 = 15.0 + k * .32; routes.push({ from: best.o, to: pts[best.i], t0, t1: t0 + 1.3 }); pts[best.i].t = t0 + 1.3;
+    owned.push(pts[best.i]); left.splice(left.indexOf(best.i), 1);
+  }
+  return { pts, routes };
+}
+function galaxy(c, W, H, S, t, P0, P1, LW) {
+  const show = seg(t, 13.2, 14.6); if (show <= 0) return;
+  const { pts, routes } = galaxyPlan(W, H, S, P0, P1);
+  c.save(); c.globalAlpha = show;
+  const r = rnd(4); c.fillStyle = a(INK, .5); for (let i = 0; i < 160; i++) { const an = r() * TAU, d = Math.pow(r(), .6) * W * 2.1; c.beginPath(); c.arc(W * .6 + Math.cos(an + d / W) * d, H * .56 + Math.sin(an + d / W) * d * .8, (.6 + r()) * LW, 0, TAU); c.fill(); }
+  pts.forEach(p => {
+    const g = p.t ? seg(t, p.t, p.t + .6) : 0;
+    c.fillStyle = a(ACC, .03 + .1 * g); c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.fill();
+    c.strokeStyle = a(g > 0 ? ACC : MUTED, .3 + .5 * g); c.lineWidth = 1.3 * LW; c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.stroke();
+    if (g > 0) { for (let i = 0; i < 5; i++) { const an = i * 1.256 + p.kind; c.fillStyle = a(PET[(i + p.kind) % 3], .9 * g); c.beginPath(); c.arc(p.x + Math.cos(an) * p.r * .5, p.y + Math.sin(an) * p.r * .5, p.r * .16 * pop(g), 0, TAU); c.fill(); } }
+    if (p.t && t > p.t && t < p.t + .7) { const k = seg(t, p.t, p.t + .7); c.strokeStyle = a(SUN, 1 - k); c.lineWidth = 1.4 * LW; c.beginPath(); c.arc(p.x, p.y, p.r * (1 + k), 0, TAU); c.stroke(); }
+  });
+  routes.forEach(({ from, to, t0, t1 }) => {
+    const k = seg(t, t0, t1); if (k <= 0 || k >= 1) return; const u = ease(k);
+    const mx = (from.x + to.x) / 2 - (to.y - from.y) * .2, my = (from.y + to.y) / 2 + (to.x - from.x) * .2;
+    const q = (u, i) => (1 - u) * (1 - u) * [from.x, from.y][i] + 2 * (1 - u) * u * [mx, my][i] + u * u * [to.x, to.y][i];
+    const x = q(u, 0), y = q(u, 1), dx = q(Math.min(1, u + .02), 0) - x, dy = q(Math.min(1, u + .02), 1) - y;
+    for (let i = 1; i < 7; i++) { const uu = Math.max(0, u - i * .03); c.fillStyle = a(SUN, .5 * (1 - i / 7)); c.beginPath(); c.arc(q(uu, 0), q(uu, 1), (2.4 - i * .25) * LW, 0, TAU); c.fill(); }
+    rocket(c, x, y, Math.atan2(dx, -dy), S * .05 * LW, 1);
+  });
+  c.restore();
+}
+
 function wopScene() {
   const slots = []; for (let i = 0; i < 10; i++) { const an = i * 2.399, d = .25 + .62 * Math.sqrt((i + .5) / 10); slots.push({ x: Math.cos(an) * d, y: Math.sin(an) * d, c: PET[i % 3] }); }
   const devs = [{ x: -.12, y: -.12, t: 4.2, kind: 'emitter' }, { x: .05, y: .3, t: 5.2, kind: 'battery' }];
@@ -71,19 +106,26 @@ function wopScene() {
   const SPEND = [[3.5, 0, 10], [4.5, 1, 8], [7.7, 'pad', 14]];
   const MAX = 40;
   return {
-    duration: 15,
+    duration: 21,
     // positions in planet-radius units, used by scripts/test.mjs to keep devices off the flowers
     layout: { flowers: slots.map(s => ({ x: s.x * .8, y: s.y * .8 })), devices: devs.map(d => ({ x: d.x * .8, y: d.y * .8 })), flowerRadius: .12, deviceRadius: .17 },
-    steps: [[0, '꽃 기르기'], [1.2, '에너지 수집'], [3.5, '장치 설치'], [6.0, '블루프린트'], [7.6, '로켓 발사'], [10.2, '같은 구조로 가동']],
+    steps: [[0, '꽃 기르기'], [1.2, '에너지 수집'], [3.5, '장치 설치'], [6.0, '블루프린트'], [7.6, '로켓 발사'], [10.2, '같은 구조로 가동'], [13.2, '은하로 확장']],
     draw(c, W, H, t) {
       const S = Math.min(W, H * 1.6), fr = S * .026;
       c.fillStyle = '#111a15'; c.fillRect(0, 0, W, H);
       c.fillStyle = a(MUTED, .1); for (let x = S * .03; x < W; x += S * .04) for (let y = S * .03; y < H; y += S * .04) c.fillRect(x, y, 1, 1);
       const P0 = { x: W * .36, y: H * .58, r: Math.min(W * .21, H * .33) }, P1 = { x: W * .83, y: H * .6, r: Math.min(W * .14, H * .23) };
-      const ORB = { x: W * .02 + S * .06, y: H * .04 + S * .06, r: S * .05 };
+      // camera: after the copy runs, pull back to the galaxy
+      const Z = lerp(1, .27, ease(seg(t, 13.0, 15.0))), CX = W * .6, CY = H * .56;
+      const toWorld = (x, y) => [CX + (x - CX) / Z, CY + (y - CY) / Z];
+      const ORBs = { x: W * .02 + S * .06, y: H * .04 + S * .06, r: S * .05 };
+      const [ox, oy] = toWorld(ORBs.x, ORBs.y), ORB = { x: ox, y: oy, r: ORBs.r / Z };
+      c.save(); c.translate(CX, CY); c.scale(Z, Z); c.translate(-CX, -CY);
+      const LW = 1 / Z;
+      galaxy(c, W, H, S, t, P0, P1, LW);
       const at = (p, s) => [p.x + s.x * p.r * .8, p.y + s.y * p.r * .8];
       const sc = P1.r / P0.r, green = seg(t, 11.3, 12.6);
-      [[P0, 1], [P1, green]].forEach(([p, g]) => { c.fillStyle = a(ACC, .03 + .05 * g); c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.fill(); c.strokeStyle = a(g > 0 ? ACC : MUTED, .3 + .3 * g); c.lineWidth = 1.2; c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.stroke(); });
+      [[P0, 1], [P1, green]].forEach(([p, g]) => { c.fillStyle = a(ACC, .03 + .05 * g); c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.fill(); c.strokeStyle = a(g > 0 ? ACC : MUTED, .3 + .3 * g); c.lineWidth = 1.2 * LW; c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.stroke(); });
 
       // energy motes: every bloomed flower on either planet feeds the store
       const sources = [...slots.map((s, i) => ({ p: P0, s, b: bt(i) })), ...slots.map((s, i) => ({ p: P1, s, b: copyBloom(i) }))];
@@ -95,8 +137,8 @@ function wopScene() {
           if (k >= 1) { gained++; pulse = Math.max(pulse, 1 - seg(t, t0 + .95, t0 + 1.3)); continue; }
           const u = ease(k), cx = (x + ORB.x) / 2, cy = Math.min(y, ORB.y) + H * .05;
           const mx = (1 - u) * (1 - u) * x + 2 * (1 - u) * u * cx + u * u * ORB.x, my = (1 - u) * (1 - u) * y + 2 * (1 - u) * u * cy + u * u * ORB.y;
-          c.fillStyle = a(SUN, .95); c.beginPath(); c.arc(mx, my, S * .006, 0, TAU); c.fill();
-          c.fillStyle = a(SUN, .18); c.beginPath(); c.arc(mx, my, S * .014, 0, TAU); c.fill();
+          c.fillStyle = a(SUN, .95); c.beginPath(); c.arc(mx, my, S * .006 * LW, 0, TAU); c.fill();
+          c.fillStyle = a(SUN, .18); c.beginPath(); c.arc(mx, my, S * .014 * LW, 0, TAU); c.fill();
         }
       });
       const pad = [P0.x + P0.r * .78, P0.y - P0.r * .62];
@@ -105,17 +147,6 @@ function wopScene() {
         const tp = target === 'pad' ? pad : at(P0, devs[target]);
         for (let i = 0; i < n; i++) { const t0 = ts + i * .06, k = seg(t, t0, t0 + .55); if (k <= 0) continue; spent++; if (k >= 1) continue; const u = ease(k); c.fillStyle = a(SUN, .9); c.beginPath(); c.arc(lerp(ORB.x, tp[0], u), lerp(ORB.y, tp[1], u), S * .006, 0, TAU); c.fill(); }
       });
-      // energy store (top-left)
-      const level = clamp((gained - spent) / MAX);
-      c.save(); c.beginPath(); c.arc(ORB.x, ORB.y, ORB.r, 0, TAU); c.clip();
-      c.fillStyle = a(SUN, .08); c.fillRect(ORB.x - ORB.r, ORB.y - ORB.r, ORB.r * 2, ORB.r * 2);
-      const top = ORB.y + ORB.r - level * ORB.r * 2;
-      c.fillStyle = a(SUN, .75); c.beginPath(); c.moveTo(ORB.x - ORB.r, ORB.y + ORB.r);
-      for (let x = -1; x <= 1.001; x += .1) c.lineTo(ORB.x + x * ORB.r, top + Math.sin(x * 4 + t * 3) * ORB.r * .06);
-      c.lineTo(ORB.x + ORB.r, ORB.y + ORB.r); c.closePath(); c.fill(); c.restore();
-      c.shadowColor = SUN; c.shadowBlur = 8 + 18 * level + 14 * pulse; c.strokeStyle = a(SUN, .55 + .4 * pulse); c.lineWidth = 1.5;
-      c.beginPath(); c.arc(ORB.x, ORB.y, ORB.r * (1 + .06 * pulse), 0, TAU); c.stroke(); c.shadowBlur = 0;
-
       const ring = (x, y, k, R, col) => { if (k <= 0 || k >= 1) return; c.strokeStyle = a(col, .6 * (1 - k)); c.lineWidth = 1.2; c.beginPath(); c.arc(x, y, k * R, 0, TAU); c.stroke(); };
       // home: cursor waves, then the emitter keeps pulsing
       const cur = tt => [P0.x + P0.r * .35 * Math.sin(tt * 1.3), P0.y + P0.r * .3 * Math.sin(tt * 2.1)];
@@ -156,6 +187,18 @@ function wopScene() {
         const e1 = at(P1, devs[0]); if (t > COPY_WAVE) for (let w = 0; w < 4; w++) { const tw = COPY_WAVE + w * 1.1; ring(e1[0], e1[1], seg(t, tw, tw + 1.3), P1.r * 1.1, ACC); }
         devs.forEach((d, i) => { const [x, y] = at(P1, d), k = seg(t, COPY_DEV + i * .15, COPY_DEV + i * .15 + .35); if (k <= 0) { c.strokeStyle = a(BLUE, .7 * ghost); c.lineWidth = 1; c.strokeRect(x - fr * sc * .5, y - fr * sc * .5, fr * sc, fr * sc); } else d.kind === 'emitter' ? emitter(c, x, y, S * .06 * sc, k, t) : battery(c, x, y, S * .055 * sc, k); });
       }
+      c.restore();
+      // energy store (top-left)
+      const level = clamp((gained - spent) / MAX);
+      c.save(); c.beginPath(); c.arc(ORBs.x, ORBs.y, ORBs.r, 0, TAU); c.clip();
+      c.fillStyle = a(SUN, .08); c.fillRect(ORBs.x - ORBs.r, ORBs.y - ORBs.r, ORBs.r * 2, ORBs.r * 2);
+      const top = ORBs.y + ORBs.r - level * ORBs.r * 2;
+      c.fillStyle = a(SUN, .75); c.beginPath(); c.moveTo(ORBs.x - ORBs.r, ORBs.y + ORBs.r);
+      for (let x = -1; x <= 1.001; x += .1) c.lineTo(ORBs.x + x * ORBs.r, top + Math.sin(x * 4 + t * 3) * ORBs.r * .06);
+      c.lineTo(ORBs.x + ORBs.r, ORBs.y + ORBs.r); c.closePath(); c.fill(); c.restore();
+      c.shadowColor = SUN; c.shadowBlur = 8 + 18 * level + 14 * pulse; c.strokeStyle = a(SUN, .55 + .4 * pulse); c.lineWidth = 1.5;
+      c.beginPath(); c.arc(ORBs.x, ORBs.y, ORBs.r * (1 + .06 * pulse), 0, TAU); c.stroke(); c.shadowBlur = 0;
+
     }
   };
 }
@@ -230,12 +273,14 @@ function wmScene() {
       const flat = t < IMPACT ? 1 : lerp(1, .32, ease(seg(t, IMPACT, IMPACT + .12)));
       const patrol = t < 1.3 ? Math.sin(t * 2) * S * .012 : Math.sin(1.3 * 2) * S * .012;
       const turned = t > 1.3 ? -1 : (Math.cos(t * 2) > 0 ? 1 : -1);
+      if (t < IMPACT + .35) {
       c.save(); c.translate(RX + patrol, G); c.scale(1 + (1 - flat) * .55, flat);
-      c.globalAlpha = t < IMPACT ? 1 : .7;
+      c.globalAlpha = t < IMPACT ? 1 : 1 - seg(t, IMPACT + .1, IMPACT + .35);
       c.strokeStyle = INK; c.lineWidth = 1.5 / Math.max(flat, .5); c.fillStyle = '#1b252a'; c.beginPath(); c.arc(0, -rr, rr, 0, TAU); c.fill(); c.stroke();
       const eyeOn = t < IMPACT || (t < IMPACT + .4 && Math.sin(t * 60) > 0);
       if (eyeOn) { c.fillStyle = t > 1.3 ? '#ff8a7a' : SUN; c.fillRect(turned < 0 ? -rr * .75 : rr * .05, -rr * 1.35, rr * .7, rr * .22); }
       c.restore();
+      }
       if (t > 1.3 && t < 2.3) { const k = seg(t, 1.3, 1.5); warnIcon(c, RX + patrol, ry - rr * 2.1 - S * .01 * (1 - k), S * .05 * pop(k), '#ff8a7a'); }
       // speech bubble: holds the stop sign until the robot is crushed, then shatters and frees it
       const BX = RX + patrol + S * .075, BY = ry - rr * 2.6, BW = S * .065;
@@ -273,8 +318,30 @@ function wmScene() {
       c.beginPath(); c.arc(mx, my - mh * .86, mh * .12, 0, TAU); c.fill(); c.stroke();
       c.beginPath(); c.moveTo(tip[0], my); c.lineTo(tip[0], tip[1]); c.stroke();
       c.fillStyle = (t > 7.3 && t < 7.5) ? '#fff' : GOLD; c.beginPath(); c.arc(tip[0], tip[1], mh * .05, 0, TAU); c.fill();
-      const bo = seg(t, 7.4, 8.0); if (bo > 0 && bo < 1) { c.shadowColor = GOLD; c.shadowBlur = 14; handIcon(c, lerp(tip[0], FX, bo), lerp(tip[1], FY, bo), S * .03, GOLD); c.shadowBlur = 0; }
-      if (t > T0 && t < T0 + .7) { const k = seg(t, T0, T0 + .7); c.strokeStyle = a(GOLD, 1 - k); c.lineWidth = 1.5; c.beginPath(); c.arc(FX, FY, R * (.15 + k * .9), 0, TAU); c.stroke(); }
+      // cast: magic circle at the staff, gathering sparks, a glowing projectile with a trail, burst on the fan
+      const circ = seg(t, 6.7, 7.0) * (1 - seg(t, 7.5, 7.8));
+      if (circ > 0) {
+        const cr = S * .05 * ease(circ);
+        c.save(); c.translate(tip[0], tip[1]); c.globalAlpha = circ;
+        c.strokeStyle = GOLD; c.lineWidth = 1.3; c.beginPath(); c.arc(0, 0, cr, 0, TAU); c.stroke();
+        c.rotate(t * 2.5); c.strokeStyle = a(GOLD, .7); c.lineWidth = 1; c.beginPath(); c.arc(0, 0, cr * .68, 0, TAU); c.stroke();
+        for (let i = 0; i < 6; i++) { c.rotate(TAU / 6); c.beginPath(); c.moveTo(cr * .68, 0); c.lineTo(cr, 0); c.stroke(); }
+        c.restore();
+        for (let i = 0; i < 10; i++) { const k = (t * 1.6 + i / 10) % 1, an = i * 2.4; c.fillStyle = a(GOLD, (1 - k) * circ); c.beginPath(); c.arc(tip[0] + Math.cos(an) * S * .09 * (1 - k), tip[1] + Math.sin(an) * S * .09 * (1 - k), S * .004, 0, TAU); c.fill(); }
+        c.globalAlpha = circ; c.shadowColor = GOLD; c.shadowBlur = 18; c.fillStyle = '#fff6d8'; c.beginPath(); c.arc(tip[0], tip[1], S * .008, 0, TAU); c.fill(); c.shadowBlur = 0; c.globalAlpha = 1;
+      }
+      const bo = seg(t, 7.4, 8.0);
+      if (bo > 0 && bo < 1) {
+        const P = u => [lerp(tip[0], FX, u), lerp(tip[1], FY, u) - Math.sin(u * Math.PI) * S * .04];
+        for (let i = 1; i < 9; i++) { const [x, y] = P(Math.max(0, ease(bo) - i * .025)); c.fillStyle = a(GOLD, .55 * (1 - i / 9)); c.beginPath(); c.arc(x, y, S * (.012 - i * .001), 0, TAU); c.fill(); }
+        const [x, y] = P(ease(bo)); c.shadowColor = GOLD; c.shadowBlur = 20; handIcon(c, x, y, S * .032, GOLD); c.shadowBlur = 0;
+      }
+      if (t > T0 && t < T0 + .8) {
+        const k = seg(t, T0, T0 + .8);
+        c.fillStyle = a('#fff6d8', .5 * (1 - k) * (1 - k)); c.beginPath(); c.arc(FX, FY, R * .35 * (1 + k), 0, TAU); c.fill();
+        c.strokeStyle = a(GOLD, 1 - k); c.lineWidth = 1.5; c.beginPath(); c.arc(FX, FY, R * (.15 + k * .9), 0, TAU); c.stroke();
+        c.strokeStyle = a(GOLD, .8 * (1 - k)); c.lineWidth = 1.2; for (let i = 0; i < 10; i++) { const an = i * TAU / 10 + .2; c.beginPath(); c.moveTo(FX + Math.cos(an) * R * (.2 + k * .5), FY + Math.sin(an) * R * (.2 + k * .5)); c.lineTo(FX + Math.cos(an) * R * (.3 + k * .75), FY + Math.sin(an) * R * (.3 + k * .75)); c.stroke(); }
+      }
       c.restore();
     }
   };
