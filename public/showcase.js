@@ -23,6 +23,7 @@ const ICON = {
   doc: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
   code: '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
   cube: '<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
+  shadedCube: '<ellipse cx="13" cy="21" rx="9" ry="2" fill="currentColor" fill-opacity=".18" stroke="none"/><path d="m12 2 8 4.5-8 4.5-8-4.5z" fill="currentColor" fill-opacity=".8"/><path d="m4 6.5 8 4.5v9l-8-4.5z" fill="currentColor" fill-opacity=".4"/><path d="m12 11 8-4.5v9l-8 4.5z" fill="currentColor" fill-opacity=".12"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>',
   robot: '<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 8V4M10 4h4"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/>',
   wrench: '<path d="M15 4a4 4 0 0 0-5 5L4 15l5 5 6-6a4 4 0 0 0 5-5l-3 3-3-3z"/>',
@@ -58,8 +59,8 @@ const list = v => Array.isArray(v) ? v : [];
 
 function animCard(id, cls, d, steps) {
   return `<article class="nx-anim ${cls}" id="${id}">
-    <header><span class="nx-anim-label">${e(d?.label || '')}</span><h3>${e(d?.title || '')}</h3></header>
-    <div class="nx-anim-stage"><canvas aria-label="${e(d?.title || '')} 진행 애니메이션"></canvas></div>
+    <header><span class="nx-anim-label">${e(d?.label || '')}</span></header>
+    <div class="nx-anim-stage"><canvas aria-label="${e(d?.label || '')} 게임 흐름 애니메이션"></canvas></div>
     <div class="nx-anim-bar" aria-hidden="true"><i></i></div>
     <ol class="nx-anim-phases" aria-hidden="true">${steps.map(([, s]) => `<li data-phase>${s}</li>`).join('')}</ol>
   </article>`;
@@ -82,12 +83,12 @@ function intro() {
     <h1>${list(I.lines).map(l => e(l) + '<br>').join('')}<strong>${e(I.highlight || '')}</strong></h1>
     ${I.lead ? `<p class="nx-lead">${e(I.lead)}</p>` : ''}
     <div class="nx-intro-tags">${list(I.tags).map(t => `<span>${ico(t.icon)}${e(t.text)}</span>`).join('')}</div>
-    <button type="button" class="nx-scroll-cue" data-scroll-to="nx-projects" aria-label="아래로 이동"><i aria-hidden="true"></i><span>${e(I.scroll || 'SCROLL')}</span></button>
   </div>
   ${profile(I.profile)}
 </section>`;
 }
 
+<<<<<<< HEAD
 /* 16-colour pixel emblems for the history list (16x16, one char = palette index) */
 const PIX_PAL = ['#000000','#1D2B53','#7E2553','#008751','#AB5236','#5F574F','#C2C3C7','#FFF1E8','#FF004D','#FFA300','#FFEC27','#00E436','#29ADFF','#83769C','#FF77A8','#FFCCAA'];
 const PIX = {"galactica": ["................", "................", "..55............", "..6655..........", ".96777655.......", "a966677766555...", "a96666666677765.", "a9666cc666666666", "a96655555555555.", "a955555555511...", ".9555511111.....", "..5511..........", "..11............", "................", "................", "................"], "wop": ["................", ".......ee.......", "......e88e......", "...ee.e88e.ee...", "..e88eeaaee88e..", "..e888aaaa888e..", "...eeeaaaaeee...", "....ee.aa.ee....", "...e88e33e88e...", "...e88e.3e88e...", "....ee.b3.ee....", "......bb3.......", "......b.3bb.....", "........3b......", "...3333333333...", "..344444444443.."], "ww": [".......cc.......", "....ccc77ccc....", ".a.c77c77c77c...", "...c77c77c77c...", "...c77c77c77c.c.", ".ccc76c76c76c...", "c77c77777776c...", "c777777777776c..", ".c77777777766c..", "..c7777777766c.c", "..c7777777666c..", "...c77777766c...", "..c.c666666c....", ".....cccccc..c..", "................", "................"], "triple": ["................", "........5555555.", "........5777775.", "....5555577b775.", "....577757bbb75.", "5555577a5bbbbb5.", "577757aa57bbb75.", "577c5aaa577b775.", "57cc57aa5777775.", "5ccc577a5777775.", "57cc57775555555.", "577c5777775.....", "57775555555.....", "5777775.........", "5555555.........", "................"], "lantern": ["......5555......", ".....5....5.....", "......5555......", "....55555555....", "...5aaaaaaaa5...", "...5a9aaaa9a5...", "...5aa9aa9aa5...", "...5aaa77aaa5...", "...5aaa77aaa5...", "...5aa9aa9aa5...", "...5a9aaaa9a5...", "...5aaaaaaaa5...", "....55555555....", "......5555......", "................", "................"], "defair": ["................", ".e8..........cc.", "..e8........cc..", "...e8......cc...", "....e8....cc....", ".....78..c7.....", "......78c7......", ".......77.......", "......c778......", ".....c7..78.....", "....c7....78....", "...cc......e8...", "..cc........e8..", ".cc..........e8.", "................", "................"], "medal": ["................", "...cc......88...", "....cc....88....", ".....cc..88.....", "......cc88......", ".......aa.......", ".....aaaaaa.....", "....aa9999aa....", "...aa9aaaa9aa...", "...a9aa77aa9a...", "...a9a7777a9a...", "...aa9aa7a9aa...", "....aa9999aa....", ".....aaaaaa.....", "................", "................"], "cap": ["................", "................", "................", ".......cc.......", ".....cccccc.....", "...cccccccccc...", ".cccccccccccccc.", "...cccccccccc.a.", "....cccccccc..a.", "....c111111c..a.", "....c111111c.aaa", ".....c1111c..aaa", "......cccc......", "................", "................", "................"]};
@@ -98,12 +99,29 @@ function pix(name) {
   return `<svg class="nx-pix" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
 }
 
+=======
+function profileTools(items) {
+  const groups=new Map();
+  list(items).forEach(t=>{const group=t.group||'기타';if(!groups.has(group))groups.set(group,[]);groups.get(group).push(t);});
+  return `<div class="nx-tool-groups">${[...groups].map(([name,tools])=>`<section class="nx-tool-group" aria-label="${e(name)} 도구"><h3>${e(name)}</h3><ul class="nx-tool-tiles">${tools.map(t=>`<li>${t.logo?`<img class="nx-logo" src="${e(t.logo)}" alt="">`:ico(t.icon)}<span>${e(t.name)}</span></li>`).join('')}</ul></section>`).join('')}</div>`;
+}
+function historyMarks(h) {
+  const marks=list(h.marks);
+  if(marks.length)return `<span class="nx-h-media">${marks.map(m=>`<span class="nx-history-mark" title="${e(m.label)}"><img src="${e(m.src)}" alt="${e(m.label)}"></span>`).join('')}</span>`;
+  return `<span class="nx-h-media">${list(h.images).length?list(h.images).map(src=>`<img src="${e(src)}" alt="" loading="lazy">`).join(''):`<i>${ico(h.icon||'check')}</i>`}</span>`;
+}
+>>>>>>> 63f61c2c32f85eff49e316b9d60d38429bbd157b
 function profile(P) {
   if (!P) return '';
   return `<aside class="nx-profile">
     <div class="nx-profile-id">${P.photo ? `<img src="${e(P.photo)}" alt="${e(P.name)} 사진">` : ''}<div><b>${e(P.name)}</b><p>${e(P.sub).replace(/\n/g, '<br>')}</p></div></div>
+<<<<<<< HEAD
     <div class="nx-profile-block"><span class="eyebrow">${e(P.toolsTitle || 'TOOLS')}</span><ul class="nx-tool-tiles">${list(P.tools).map(t => `<li>${t.logo ? `<img class="nx-logo" src="${e(t.logo)}" alt="" onerror="this.remove()">` : ''}<span>${e(t.name)}</span></li>`).join('')}</ul></div>
     <div class="nx-profile-block"><span class="eyebrow">${e(P.historyTitle || 'HISTORY')}</span><ol class="nx-history">${list(P.history).map(h => `<li><time>${e(h.year)}</time><span class="nx-h-media">${list(h.pixel).map(n => `<i>${pix(n)}</i>`).join('')}${h.logo ? `<i class="nx-h-logo"><img src="${e(h.logo)}" alt="${e(h.logoAlt || '')}" onerror="this.parentNode.remove()"></i>` : ''}</span><span class="nx-h-text">${e(h.text)}</span></li>`).join('')}</ol></div>
+=======
+    <div class="nx-profile-block"><span class="eyebrow">${e(P.toolsTitle || 'TOOLS')}</span>${profileTools(P.tools)}</div>
+    <div class="nx-profile-block"><span class="eyebrow">${e(P.historyTitle || 'HISTORY')}</span><ol class="nx-history">${list(P.history).map(h => `<li><time>${e(h.year)}</time>${historyMarks(h)}<span class="nx-h-text">${e(h.text)}</span></li>`).join('')}</ol></div>
+>>>>>>> 63f61c2c32f85eff49e316b9d60d38429bbd157b
   </aside>`;
 }
 
@@ -124,6 +142,7 @@ function psCard(it, extra = '', L = {}) {
     <h4>${e(L.problem || '문제')}</h4><p>${rich(it.problem)}</p>
     <hr>
     <h4 class="sol">${e(L.solution || '해결')}</h4><p>${rich(it.solution)}</p>
+    ${it.reason ? `<div class="nx-ps-reason"><h4>${e(L.reason || '수정 사유')}</h4><p>${rich(it.reason)}</p></div>` : ''}
     ${list(it.images).length ? `<div class="nx-ps-shots" style="--n:${Math.min(list(it.images).length, 2)}">${list(it.images).map(im => `<figure><button type="button" class="nx-zoom" data-full="${e(im.full || im.src)}" data-cap="${e(im.caption)}" aria-label="${e(im.caption)} 크게 보기"><img src="${e(im.src)}" alt="${e(im.caption)}" loading="lazy"><span class="nx-zoom-ico" aria-hidden="true">⤢</span></button><figcaption>${e(im.caption)}</figcaption></figure>`).join('')}</div>` : ''}
   </article>`;
 }
@@ -144,7 +163,7 @@ function verify() {
   return `<section class="nx-section nx-reveal" id="nx-verify" data-nx>
   ${head(C)}
   ${list(C.projects).map(pj => `<div class="nx-pj ${e(pj.id)}">
-    <header class="nx-pj-head"><span class="nx-pj-mark">${ico(pj.id === 'ww' ? 'magic' : 'flower')}</span><div><h3>${e(pj.name)}</h3><small>${e(pj.sub)}</small></div></header>
+    <header class="nx-pj-head"><span class="nx-pj-mark">${pj.logo ? `<img src="${e(pj.logo)}" alt="${e(pj.name)} 아이콘" loading="lazy">` : ico(pj.id === 'ww' ? 'magic' : 'flower')}</span><div><h3>${e(pj.name)}</h3><small>${e(pj.sub)}</small></div></header>
     <div class="nx-ps-grid">${list(pj.items).map(it => psCard(it, '', C.labels || {})).join('')}</div>
   </div>`).join('')}
 </section>`;
@@ -217,7 +236,7 @@ let railEl = null;
 function rail() {
   if (!railEl) {
     railEl = document.createElement('div'); railEl.className = 'nx-rail'; railEl.setAttribute('aria-hidden', 'true');
-    railEl.innerHTML = '<span>SCROLL</span><i><b></b></i>'; document.body.append(railEl);
+    railEl.innerHTML = '<i><b></b></i>'; document.body.append(railEl);
     const upd = () => { const max = document.documentElement.scrollHeight - innerHeight, k = max > 0 ? Math.min(1, scrollY / max) : 1; railEl.style.setProperty('--k', k.toFixed(3)); railEl.classList.toggle('done', k > .98); };
     addEventListener('scroll', upd, { passive: true }); addEventListener('resize', upd); railEl._upd = upd;
   }
@@ -242,7 +261,7 @@ function mount(force) {
   const heading = $('.collection-heading', main), grid = $('.project-grid', main); if (!heading || !grid) return;
   heading.id = 'nx-projects';
   heading.insertAdjacentHTML('beforebegin', intro());
-  grid.insertAdjacentHTML('afterend', play() + split() + aiIssues() + verify() + tools() + archive());
+  grid.insertAdjacentHTML('afterend', play() + split() + aiIssues() + verify() + archive());
   if (window.NXAnim) cleanups.push(NXAnim.mount($('#nx-anim-wop'), NXAnim.wopScene()), NXAnim.mount($('#nx-anim-ww'), NXAnim.wmScene()));
   countUp(); reveal(); rail();
   if (force) $$('.nx-reveal', main).forEach(n => n.classList.add('nx-in'));

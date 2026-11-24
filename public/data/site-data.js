@@ -125,7 +125,7 @@ window.ARCHIVE_DATA = {
           "wop-04"
         ]
       },
-      "cardText": "꽃에서 시작해, 행성으로.",
+      "cardText": "꽃에서 시작해 더 넓은 우주로",
       "coverLayout": {
         "fit": "cover",
         "positionX": 50,

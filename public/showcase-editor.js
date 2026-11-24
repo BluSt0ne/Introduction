@@ -12,7 +12,7 @@ let history = [], saved = JSON.stringify(data) === JSON.stringify(PUBLISHED), fi
 const SECTIONS = [
   ['intro', '소개', 'nx-intro'],
   ['play', '게임 흐름', 'nx-play'], ['role', '역할 분담', 'nx-split'], ['ai', 'AI와 일하는 방식', 'nx-ai'],
-  ['cases', '설계 의도', 'nx-verify'], ['tools', '제작 도구', 'nx-tools'], ['archive', '이전 프로젝트', 'nx-archive']
+  ['cases', '설계 의도', 'nx-verify'], ['archive', '이전 프로젝트', 'nx-archive']
 ];
 const LABEL = {
   eyebrow: '작은 제목(영문)', title: '제목', lines: '제목 줄', highlight: '강조 문구', lead: '한 줄 소개(비우면 숨김)', tags: '태그',
@@ -21,9 +21,13 @@ const LABEL = {
   issues: '사례', tag: '분류', what: '발생', fix: '대응', rule: '반영 원칙', rulesTitle: '원칙 제목', rules: '협업 원칙',
   filters: '필터 버튼', metric: '큰 숫자', metricLabel: '숫자 설명', steps: '단계', k: '단계 이름', v: '내용',
   route: '수정 분기도', start: '시작', question: '질문', yes: '예 →', yesNote: '예 설명', no: '아니오 →', noNote: '아니오 설명', end: '끝',
-  problem: '문제', solution: '해결 (**굵게** 표시 가능)', images: '스크린샷', src: '이미지 경로(썸네일)', full: '클릭 시 열 원본', caption: '캡션', name: '프로젝트 이름', projects: '프로젝트', 
+  problem: '초기 기획', solution: '수정안 (**굵게** 표시 가능)', reason: '수정 사유', images: '스크린샷', src: '이미지 경로(썸네일)', full: '클릭 시 열 원본', caption: '캡션', name: '프로젝트 이름', projects: '프로젝트',
   more: '카드 버튼 문구', period: '기간', genre: '장르', team: '인원·역할', platform: '플랫폼', summary: '한 줄 소개', cover: '대표 이미지', videos: '유튜브 영상', url: '유튜브 링크', points: '핵심 설계',
+<<<<<<< HEAD
   project: '프로젝트', image: 'Unity 스크린샷 경로(비우면 숨김)', scroll: '스크롤 안내 문구', labels: '카드 머리말', profile: '오른쪽 프로필', photo: '사진 경로', toolsTitle: '툴 제목', group: '분류', historyTitle: '연혁 제목', history: '연혁', year: '연도', logo: '대표 로고 이미지 경로', pixel: '픽셀 아이콘', logoAlt: '로고 설명'
+=======
+  project: '프로젝트', image: 'Unity 스크린샷 경로(비우면 숨김)', scroll: '스크롤 안내 문구', labels: '카드 머리말', profile: '오른쪽 프로필', photo: '사진 경로', toolsTitle: '툴 제목', group: '분류', historyTitle: '연혁 제목', history: '연혁', year: '연도', logo: '대표 로고 이미지 경로', marks: '연혁 아이콘'
+>>>>>>> 63f61c2c32f85eff49e316b9d60d38429bbd157b
 };
 const CHOICES = { tag: [['wop', 'World of Plant'], ['ww', 'Wordless Mage'], ['build', '빌드']], who: [['me', '직접'], ['ai', 'AI']] };
 
