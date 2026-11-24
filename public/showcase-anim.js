@@ -543,19 +543,16 @@ const MINI = {
     if (i === 0) { const r = S * .13; c.strokeStyle = a(BLUE, .8 * k); c.lineWidth = 1.6; c.beginPath(); c.arc(bx, by - S * .08, r, 0, TAU * k); c.stroke(); }
     if (i === 4 && k > .2) for (let f = 0; f < 5; f++) { const fx = bx + (f - 2) * S * .03, fh = S * (.05 + .04 * Math.abs(Math.sin(t * 9 + f))); c.fillStyle = a(f % 2 ? '#f29a4a' : SUN, .9); c.beginPath(); c.moveTo(fx - S * .015, by - S * .16); c.quadraticCurveTo(fx, by - S * .16 - fh * 2, fx + S * .015, by - S * .16); c.fill(); }
   } }),
-  // three slots fill up; a fourth magic turns red and bounces off
-  'ww-slots': () => ({ duration: 5.4, steps: [[0, '']], draw(c, W, H, t) {
-    miniBase(c, W, H); const S = Math.min(W, H), sx = i => W * .5 + (i - 1) * S * .22, sy = H * .55, ss = S * .17;
-    const fill = [.6, 1.3, 2.0], reject = 2.9, flash = t > reject + .35 && t < reject + .9;
-    [0, 1, 2].forEach(i => miniSlot(c, sx(i), sy, ss, t > fill[i] + .5, flash));
-    fill.forEach((f, i) => { const k = seg(t, f, f + .5); if (k > 0 && k < 1) miniGlyph(c, 'stop', lerp(W * .5, sx(i), ease(k)), lerp(H * .08, sy, ease(k)), ss * .55, GOLD); });
-    const r = seg(t, reject, reject + 1.3);
-    if (r > 0 && r < 1) {
-      // falls onto the full row, turns red on contact, then is knocked back up and away
-      const hit = .3, y = r < hit ? lerp(H * .08, sy - ss * .85, ease(r / hit)) : sy - ss * .85 - Math.sin(Math.min(1, (r - hit) / .7) * Math.PI * .5) * H * .5;
-      const x = W * .5 + (r < hit ? 0 : (r - hit) / .7 * S * .35), red = r >= hit;
-      c.globalAlpha = 1 - Math.max(0, (r - .7) / .3); miniGlyph(c, 'stop', x, y, ss * .55, red ? '#ff6b5a' : GOLD); c.globalAlpha = 1;
-      if (red) miniRing(c, W * .5, sy - ss * .85, seg(r, hit, hit + .35), S * .12, '#ff6b5a', 2);
+  // Each level provides the slots needed for its puzzle.
+  'ww-slots': () => ({ duration: 9, steps: [[0, '']], draw(c, W, H, t) {
+    miniBase(c, W, H);
+    const S = Math.min(W, H), level = Math.min(2, Math.floor(t / 3)), count = level + 1;
+    const local = t % 3, sy = H * .55, ss = S * .17;
+    for (let i = 0; i < count; i++) {
+      const x = W * .5 + (i - (count - 1) / 2) * S * .22;
+      const k = seg(local, .4 + i * .45, .9 + i * .45);
+      miniSlot(c, x, sy, ss, k >= 1, false);
+      if (k > 0 && k < 1) miniGlyph(c, 'stop', x, lerp(H * .08, sy, ease(k)), ss * .55, GOLD);
     }
   } }),
   // a fork in the road: take the door now, or climb for the star; a retry comes back for the star
