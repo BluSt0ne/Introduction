@@ -71,11 +71,14 @@ const GAL = (() => {
     if (pts.some(p => Math.hypot(p.x - x, p.y - y) < .075)) continue;
     pts.push({ x, y, s, d, kind: pts.length % 3, j: r() });
   }
+  pts.forEach(p => { p.lit = 15.4 + p.d * 6.5 + p.j * .6; });
+  pts.forEach(p => { let best = { x: 0, y: 0 }, bd = Math.hypot(p.x, p.y); pts.forEach(q => { if (q.lit < p.lit - 1.3) { const d = Math.hypot(p.x - q.x, p.y - q.y); if (d < bd) { bd = d; best = q; } } }); p.src = best; });
   const dust = []; for (let i = 0; i < 420; i++) { const arm = i % 3, d = Math.pow(r(), .7), an = arm * TAU / 3 + d * 4.2 + (r() - .5) * .8; dust.push([Math.cos(an) * d, Math.sin(an) * d * .62, r()]); }
   return { pts, dust };
 })();
-function galaxy(c, W, H, S, t, P0, P1, LW) {
-  const show = seg(t, 13.2, 15.2); if (show <= 0) return;
+function galaxy(c, W, H, S, t, P0, P1, LW, ORB) {
+  const out = { gained: 0, pulse: 0 };
+  const show = seg(t, 13.2, 15.2); if (show <= 0) return out;
   const CX = W * .6, CY = H * .56, RAD = W * 2.9;
   c.save(); c.globalAlpha = show;
   const core = c.createRadialGradient(CX, CY, 0, CX, CY, RAD * .5); core.addColorStop(0, a(ACC, .1)); core.addColorStop(1, a(ACC, 0));
@@ -83,7 +86,7 @@ function galaxy(c, W, H, S, t, P0, P1, LW) {
   GAL.dust.forEach(([x, y, k]) => { c.fillStyle = a(INK, .15 + .35 * k); c.beginPath(); c.arc(CX + x * RAD, CY + y * RAD, (.5 + k) * LW, 0, TAU); c.fill(); });
   GAL.pts.forEach(p => {
     const x = CX + p.x * RAD, y = CY + p.y * RAD, r = S * .09 * p.s;
-    const lit = 15.4 + p.d * 6.5 + p.j * .6, g = seg(t, lit, lit + 1.2);
+    const lit = p.lit, g = seg(t, lit, lit + 1.2);
     if (g > 0) {
       const halo = c.createRadialGradient(x, y, r * .6, x, y, r * (2.6 + .3 * Math.sin(t * 2 + p.j * 6)));
       halo.addColorStop(0, a(ACC, .45 * g)); halo.addColorStop(1, a(ACC, 0));
@@ -93,7 +96,28 @@ function galaxy(c, W, H, S, t, P0, P1, LW) {
     c.strokeStyle = a(g > 0 ? ACC : MUTED, .35 + .5 * g); c.lineWidth = 1.2 * LW; c.beginPath(); c.arc(x, y, r, 0, TAU); c.stroke();
     if (g > 0 && g < 1) { c.strokeStyle = a(SUN, .8 * (1 - g)); c.lineWidth = 1.4 * LW; c.beginPath(); c.arc(x, y, r * (1 + g * 2.2), 0, TAU); c.stroke(); }
   });
+  // tiny rockets: each planet is reached from the nearest planet that was already running
+  GAL.pts.forEach(p => {
+    const k = seg(t, p.lit - 1.2, p.lit); if (k <= 0 || k >= 1) return;
+    const A = [CX + p.src.x * RAD, CY + p.src.y * RAD], B = [CX + p.x * RAD, CY + p.y * RAD], u = ease(k);
+    const x = lerp(A[0], B[0], u), y = lerp(A[1], B[1], u);
+    for (let i = 1; i < 5; i++) { const uu = Math.max(0, u - i * .04); c.fillStyle = a(SUN, .5 * (1 - i / 5)); c.beginPath(); c.arc(lerp(A[0], B[0], uu), lerp(A[1], B[1], uu), (1.4 - i * .2) * LW, 0, TAU); c.fill(); }
+    rocket(c, x, y, Math.atan2(B[0] - A[0], -(B[1] - A[1])), S * .018 * LW, 1);
+  });
+  // energy from every running planet flows to the store
+  GAL.pts.forEach(p => {
+    if (t < p.lit + .4) return;
+    const x = CX + p.x * RAD, y = CY + p.y * RAD;
+    for (let n = 0; n < 8; n++) {
+      const t0 = p.lit + .4 + p.j * 1.5 + n * 1.6; if (t0 > t) break; const k = seg(t, t0, t0 + 1.3);
+      if (k >= 1) { out.gained++; out.pulse = Math.max(out.pulse, 1 - seg(t, t0 + 1.3, t0 + 1.6)); continue; }
+      const u = ease(k), mx = lerp(x, ORB.x, u) + Math.sin(u * Math.PI) * (y - ORB.y) * .15, my = lerp(y, ORB.y, u) - Math.sin(u * Math.PI) * (x - ORB.x) * .15;
+      c.fillStyle = a(SUN, .95); c.beginPath(); c.arc(mx, my, 2.2 * LW, 0, TAU); c.fill();
+      c.fillStyle = a(SUN, .2); c.beginPath(); c.arc(mx, my, 5.5 * LW, 0, TAU); c.fill();
+    }
+  });
   c.restore();
+  return out;
 }
 
 function wopScene() {
@@ -122,7 +146,7 @@ function wopScene() {
       const [ox, oy] = toWorld(ORBs.x, ORBs.y), ORB = { x: ox, y: oy, r: ORBs.r / Z };
       c.save(); c.translate(CX, CY); c.scale(Z, Z); c.translate(-CX, -CY);
       const LW = 1 / Z;
-      galaxy(c, W, H, S, t, P0, P1, LW);
+      const gx = galaxy(c, W, H, S, t, P0, P1, LW, ORB);
       const at = (p, s) => [p.x + s.x * p.r * .8, p.y + s.y * p.r * .8];
       const sc = P1.r / P0.r, green = seg(t, 11.3, 12.6);
       [[P0, 1], [P1, green]].forEach(([p, g]) => { c.fillStyle = a(ACC, .03 + .05 * g); c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.fill(); c.strokeStyle = a(g > 0 ? ACC : MUTED, .3 + .3 * g); c.lineWidth = 1.2 * LW; c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.stroke(); });
@@ -190,6 +214,7 @@ function wopScene() {
       }
       c.restore();
       // energy store (top-left)
+      gained += gx.gained; pulse = Math.max(pulse, gx.pulse);
       const level = clamp((gained - spent) / MAX);
       c.save(); c.beginPath(); c.arc(ORBs.x, ORBs.y, ORBs.r, 0, TAU); c.clip();
       c.fillStyle = a(SUN, .08); c.fillRect(ORBs.x - ORBs.r, ORBs.y - ORBs.r, ORBs.r * 2, ORBs.r * 2);
