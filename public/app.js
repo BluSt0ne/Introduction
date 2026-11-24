@@ -191,7 +191,7 @@ function aiSectionBody(section){
 function aiMarkdownPage(a){
  const sections=parseAIMarkdown(a.markdown);if(!sections.length)return titleBlock(esc(a.title),esc(a.intro),'GAME DESIGN × AI');
  const theme=title=>/World of Plant/i.test(title)?'wop':/Wordless Mage/i.test(title)?'ww':'shared',n=String(sections.length).padStart(2,'0');
- return `<article class="ai-page ai-interactive ai-all" data-ai-theme="shared">${titleBlock(esc(a.title),esc(a.intro),'GAME DESIGN × AI')}<div class="ai-tool-pills" aria-label="사용한 도구">${a.tools.map(([name])=>`<span>${esc(name)}</span>`).join('')}</div>${sections.map((section,index)=>`<section class="ai-section-panel ai-interactive" data-ai-theme="${theme(section.title)}" id="ai-section-${index}"><header class="ai-panel-heading"><span>${String(index+1).padStart(2,'0')} / ${n}</span><h2>${esc(section.title)}</h2></header><div class="ai-markdown">${aiSectionBody(section)}</div></section>`).join('')}</article>`;
+ return `<article class="ai-page ai-interactive ai-all" data-ai-theme="shared">${titleBlock(esc(a.title),esc(a.intro),'GAME DESIGN × AI')}<p class="ai-used-tools">사용 도구: ${a.tools.map(([name])=>esc(name)).join(', ')}</p>${sections.map((section,index)=>`<section class="ai-section-panel ai-interactive" data-ai-theme="${theme(section.title)}" id="ai-section-${index}"><header class="ai-panel-heading"><span>${String(index+1).padStart(2,'0')} / ${n}</span><h2>${esc(section.title)}</h2></header><div class="ai-markdown">${aiSectionBody(section)}</div></section>`).join('')}</article>`;
 }
 function selectAISection(index){aiActiveSection=index;aiActiveStep=0;render();document.querySelector(`[data-ai-section="${index}"]`)?.focus();}
 document.addEventListener('click',event=>{
