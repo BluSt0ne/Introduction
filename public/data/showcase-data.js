@@ -473,7 +473,7 @@ window.SHOWCASE_DATA = {
         "genre": "싱글플레이 턴제 우주 전략",
         "team": "1인 개발, AI 활용",
         "platform": "PC, Unity 6",
-        "summary": "공개 맵에서 행성을 확장하고 AI와 교전하는 턴제 우주 전략 게임입니다. 함선 부위 조준, 피해 예측, 8개 작전 캠페인을 구성했습니다.",
+        "summary": "미니멀한 4X 느낌의 턴제 우주 전략 게임입니다. 함선 부위 조준, 피해 예측, 8개 작전 캠페인을 구성했습니다.",
         "cover": "assets/archive/galactica-pc-cover.webp",
         "videos": [],
         "points": [
