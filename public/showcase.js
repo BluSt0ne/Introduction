@@ -37,6 +37,7 @@ const ICON = {
   hash: '<path d="M9 3 7 21M17 3l-2 18M4 8h17M3 16h17"/>',
   magic: '<path d="m4 20 11-11M14 4l1 3 3 1-3 1-1 3-1-3-3-1 3-1zM19 13l.5 1.5L21 15l-1.5.5L19 17l-.5-1.5L17 15l1.5-.5z"/>',
   ai: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 15l2-6 2 6M9.3 13h2.4M15.5 9v6"/>',
+  flower: '<circle cx="12" cy="10" r="2.5"/><path d="M12 7.5a3 3 0 1 1 2.6 1.6M12 7.5a3 3 0 1 0-2.6 1.6M9.5 10.5a3 3 0 1 0 2.5 2M14.5 10.5a3 3 0 1 1-2.5 2M12 13v8"/>',
   me: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
 };
 const ico = (k, cls = '') => `<svg class="nx-ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[k] || ''}</svg>`;
@@ -98,16 +99,22 @@ function split() {
 </section>`;
 }
 
+const rich = v => e(v).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+function psCard(it, extra = '') {
+  return `<article class="nx-ps">
+    <span class="nx-ps-bar" aria-hidden="true"></span>${extra}
+    <h3>${e(it.title)}</h3>
+    <h4>문제</h4><p>${rich(it.problem)}</p>
+    <hr>
+    <h4 class="sol">해결</h4><p>${rich(it.solution)}</p>
+    ${list(it.images).length ? `<div class="nx-ps-shots" style="--n:${Math.min(list(it.images).length, 2)}">${list(it.images).map(im => `<figure><button type="button" class="nx-zoom" data-full="${e(im.full || im.src)}" data-cap="${e(im.caption)}" aria-label="${e(im.caption)} 크게 보기"><img src="${e(im.src)}" alt="${e(im.caption)}" loading="lazy"><span class="nx-zoom-ico" aria-hidden="true">⤢</span></button><figcaption>${e(im.caption)}</figcaption></figure>`).join('')}</div>` : ''}
+  </article>`;
+}
 function aiIssues() {
   const A = D.ai || {};
-  const row = (icon, label, text, cls = '') => `<div class="${cls}"><dt title="${label}">${ico(icon)}<span class="sr-only">${label}</span></dt><dd>${e(text)}</dd></div>`;
   return `<section class="nx-section nx-reveal" id="nx-ai" data-nx>
-  ${head(A, `<p class="nx-legend">${ico('alert')}발생 ${ico('wrench')}대응 ${ico('check')}반영 원칙</p>`)}
-  <ol class="nx-issues">${list(A.issues).map((it, i) => `<li class="nx-issue">
-    <div class="nx-issue-head">${ico(it.icon, 'issue')}<span class="nx-issue-no">${String(i + 1).padStart(2, '0')}</span><span class="nx-issue-tag">${e(it.tag)}</span><h3>${e(it.title)}</h3></div>
-    <dl>${row('alert', '발생', it.what)}${row('wrench', '대응', it.fix)}${row('check', '반영 원칙', it.rule, 'rule')}</dl>
-  </li>`).join('')}</ol>
-  <div class="nx-rules"><h3>${e(A.rulesTitle || '')}</h3><ul>${list(A.rules).map(r => `<li>${ico(r.icon)}<b>${e(r.title)}</b><span>${e(r.text)}</span></li>`).join('')}</ul></div>
+  ${head(A)}
+  <div class="nx-ps-grid">${list(A.items).map(it => psCard(it, it.tag ? `<span class="nx-ps-tag">${e(it.tag)}</span>` : '')).join('')}</div>
 </section>`;
 }
 
@@ -115,17 +122,10 @@ function verify() {
   const C = D.cases || {};
   return `<section class="nx-section nx-reveal" id="nx-verify" data-nx>
   ${head(C)}
-  <div class="nx-filter" role="group" aria-label="분류">${list(C.filters).map((f, i) => `<button type="button" data-nx-case="${e(f.id)}" aria-pressed="${i === 0}">${e(f.label)}</button>`).join('')}</div>
-  <div class="nx-cases">${list(C.items).map((c, i) => `<article class="nx-case ${e(c.tag)}" data-tag="${e(c.tag)}">
-    <button type="button" class="nx-case-top" aria-expanded="false" aria-controls="nx-case-${i}">
-      <span class="nx-case-label">${ico(c.icon)}${e(c.label)}</span>
-      <h3>${e(c.title)}</h3>
-      <span class="nx-metric"><b data-count="${Number(c.metric) || 0}">0</b><small>${e(c.unit)}</small></span>
-      <span class="nx-mlabel">${e(c.metricLabel)}</span>
-      <span class="nx-plus" aria-hidden="true">+</span>
-    </button>
-    <ol class="nx-case-body" id="nx-case-${i}" hidden>${list(c.steps).map(s => `<li><span>${e(s.k)}</span><p>${e(s.v)}</p></li>`).join('')}</ol>
-  </article>`).join('')}</div>
+  ${list(C.projects).map(pj => `<div class="nx-pj ${e(pj.id)}">
+    <header class="nx-pj-head"><span class="nx-pj-mark">${ico(pj.id === 'ww' ? 'magic' : 'flower')}</span><div><h3>${e(pj.name)}</h3><small>${e(pj.sub)}</small></div></header>
+    <div class="nx-ps-grid">${list(pj.items).map(it => psCard(it)).join('')}</div>
+  </div>`).join('')}
 </section>`;
 }
 
@@ -235,6 +235,13 @@ document.addEventListener('click', ev => {
   const f = ev.target.closest('[data-nx-case]');
   if (f) { $$('[data-nx-case]').forEach(b => b.setAttribute('aria-pressed', b === f)); $$('.nx-case').forEach(c => c.hidden = !(f.dataset.nxCase === 'all' || c.dataset.tag === f.dataset.nxCase)); return; }
   if (ev.target.closest('#nx-planet-roll')) drawPlanet(++rolls);
+  const z = ev.target.closest('.nx-zoom');
+  if (z) {
+    const ov = document.createElement('div'); ov.className = 'nx-lightbox'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', z.dataset.cap || '이미지');
+    ov.innerHTML = `<figure><img src="${e(z.dataset.full)}" alt="${e(z.dataset.cap)}"><figcaption>${e(z.dataset.cap)}</figcaption></figure><button type="button" aria-label="닫기">✕</button>`;
+    const close = () => { ov.remove(); document.removeEventListener('keydown', esc); z.focus(); }, esc = k => { if (k.key === 'Escape') close(); };
+    ov.addEventListener('click', close); document.addEventListener('keydown', esc); document.body.append(ov); ov.querySelector('button').focus(); return;
+  }
 });
 
 new MutationObserver(() => mount()).observe($('#main'), { childList: true });
