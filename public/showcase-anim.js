@@ -227,7 +227,7 @@ function wmScene() {
   return {
     duration: 14.5,
     // story order, checked by scripts/test.mjs
-    stateAt: t => ({ robotAlive: t < 2.95, defeated: t >= 2.95, drop: t >= 2.95 && t < 5.6, collected: t >= 5.6, fanStopped: t >= 9.0 }),
+    stateAt: t => ({ robotAlive: t < 2.95, defeated: t >= 2.95, drop: t >= 2.95 && t < 5.6, collected: t >= 5.6, consumed: t >= 6.75, fanStopped: t >= 9.0 }),
     steps: [[0, '로봇 반응'], [2.3, '낙하 장치'], [2.95, '말풍선 파괴·마법 획득'], [6.2, '팬 정지'], [9.2, '통과']],
     draw(c, W, H, t) {
       const S = Math.min(W, H * 1.6), G = H * .82, CEIL = H * .1;
@@ -253,7 +253,9 @@ function wmScene() {
       const RX = W * .44, rr = S * .032, ry = G - rr, BTN = W * .2;
       const wh = S * .07, ww = S * .08, fallK = seg(t, 2.55, IMPACT), restY = G - rr * .55 - wh;
       const bounce = t > IMPACT ? Math.max(0, Math.sin(seg(t, IMPACT, IMPACT + .28) * Math.PI)) * S * .018 : 0;
-      const wy = (t < IMPACT ? lerp(CEIL + S * .03, restY, fallK * fallK) : restY) - bounce;
+      // after the robot is gone the weight settles onto the floor
+      const settle = seg(t, IMPACT + .3, IMPACT + .5), floorY = G - wh;
+      const wy = (t < IMPACT ? lerp(CEIL + S * .03, restY, fallK * fallK) : lerp(restY, floorY, settle * settle)) - bounce - (settle >= 1 ? Math.max(0, Math.sin(seg(t, IMPACT + .5, IMPACT + .7) * Math.PI)) * S * .006 : 0);
       c.strokeStyle = a(MUTED, .6); c.lineWidth = 2; c.beginPath(); c.moveTo(RX - ww, CEIL); c.lineTo(RX + ww, CEIL); c.stroke();
       if (t < 2.55) { const sway = Math.sin(t * 2.2) * S * .004; c.strokeStyle = a(MUTED, .6); c.lineWidth = 1; c.beginPath(); c.moveTo(RX, CEIL); c.lineTo(RX + sway, wy); c.stroke(); }
       else if (t < 3.2) { const k = seg(t, 2.55, 3.2); c.strokeStyle = a(MUTED, .6 * (1 - k)); c.lineWidth = 1; c.beginPath(); c.moveTo(RX, CEIL); c.lineTo(RX, CEIL + S * .03 * (1 - k)); c.stroke(); }
@@ -295,7 +297,13 @@ function wmScene() {
       }
       // magic slots (top-left)
       const sl = S * .05, slot0 = [W * .04 + sl / 2, H * .05 + sl / 2];
-      for (let i = 0; i < 3; i++) { const x = W * .04 + i * (sl + S * .012), y = H * .05, on = i === 0 && t > 5.6; c.strokeStyle = on ? GOLD : a(MUTED, .4); c.lineWidth = on ? 1.6 : 1; c.fillStyle = on ? a(GOLD, .12) : 'transparent'; c.beginPath(); c.roundRect(x, y, sl, sl, 4); c.fill(); c.stroke(); if (on) handIcon(c, x + sl / 2, y + sl / 2, sl * .62, GOLD); }
+      const used = seg(t, 6.6, 6.75);
+      for (let i = 0; i < 3; i++) {
+        const x = W * .04 + i * (sl + S * .012), y = H * .05, on = i === 0 && t > 5.6 && t < 6.75, flash = i === 0 ? Math.max(0, 1 - Math.abs(t - 6.75) / .25) : 0;
+        c.strokeStyle = on || flash > 0 ? GOLD : a(MUTED, .4); c.lineWidth = on ? 1.6 : 1; c.fillStyle = on ? a(GOLD, .12) : a(GOLD, .18 * flash);
+        c.beginPath(); c.roundRect(x, y, sl, sl, 4); c.fill(); c.stroke();
+        if (on) { c.globalAlpha = 1 - used; handIcon(c, x + sl / 2, y + sl / 2, sl * .62 * (1 - used * .4), GOLD); c.globalAlpha = 1; }
+      }
       // the freed stop sign drifts down from where the bubble was, then goes to the slot
       if (t >= IMPACT && t < 5.6) {
         const k = ease(seg(t, IMPACT + .15, 3.9)), bob = t > 3.9 ? Math.sin(t * 5) * S * .006 : 0, spin = Math.sin(seg(t, IMPACT, 3.9) * Math.PI * 2) * .25;
@@ -319,8 +327,15 @@ function wmScene() {
       c.beginPath(); c.arc(mx, my - mh * .86, mh * .12, 0, TAU); c.fill(); c.stroke();
       c.beginPath(); c.moveTo(tip[0], my); c.lineTo(tip[0], tip[1]); c.stroke();
       c.fillStyle = (t > 7.3 && t < 7.5) ? '#fff' : GOLD; c.beginPath(); c.arc(tip[0], tip[1], mh * .05, 0, TAU); c.fill();
+      // the stop magic leaves its slot and is consumed into the staff
+      const use = seg(t, 6.6, 7.0);
+      if (use > 0 && use < 1) {
+        const u = ease(use), x = lerp(slot0[0], tip[0], u), y = lerp(slot0[1], tip[1], u) - Math.sin(u * Math.PI) * H * .1;
+        for (let i = 1; i < 6; i++) { const uu = Math.max(0, u - i * .05); c.fillStyle = a(GOLD, .4 * (1 - i / 6)); c.beginPath(); c.arc(lerp(slot0[0], tip[0], uu), lerp(slot0[1], tip[1], uu) - Math.sin(uu * Math.PI) * H * .1, S * .006, 0, TAU); c.fill(); }
+        c.shadowColor = GOLD; c.shadowBlur = 14; handIcon(c, x, y, S * .036 * (1 - u * .5), GOLD); c.shadowBlur = 0;
+      }
       // cast: magic circle at the staff, gathering sparks, a glowing projectile with a trail, burst on the fan
-      const circ = seg(t, 6.7, 7.0) * (1 - seg(t, 7.5, 7.8));
+      const circ = seg(t, 6.9, 7.1) * (1 - seg(t, 7.5, 7.8));
       if (circ > 0) {
         const cr = S * .05 * ease(circ);
         c.save(); c.translate(tip[0], tip[1]); c.globalAlpha = circ;
