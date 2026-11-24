@@ -178,11 +178,13 @@ function warnIcon(c, x, y, s, col) {
 }
 function wmScene() {
   const DEBRIS = [[-1, 1.1, .5], [1, 1.3, -.4], [-.6, 1.6, .9], [.7, 1.0, -.8], [.2, 1.8, .3]];
+  // bubble border split into pieces: x0,y0,x1,y1 (half-size units), velocity, spin
+  const SHARDS = [[-1, -1, 0, -1, -.6, -1.1, .8], [0, -1, 1, -1, .7, -1.2, -.6], [1, -1, 1, 0, 1.2, -.5, .9], [1, 0, 1, 1, 1.1, .2, -.7], [1, 1, 0, 1, .6, .6, .5], [0, 1, -1, 1, -.5, .7, -.9], [-1, 1, -1, 0, -1.2, .3, .6], [-1, 0, -1, -1, -1.1, -.6, -.5]];
   return {
     duration: 14.5,
     // story order, checked by scripts/test.mjs
-    stateAt: t => ({ robotAlive: t < 2.95, defeated: t >= 2.95, drop: t >= 3.2 && t < 5.6, collected: t >= 5.6, fanStopped: t >= 9.0 }),
-    steps: [[0, '로봇 반응'], [2.3, '낙하 장치'], [3.2, '마법 획득'], [6.2, '팬 정지'], [9.2, '통과']],
+    stateAt: t => ({ robotAlive: t < 2.95, defeated: t >= 2.95, drop: t >= 2.95 && t < 5.6, collected: t >= 5.6, fanStopped: t >= 9.0 }),
+    steps: [[0, '로봇 반응'], [2.3, '낙하 장치'], [2.95, '말풍선 파괴·마법 획득'], [6.2, '팬 정지'], [9.2, '통과']],
     draw(c, W, H, t) {
       const S = Math.min(W, H * 1.6), G = H * .82, CEIL = H * .1;
       c.fillStyle = '#10171b'; c.fillRect(0, 0, W, H);
@@ -235,24 +237,33 @@ function wmScene() {
       if (eyeOn) { c.fillStyle = t > 1.3 ? '#ff8a7a' : SUN; c.fillRect(turned < 0 ? -rr * .75 : rr * .05, -rr * 1.35, rr * .7, rr * .22); }
       c.restore();
       if (t > 1.3 && t < 2.3) { const k = seg(t, 1.3, 1.5); warnIcon(c, RX + patrol, ry - rr * 2.1 - S * .01 * (1 - k), S * .05 * pop(k), '#ff8a7a'); }
-      if (t > 1.7 && t < 2.9) { const k = seg(t, 1.7, 1.9), bx = RX + patrol + S * .075, bby = ry - rr * 2.6, bw = S * .065 * pop(k); c.strokeStyle = GOLD; c.lineWidth = 1.4; c.fillStyle = '#10171b'; c.beginPath(); c.roundRect(bx - bw / 2, bby - bw / 2, bw, bw, 6); c.fill(); c.stroke(); handIcon(c, bx, bby, bw * .62, GOLD); }
+      // speech bubble: holds the stop sign until the robot is crushed, then shatters and frees it
+      const BX = RX + patrol + S * .075, BY = ry - rr * 2.6, BW = S * .065;
+      if (t > 1.7 && t < IMPACT) { const k = seg(t, 1.7, 1.9), bw = BW * pop(k); c.strokeStyle = GOLD; c.lineWidth = 1.4; c.fillStyle = '#10171b'; c.beginPath(); c.roundRect(BX - bw / 2, BY - bw / 2, bw, bw, 6); c.fill(); c.stroke(); c.beginPath(); c.moveTo(BX - S * .012 - bw * .2, BY + bw / 2); c.lineTo(BX - bw * .32, BY + bw / 2 + S * .012); c.lineTo(BX - bw * .05, BY + bw / 2); c.fill(); c.stroke(); handIcon(c, BX, BY, bw * .62, GOLD); }
+      if (t >= IMPACT && t < IMPACT + .8) {
+        const k = seg(t, IMPACT, IMPACT + .8), h = BW / 2;
+        c.globalAlpha = 1 - k; c.strokeStyle = GOLD; c.lineWidth = 1.4;
+        SHARDS.forEach(([x0, y0, x1, y1, vx, vy, rot]) => { const cx = BX + (x0 + x1) / 2 * h + vx * k * S * .09, cy = BY + (y0 + y1) / 2 * h + (vy * k + 1.4 * k * k) * S * .09; c.save(); c.translate(cx, cy); c.rotate(rot * k * 6); c.beginPath(); c.moveTo((x0 - x1) / 2 * h, (y0 - y1) / 2 * h); c.lineTo((x1 - x0) / 2 * h, (y1 - y0) / 2 * h); c.stroke(); c.restore(); });
+        c.fillStyle = a(GOLD, .5 * (1 - k)); for (let i = 0; i < 8; i++) { const an = i * TAU / 8 + .3; c.beginPath(); c.arc(BX + Math.cos(an) * k * S * .08, BY + Math.sin(an) * k * S * .08, S * .004, 0, TAU); c.fill(); }
+        c.globalAlpha = 1;
+      }
       // magic slots (top-left)
       const sl = S * .05, slot0 = [W * .04 + sl / 2, H * .05 + sl / 2];
       for (let i = 0; i < 3; i++) { const x = W * .04 + i * (sl + S * .012), y = H * .05, on = i === 0 && t > 5.6; c.strokeStyle = on ? GOLD : a(MUTED, .4); c.lineWidth = on ? 1.6 : 1; c.fillStyle = on ? a(GOLD, .12) : 'transparent'; c.beginPath(); c.roundRect(x, y, sl, sl, 4); c.fill(); c.stroke(); if (on) handIcon(c, x + sl / 2, y + sl / 2, sl * .62, GOLD); }
-      // the dropped stop magic pops out of the wreck, settles, then goes to the slot
-      if (t > 3.2 && t < 5.6) {
-        const k = seg(t, 3.2, 3.8), hop = Math.sin(k * Math.PI) * S * .08, bob = k >= 1 ? Math.sin(t * 5) * S * .006 : 0;
-        let x = RX + S * .02 + k * S * .05, y = G - S * .035 - hop + bob;
+      // the freed stop sign drifts down from where the bubble was, then goes to the slot
+      if (t >= IMPACT && t < 5.6) {
+        const k = ease(seg(t, IMPACT + .15, 3.9)), bob = t > 3.9 ? Math.sin(t * 5) * S * .006 : 0, spin = Math.sin(seg(t, IMPACT, 3.9) * Math.PI * 2) * .25;
+        let x = BX + S * .02 * k, y = lerp(BY, G - S * .04, k) + bob;
         const fly = ease(seg(t, 5.0, 5.6)); if (fly > 0) { x = lerp(x, slot0[0], fly); y = lerp(y, slot0[1], fly) - Math.sin(fly * Math.PI) * H * .08; }
-        c.shadowColor = GOLD; c.shadowBlur = 12; handIcon(c, x, y, S * .042, GOLD); c.shadowBlur = 0;
+        c.save(); c.translate(x, y); c.rotate(fly > 0 ? 0 : spin); c.shadowColor = GOLD; c.shadowBlur = 12 + 10 * (1 - seg(t, IMPACT, IMPACT + .5)); handIcon(c, 0, 0, S * .042, GOLD); c.restore(); c.shadowBlur = 0;
       }
       // mage
       let mx;
       if (t < 1.4) mx = lerp(W * .05, BTN - S * .03, ease(t / 1.4));
       else if (t < 4.2) mx = BTN - S * .03;
-      else if (t < 5.0) mx = lerp(BTN - S * .03, RX + S * .02, ease(seg(t, 4.2, 5.0)));
-      else if (t < 6.2) mx = RX + S * .02;
-      else if (t < 7.2) mx = lerp(RX + S * .02, W * .5, seg(t, 6.2, 7.2));
+      else if (t < 5.0) mx = lerp(BTN - S * .03, RX + S * .06, ease(seg(t, 4.2, 5.0)));
+      else if (t < 6.2) mx = RX + S * .06;
+      else if (t < 7.2) mx = lerp(RX + S * .06, W * .5, seg(t, 6.2, 7.2));
       else if (t < 9.2) mx = W * .5;
       else mx = lerp(W * .5, W * 1.08, ease(seg(t, 9.2, 11.8)));
       const walk = t < 1.4 || (t > 4.2 && t < 5.0) || (t > 6.2 && t < 7.2) || (t > 9.2 && t < 11.8), bob = walk ? Math.abs(Math.sin(t * 9)) * S * .004 : 0;
