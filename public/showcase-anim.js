@@ -253,7 +253,7 @@ function wmScene() {
     duration: 14.5,
     // story order, checked by scripts/test.mjs
     stateAt: t => ({ robotAlive: t < 2.95, defeated: t >= 2.95, drop: t >= 2.95 && t < 5.6, collected: t >= 5.6, consumed: t >= 6.75, fanStopped: t >= 9.0 }),
-    steps: [[0, '로봇 반응'], [2.3, '낙하 장치'], [2.95, '말풍선 파괴·마법 획득'], [6.2, '팬 정지'], [9.2, '통과']],
+    steps: [[0, '로봇 반응'], [2.3, '낙하 장치'], [2.95, '마법 획득'], [6.2, '팬 정지'], [9.2, '통과']],
     draw(c, W, H, t) {
       const S = Math.min(W, H * 1.6), G = H * .82, CEIL = H * .1;
       c.fillStyle = '#10171b'; c.fillRect(0, 0, W, H);

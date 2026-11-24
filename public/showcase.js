@@ -38,18 +38,13 @@ const ICON = {
   magic: '<path d="m4 20 11-11M14 4l1 3 3 1-3 1-1 3-1-3-3-1 3-1zM19 13l.5 1.5L21 15l-1.5.5L19 17l-.5-1.5L17 15l1.5-.5z"/>',
   ai: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 15l2-6 2 6M9.3 13h2.4M15.5 9v6"/>',
   flower: '<circle cx="12" cy="10" r="2.5"/><path d="M12 7.5a3 3 0 1 1 2.6 1.6M12 7.5a3 3 0 1 0-2.6 1.6M9.5 10.5a3 3 0 1 0 2.5 2M14.5 10.5a3 3 0 1 1-2.5 2M12 13v8"/>',
+  image: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-9 8"/>',
   me: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
 };
 const ico = (k, cls = '') => `<svg class="nx-ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[k] || ''}</svg>`;
 window.NXIcons = ICON;
 
-const PLANETS = [
-  { name: 'Sprout Cradle', kind: '초원', a: '#3f7d4a', b: '#8fc46b', c: '#d8e8a6', sea: '#2c5d78', clouds: .5 },
-  { name: 'White Night Ice', kind: '빙원', a: '#9fb9c9', b: '#dfeef3', c: '#ffffff', sea: '#3d6f8f', clouds: .35 },
-  { name: 'Red Sands', kind: '사막', a: '#8d3f2a', b: '#c86d3f', c: '#e6b07a', sea: null, clouds: .12 },
-  { name: 'Sleeping Night', kind: '가스', a: '#2a2c55', b: '#5a4f8e', c: '#b3a6d9', sea: null, clouds: 0, bands: true },
-  { name: 'Ember Garden', kind: '용암', a: '#231512', b: '#4a2318', c: '#ff8a3c', sea: null, clouds: 0, lava: true }
-];
+
 
 
 
@@ -83,10 +78,19 @@ function intro() {
     <h1>${list(I.lines).map(l => e(l) + '<br>').join('')}<strong>${e(I.highlight || '')}</strong></h1>
     ${I.lead ? `<p class="nx-lead">${e(I.lead)}</p>` : ''}
     <div class="nx-intro-tags">${list(I.tags).map(t => `<span>${ico(t.icon)}${e(t.text)}</span>`).join('')}</div>
+    <button type="button" class="nx-scroll-cue" data-scroll-to="nx-projects" aria-label="아래로 이동"><i aria-hidden="true"></i><span>${e(I.scroll || 'SCROLL')}</span></button>
   </div>
-  <div class="nx-stats" aria-label="주요 수치">${list(D.stats).map(s => `<div class="nx-stat"><strong><span data-count="${Number(s.value) || 0}">0</span>${s.unit ? `<small>${e(s.unit)}</small>` : ''}</strong><span>${e(s.label)}</span><em>${e(s.note)}</em></div>`).join('')}</div>
-</section>
-<nav class="nx-jump" aria-label="페이지 내 이동" data-nx>${list(D.nav).map((n, i) => `<a href="#" data-scroll="${e(n.id)}"><span>${String(i + 1).padStart(2, '0')}</span>${e(n.label)}</a>`).join('')}</nav>`;
+  ${profile(I.profile)}
+</section>`;
+}
+
+function profile(P) {
+  if (!P) return '';
+  return `<aside class="nx-profile">
+    <div class="nx-profile-id">${P.photo ? `<img src="${e(P.photo)}" alt="${e(P.name)} 사진">` : ''}<div><b>${e(P.name)}</b><p>${e(P.sub).replace(/\n/g, '<br>')}</p></div></div>
+    <div class="nx-profile-block"><span class="eyebrow">${e(P.toolsTitle || 'TOOLS')}</span><dl class="nx-tools-list">${list(P.tools).map(t => `<dt>${e(t.group)}</dt><dd>${String(t.items || '').split(',').map(x => x.trim()).filter(Boolean).map(x => `<span>${e(x)}</span>`).join('')}</dd>`).join('')}</dl></div>
+    <div class="nx-profile-block"><span class="eyebrow">${e(P.historyTitle || 'HISTORY')}</span><ol class="nx-history">${list(P.history).map(h => `<li><time>${e(h.year)}</time><span>${e(h.text)}</span></li>`).join('')}</ol></div>
+  </aside>`;
 }
 
 function split() {
@@ -95,18 +99,17 @@ function split() {
   return `<section class="nx-section nx-reveal" id="nx-split" data-nx>
   ${head(R)}
   <div class="nx-roles">${side('me', 'me')}${side('ai', 'ai')}</div>
-  <ol class="nx-loop" aria-label="작업 순환">${list(R.loop).map(l => `<li class="${l.who === 'ai' ? 'ai' : 'me'}">${ico(l.icon)}<span>${e(l.text)}</span></li>`).join('')}</ol>
 </section>`;
 }
 
 const rich = v => e(v).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-function psCard(it, extra = '') {
+function psCard(it, extra = '', L = {}) {
   return `<article class="nx-ps">
     <span class="nx-ps-bar" aria-hidden="true"></span>${extra}
     <h3>${e(it.title)}</h3>
-    <h4>문제</h4><p>${rich(it.problem)}</p>
+    <h4>${e(L.problem || '문제')}</h4><p>${rich(it.problem)}</p>
     <hr>
-    <h4 class="sol">해결</h4><p>${rich(it.solution)}</p>
+    <h4 class="sol">${e(L.solution || '해결')}</h4><p>${rich(it.solution)}</p>
     ${list(it.images).length ? `<div class="nx-ps-shots" style="--n:${Math.min(list(it.images).length, 2)}">${list(it.images).map(im => `<figure><button type="button" class="nx-zoom" data-full="${e(im.full || im.src)}" data-cap="${e(im.caption)}" aria-label="${e(im.caption)} 크게 보기"><img src="${e(im.src)}" alt="${e(im.caption)}" loading="lazy"><span class="nx-zoom-ico" aria-hidden="true">⤢</span></button><figcaption>${e(im.caption)}</figcaption></figure>`).join('')}</div>` : ''}
   </article>`;
 }
@@ -114,7 +117,11 @@ function aiIssues() {
   const A = D.ai || {};
   return `<section class="nx-section nx-reveal" id="nx-ai" data-nx>
   ${head(A)}
-  <div class="nx-ps-grid">${list(A.items).map(it => psCard(it, it.tag ? `<span class="nx-ps-tag">${e(it.tag)}</span>` : '')).join('')}</div>
+  <div class="nx-way-grid">${list(A.items).map((it, i) => `<article class="nx-way">
+    <span class="nx-way-ico">${ico(it.icon || 'ai')}</span>
+    <h3>${e(it.title)}</h3>
+    <p>${rich(it.text)}</p>
+  </article>`).join('')}</div>
 </section>`;
 }
 
@@ -124,7 +131,7 @@ function verify() {
   ${head(C)}
   ${list(C.projects).map(pj => `<div class="nx-pj ${e(pj.id)}">
     <header class="nx-pj-head"><span class="nx-pj-mark">${ico(pj.id === 'ww' ? 'magic' : 'flower')}</span><div><h3>${e(pj.name)}</h3><small>${e(pj.sub)}</small></div></header>
-    <div class="nx-ps-grid">${list(pj.items).map(it => psCard(it)).join('')}</div>
+    <div class="nx-ps-grid">${list(pj.items).map(it => psCard(it, '', C.labels || {})).join('')}</div>
   </div>`).join('')}
 </section>`;
 }
@@ -139,13 +146,7 @@ function tools() {
     <div class="nx-fork"><div class="nx-branch"><span>Y</span><div class="nx-node ai">${ico('code')}${e(r.yes)}<small>${e(r.yesNote)}</small></div></div><div class="nx-branch"><span>N</span><div class="nx-node me">${ico('sliders')}${e(r.no)}<small>${e(r.noNote)}</small></div></div></div>
     <span class="nx-line"></span><div class="nx-node end">${ico('gamepad')}${e(r.end)}</div>
   </div>
-  <div class="nx-tool-wrap">
-    <div class="nx-tool-grid">${list(T.items).map(t => `<article class="nx-tool">${ico(t.icon, 'tool')}<span class="nx-tool-proj">${e(t.project)}</span><h3>${e(t.title)}</h3><p>${e(t.text)}</p></article>`).join('')}</div>
-    <figure class="nx-planet">
-      <canvas id="nx-planet-canvas" width="320" height="320" aria-label="행성 생성 미리보기"></canvas>
-      <figcaption><span class="eyebrow">${e(T.planetLabel || '')}</span><h3 id="nx-planet-name">—</h3><p id="nx-planet-meta"></p><button type="button" class="button" id="nx-planet-roll">${e(T.planetButton || '↻')}</button></figcaption>
-    </figure>
-  </div>
+  <div class="nx-tool-grid">${list(T.items).map(t => `<article class="nx-tool${t.image ? ' has-shot' : ''}">${t.image ? `<button type="button" class="nx-zoom nx-tool-shot" data-full="${e(t.image)}" data-cap="${e(t.title)}" aria-label="${e(t.title)} 화면 크게 보기"><img src="${e(t.image)}" alt="${e(t.title)} Unity 화면" loading="lazy"><span class="nx-zoom-ico" aria-hidden="true">⤢</span></button>` : ''}${ico(t.icon, 'tool')}<span class="nx-tool-proj">${e(t.project)}</span><h3>${e(t.title)}</h3><p>${e(t.text)}</p></article>`).join('')}</div>
 </section>`;
 }
 
@@ -157,7 +158,7 @@ function archive() {
   ${head(A)}
   <div class="nx-arc-grid">${list(A.items).map((it, i) => `<button type="button" class="nx-arc" data-arc="${i}">
     <span class="nx-arc-img"><img src="${e(it.cover)}" alt="" loading="lazy">${list(it.videos).length ? `<span class="nx-arc-play" aria-hidden="true">▶</span>` : ''}</span>
-    <span class="nx-arc-body"><small>${e(it.period)}</small><b>${e(it.title)}</b><em>${e(it.genre)} · ${e(it.team)}</em><span>${e(it.summary)}</span><i>${e(A.more || '자세히 보기')} →</i></span>
+    <span class="nx-arc-body"><small>${e(it.period)}</small><b>${e(it.title)}</b><em>${e(it.genre)}</em><em>${e(it.team)}</em><span>${e(it.summary)}</span><i>${e(A.more || '자세히 보기')} →</i></span>
   </button>`).join('')}</div>
 </section>`;
 }
@@ -165,7 +166,7 @@ function openArchive(i) {
   const it = list(D.archive?.items)[i]; if (!it) return;
   const vids = list(it.videos).map(v => ({ ...v, id: ytId(v.url) })).filter(v => v.id);
   const dlg = document.createElement('dialog'); dlg.className = 'nx-arc-dialog';
-  dlg.innerHTML = `<header><div><small>${e(it.period)} · ${e(it.platform)}</small><h2>${e(it.title)}</h2><p>${e(it.genre)} · ${e(it.team)}</p></div><button type="button" class="nx-arc-close" aria-label="닫기">✕</button></header>
+  dlg.innerHTML = `<header><div><small>${e(it.period)}, ${e(it.platform)}</small><h2>${e(it.title)}</h2><p>${e(it.genre)}<br>${e(it.team)}</p></div><button type="button" class="nx-arc-close" aria-label="닫기">✕</button></header>
     <p class="nx-arc-sum">${e(it.summary)}</p>
     ${vids.length ? `<div class="nx-arc-video"><iframe src="https://www.youtube-nocookie.com/embed/${vids[0].id}" title="${e(vids[0].label || it.title)}" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>${vids.length > 1 ? `<div class="nx-arc-vtabs">${vids.map((v, k) => `<button type="button" data-vid="${v.id}" aria-pressed="${k === 0}">▶ ${e(v.label || '영상 ' + (k + 1))}</button>`).join('')}</div>` : ''}` : ''}
     <ul class="nx-arc-points">${list(it.points).map(p => `<li><b>${e(p.title)}</b><span>${e(p.text)}</span></li>`).join('')}</ul>
@@ -197,39 +198,17 @@ function reveal() {
 }
 
 
-/* planet preview: same idea as the in-game rules (type palette + noise + rare variant) */
-function hash(x, y, s) { const n = Math.sin(x * 127.1 + y * 311.7 + s * 74.7) * 43758.5453; return n - Math.floor(n); }
-function noise(x, y, s) { const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
-  const a = hash(xi, yi, s), b = hash(xi + 1, yi, s), c = hash(xi, yi + 1, s), d = hash(xi + 1, yi + 1, s); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
-function fbm(x, y, s) { let v = 0, a = .5; for (let i = 0; i < 5; i++) { v += a * noise(x, y, s + i * 13); x *= 2; y *= 2; a *= .5; } return v; }
-function mix(h1, h2, k) { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const A = p(h1), B = p(h2); return A.map((v, i) => Math.round(v + (B[i] - v) * k)); }
-function drawPlanet(count) {
-  const cv = $('#nx-planet-canvas'); if (!cv) return; const ctx = cv.getContext('2d'), S = cv.width, R = S * .42, cx = S / 2, cy = S / 2;
-  const type = PLANETS[count % PLANETS.length], seed = Math.random() * 1000, rare = Math.random() < .05;
-  const img = ctx.createImageData(S, S), L = [-.55, -.45, .7];
-  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-    const dx = (x - cx) / R, dy = (y - cy) / R, d2 = dx * dx + dy * dy, i = (y * S + x) * 4; if (d2 > 1) continue;
-    const dz = Math.sqrt(1 - d2), lon = Math.atan2(dx, dz) + seed, lat = Math.asin(dy);
-    const nx = Math.cos(lat) * Math.cos(lon) * 2.2, ny = Math.sin(lat) * 2.2 + Math.cos(lat) * Math.sin(lon);
-    let h = type.bands ? .5 + .5 * Math.sin(lat * 9 + fbm(nx, ny, seed) * 3) : fbm(nx + 5, ny + 5, seed);
-    let col;
-    if (type.sea && h < .47) col = mix(type.sea, '#1b3a55', (.47 - h) * 2);
-    else if (type.lava) col = h > .58 ? mix('#ff6a2a', type.c, (h - .58) * 4) : mix(type.a, type.b, h * 1.6);
-    else col = h < .55 ? mix(type.a, type.b, (h - .3) * 3) : mix(type.b, type.c, (h - .55) * 2.5);
-    if (type.name === 'White Night Ice' && Math.abs(lat) > 1.0) col = col.map(v => v + (255 - v) * .8);
-    if (type.clouds) { const cl = fbm(nx * 1.6 + 9, ny * 1.6, seed + 40); if (cl > .62) { const k = Math.min(1, (cl - .62) * 4) * type.clouds * 1.6; col = col.map(v => v + (255 - v) * k); } }
-    if (rare) col = [col[1], col[2], col[0]];
-    const lit = Math.max(0, dx * L[0] + dy * L[1] + dz * L[2]), sh = .18 + .95 * lit, rim = Math.pow(1 - dz, 3) * .5;
-    img.data[i] = Math.min(255, col[0] * sh + 140 * rim); img.data[i + 1] = Math.min(255, col[1] * sh + 200 * rim); img.data[i + 2] = Math.min(255, col[2] * sh + 255 * rim);
-    img.data[i + 3] = Math.min(255, (1 - d2) * 2600);
+/* side rail: shows how far down the page you are, so it's clear there is more below */
+let railEl = null;
+function rail() {
+  if (!railEl) {
+    railEl = document.createElement('div'); railEl.className = 'nx-rail'; railEl.setAttribute('aria-hidden', 'true');
+    railEl.innerHTML = '<span>SCROLL</span><i><b></b></i>'; document.body.append(railEl);
+    const upd = () => { const max = document.documentElement.scrollHeight - innerHeight, k = max > 0 ? Math.min(1, scrollY / max) : 1; railEl.style.setProperty('--k', k.toFixed(3)); railEl.classList.toggle('done', k > .98); };
+    addEventListener('scroll', upd, { passive: true }); addEventListener('resize', upd); railEl._upd = upd;
   }
-  ctx.clearRect(0, 0, S, S); ctx.putImageData(img, 0, 0);
-  $('#nx-planet-name').textContent = type.name + (rare ? ' · 희귀 변형' : '');
-  $('#nx-planet-meta').textContent = `${type.kind} · ${D.tools?.planetNote || ''}`;
+  railEl._upd();
 }
-
-
-
 
 /* project pages: long work-step text starts folded, first step open */
 function foldSteps(main) {
@@ -251,7 +230,7 @@ function mount(force) {
   heading.insertAdjacentHTML('beforebegin', intro());
   grid.insertAdjacentHTML('afterend', play() + split() + aiIssues() + verify() + tools() + archive());
   if (window.NXAnim) cleanups.push(NXAnim.mount($('#nx-anim-wop'), NXAnim.wopScene()), NXAnim.mount($('#nx-anim-ww'), NXAnim.wmScene()));
-  drawPlanet(0); countUp(); reveal();
+  countUp(); reveal(); rail();
   if (force) $$('.nx-reveal', main).forEach(n => n.classList.add('nx-in'));
 }
 
@@ -265,13 +244,12 @@ if (PREVIEW) {
   window.parent?.postMessage({ type: 'showcase-preview-ready' }, location.origin);
 }
 
-let rolls = 0;
 document.addEventListener('click', ev => {
   const top = ev.target.closest('.nx-case-top');
   if (top) { const open = top.getAttribute('aria-expanded') !== 'true'; top.setAttribute('aria-expanded', open); $('#' + top.getAttribute('aria-controls')).hidden = !open; top.closest('.nx-case').classList.toggle('open', open); return; }
   const f = ev.target.closest('[data-nx-case]');
   if (f) { $$('[data-nx-case]').forEach(b => b.setAttribute('aria-pressed', b === f)); $$('.nx-case').forEach(c => c.hidden = !(f.dataset.nxCase === 'all' || c.dataset.tag === f.dataset.nxCase)); return; }
-  if (ev.target.closest('#nx-planet-roll')) drawPlanet(++rolls);
+  const cue = ev.target.closest('[data-scroll-to]'); if (cue) { document.getElementById(cue.dataset.scrollTo)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); return; }
   const arc = ev.target.closest('[data-arc]'); if (arc) { openArchive(+arc.dataset.arc); return; }
   const z = ev.target.closest('.nx-zoom');
   if (z) {
