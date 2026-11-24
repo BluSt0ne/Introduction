@@ -119,7 +119,6 @@
 .nx-anim.ww h3{color:#e6d29e}
 .nx-anim-stage{aspect-ratio:16/10;position:relative;background:#0c1210}
 .nx-anim-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.nx-anim.ww .nx-anim-stage canvas{image-rendering:pixelated}
 .nx-anim-bar{height:2px;background:var(--line)}
 .nx-anim-bar i{display:block;height:100%;width:0;background:var(--accent)}
 .nx-anim.ww .nx-anim-bar i{background:#d9b96e}
@@ -179,3 +178,42 @@
   .nx-case-body li{grid-template-columns:1fr;gap:4px}
   .nx-stat strong{font-size:34px}
 }
+
+/* pictograms */
+.nx-ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.nx-ico.big{width:34px;height:34px;stroke-width:1.4}
+/* role split */
+.nx-roles{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.nx-role{border:1px solid var(--line);border-radius:16px;padding:22px;background:var(--paper)}
+.nx-role header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.nx-role.me header{color:var(--accent)}
+.nx-role.ai header{color:#8cc8ff}
+.nx-role h3{font-size:20px;font-weight:600;color:var(--ink)}
+.nx-role small{font-size:13px;color:var(--muted)}
+.nx-role ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.nx-role-tile{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:18px 8px;border:1px solid var(--line);border-radius:12px;font-size:13px;line-height:1.4}
+.nx-role-tile .nx-ico{width:28px;height:28px;stroke-width:1.4}
+.nx-role-tile.me .nx-ico{color:var(--accent)}
+.nx-role-tile.ai .nx-ico{color:#8cc8ff}
+.nx-role-tile.ai{border-style:dashed}
+.nx-loop{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.nx-loop li{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 14px;border-radius:30px;border:1px solid var(--line)}
+.nx-loop li.me .nx-ico{color:var(--accent)}
+.nx-loop li.ai .nx-ico{color:#8cc8ff}
+.nx-loop li+li:before{content:'';width:18px;height:1px;background:var(--muted);margin-left:-26px;margin-right:8px}
+.nx-loop li:last-child:after{content:'↺';margin-left:6px;color:var(--muted)}
+/* icons elsewhere */
+.nx-issue-head .nx-ico.issue{width:26px;height:26px;color:var(--accent);grid-row:span 1}
+.nx-issue-head{grid-template-columns:auto auto 1fr}
+.nx-issue h3{grid-column:1/-1}
+.nx-rules li .nx-ico{width:22px;height:22px;color:var(--accent);margin-bottom:4px}
+.nx-case-label{display:flex;align-items:center;gap:7px}
+.nx-case-label .nx-ico{width:16px;height:16px}
+.nx-tool .nx-ico.tool{width:28px;height:28px;color:var(--accent);display:block;margin-bottom:8px;stroke-width:1.4}
+.nx-node{flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap}
+.nx-node small{flex-basis:100%;padding-left:26px}
+.nx-node .nx-ico{width:16px;height:16px}
+.nx-node.end .nx-ico{color:var(--bg)}
+.nx-play{margin-top:84px}
+@media (max-width:980px){.nx-roles{grid-template-columns:1fr}}
+@media (max-width:640px){.nx-role ul{grid-template-columns:1fr 1fr}.nx-loop li+li:before{display:none}}

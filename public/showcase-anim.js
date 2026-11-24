@@ -51,8 +51,8 @@ function wopScene() {
       const S = Math.min(W, H * 1.6), fr = S * .026;
       c.fillStyle = '#111a15'; c.fillRect(0, 0, W, H);
       c.fillStyle = a(MUTED, .1); for (let x = S * .03; x < W; x += S * .04) for (let y = S * .03; y < H; y += S * .04) c.fillRect(x, y, 1, 1);
-      const P0 = { x: W * .27, y: H * .56, r: Math.min(W * .21, H * .34) }, P1 = { x: W * .82, y: H * .62, r: Math.min(W * .12, H * .2) };
-      const ORB = { x: W * .58, y: H * .22, r: S * .055 };
+      const P0 = { x: W * .36, y: H * .56, r: Math.min(W * .21, H * .34) }, P1 = { x: W * .84, y: H * .6, r: Math.min(W * .12, H * .2) };
+      const ORB = { x: W * .02 + S * .06, y: H * .04 + S * .06, r: S * .05 };
       const at = (p, s) => [p.x + s.x * p.r * .8, p.y + s.y * p.r * .8];
       const green = seg(t, 10.0, 11.2);
       [[P0, 1], [P1, green]].forEach(([p, g]) => { c.fillStyle = a(ACC, .03 + .05 * g); c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.fill(); c.strokeStyle = a(g > 0 ? ACC : MUTED, .3 + .3 * g); c.lineWidth = 1.2; c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.stroke(); });
@@ -132,18 +132,19 @@ function wmScene() {
   return {
     duration: 14.5,
     // story order, checked by scripts/test.mjs
-    stateAt: t => ({ robotAlive: t < 3.3, defeated: t >= 3.9, drop: t >= 3.9 && t < 6.0, collected: t >= 6.0, fanStopped: t >= 9.6 }),
-    steps: [[0, '로봇 반응'], [2.6, '처치'], [4.0, '마법 획득'], [6.4, '팬 정지'], [9.6, '통과']],
+    stateAt: t => ({ robotAlive: t < 3.0, defeated: t >= 3.0, drop: t >= 3.2 && t < 5.6, collected: t >= 5.6, fanStopped: t >= 9.0 }),
+    steps: [[0, '로봇 반응'], [2.3, '낙하 장치'], [3.2, '마법 획득'], [6.2, '팬 정지'], [9.2, '통과']],
     draw(c, W, H, t) {
-      const S = Math.min(W, H * 1.6), G = H * .8;
+      const S = Math.min(W, H * 1.6), G = H * .82, CEIL = H * .1;
       c.fillStyle = '#10171b'; c.fillRect(0, 0, W, H);
       c.fillStyle = a(MUTED, .1); for (let x = S * .03; x < W; x += S * .04) for (let y = S * .03; y < G; y += S * .04) c.fillRect(x, y, 1, 1);
       c.strokeStyle = a(GOLD, .5); c.lineWidth = 1.2; c.beginPath(); c.moveTo(0, G); c.lineTo(W, G); c.stroke();
-      const sl = S * .05, slot0 = [W * .05 + sl / 2, H * .07 + sl / 2];
-      for (let i = 0; i < 3; i++) { const x = W * .05 + i * (sl + S * .012), y = H * .07, on = i === 0 && t > 6.0; c.strokeStyle = on ? GOLD : a(MUTED, .4); c.lineWidth = on ? 1.6 : 1; c.fillStyle = on ? a(GOLD, .12) : 'transparent'; c.beginPath(); c.roundRect(x, y, sl, sl, 4); c.fill(); c.stroke(); if (on) stopIcon(c, x + sl / 2, y + sl / 2, sl * .5, GOLD); }
+      // magic slots (top-left)
+      const sl = S * .05, slot0 = [W * .04 + sl / 2, H * .05 + sl / 2];
+      for (let i = 0; i < 3; i++) { const x = W * .04 + i * (sl + S * .012), y = H * .05, on = i === 0 && t > 5.6; c.strokeStyle = on ? GOLD : a(MUTED, .4); c.lineWidth = on ? 1.6 : 1; c.fillStyle = on ? a(GOLD, .12) : 'transparent'; c.beginPath(); c.roundRect(x, y, sl, sl, 4); c.fill(); c.stroke(); if (on) stopIcon(c, x + sl / 2, y + sl / 2, sl * .5, GOLD); }
       // fan
-      const FX = W * .75, R = Math.min((G - H * .08) / 2 * .95, W * .2), FY = G - R - H * .02;
-      const T0 = 8.6, SP = 8, target = -Math.PI / 2, a0 = target - (SP * T0 + SP * .5);
+      const FX = W * .76, R = Math.min((G - CEIL) / 2 * .92, W * .19), FY = G - R - H * .02;
+      const T0 = 8.0, SP = 8, target = -Math.PI / 2, a0 = target - (SP * T0 + SP * .5);
       const ang = t < T0 ? a0 + SP * t : t < T0 + 1 ? a0 + SP * T0 + SP * ((t - T0) - (t - T0) ** 2 / 2) : target;
       const st = seg(t, T0, T0 + 1), fcol = st >= 1 ? GOLD : MUTED;
       c.strokeStyle = a(st > 0 ? GOLD : MUTED, .5 + .4 * st); c.lineWidth = 1.4; c.beginPath(); c.arc(FX, FY, R, 0, TAU); c.stroke();
@@ -151,48 +152,54 @@ function wmScene() {
       for (let k = 0; k < 3; k++) { const an = ang + k * TAU / 3; c.beginPath(); c.moveTo(FX + Math.cos(an) * R * .14, FY + Math.sin(an) * R * .14); c.lineTo(FX + Math.cos(an) * R * .88, FY + Math.sin(an) * R * .88); c.stroke(); }
       c.lineCap = 'butt'; c.fillStyle = '#10171b'; c.strokeStyle = fcol; c.lineWidth = 1.4; c.beginPath(); c.arc(FX, FY, R * .1, 0, TAU); c.fill(); c.stroke();
       const wind = 1 - seg(t, T0, T0 + .5);
-      if (wind > 0) for (let i = 0; i < 12; i++) { const y = FY - R * .8 + (i * 37 % 100) / 100 * R * 1.6, sp = W * (.35 + (i % 3) * .1), x = FX - R - ((t * sp + i * 97) % (W * .5)); c.strokeStyle = a(INK, .3 * wind); c.lineWidth = 1; c.beginPath(); c.moveTo(x, y); c.lineTo(x + S * .04, y); c.stroke(); }
-      // robot: react -> defeated -> drops magic
-      const RX = W * .38, rr = S * .032, ry = G - rr, down = ease(seg(t, 3.3, 3.9));
-      if (down < 1) {
-        c.save(); c.globalAlpha = 1 - down * .75; c.translate(RX, ry + down * rr * .4); c.rotate(down * 1.2);
-        c.strokeStyle = INK; c.lineWidth = 1.5; c.fillStyle = '#1b252a'; c.beginPath(); c.arc(0, 0, rr, 0, TAU); c.fill(); c.stroke();
-        const alert = t > 1.6; c.fillStyle = alert ? '#ff8a7a' : SUN; c.fillRect(-rr * .7, -rr * .35, rr * .7, rr * .22);
-        c.restore();
-      } else { c.strokeStyle = a(INK, .3); c.lineWidth = 1.5; c.beginPath(); c.arc(RX, ry + rr * .4, rr, Math.PI, TAU); c.stroke(); }
-      if (t > 1.5 && t < 2.3) { const k = seg(t, 1.5, 2.3); c.strokeStyle = a('#ff8a7a', 1 - k); c.lineWidth = 1.4; c.beginPath(); c.arc(RX, ry, rr * (1.2 + k * 1.4), 0, TAU); c.stroke(); }
-      if (t > 2.0 && t < 3.0) { const bx = RX, by = ry - rr * 2.6, bw = S * .07; c.strokeStyle = GOLD; c.lineWidth = 1.4; c.fillStyle = '#10171b'; c.beginPath(); c.roundRect(bx - bw / 2, by - bw / 2, bw, bw, 6); c.fill(); c.stroke(); stopIcon(c, bx, by, bw * .5, GOLD); }
-      // dropped magic: falls, bobs, then flies to slot
-      let drop = null;
-      if (t > 3.9 && t < 6.0) {
-        const fall = ease(seg(t, 3.9, 4.4)), bob = Math.sin(t * 5) * S * .006;
-        let x = RX + rr * 1.6, y = lerp(ry - rr, G - S * .04, fall) + (fall >= 1 ? bob : 0);
-        const fly = ease(seg(t, 5.3, 6.0)); if (fly > 0) { x = lerp(x, slot0[0], fly); y = lerp(y, slot0[1], fly) - Math.sin(fly * Math.PI) * H * .08; }
-        drop = [x, y]; c.shadowColor = GOLD; c.shadowBlur = 12; stopIcon(c, x, y, S * .035, GOLD); c.shadowBlur = 0;
+      if (wind > 0) for (let i = 0; i < 10; i++) { const y = FY - R * .8 + (i * 37 % 100) / 100 * R * 1.6, sp = W * (.35 + (i % 3) * .1), x = FX - R - ((t * sp + i * 97) % (W * .45)); c.strokeStyle = a(INK, .28 * wind); c.lineWidth = 1; c.beginPath(); c.moveTo(x, y); c.lineTo(x + S * .04, y); c.stroke(); }
+      // drop device: beam on the ceiling holding a weight above the robot
+      const RX = W * .44, rr = S * .032, ry = G - rr, BTN = W * .2;
+      const fall = Math.pow(seg(t, 2.6, 3.0), 2), wh = S * .07, ww = S * .08;
+      c.strokeStyle = a(MUTED, .6); c.lineWidth = 2; c.beginPath(); c.moveTo(RX - ww, CEIL); c.lineTo(RX + ww, CEIL); c.stroke();
+      const wy = lerp(CEIL + S * .03, G - rr * .9 - wh, fall);
+      if (fall <= 0) { c.strokeStyle = a(MUTED, .6); c.lineWidth = 1; c.beginPath(); c.moveTo(RX, CEIL); c.lineTo(RX, wy); c.stroke(); }
+      c.fillStyle = '#26323a'; c.strokeStyle = INK; c.lineWidth = 1.5; c.beginPath(); c.moveTo(RX - ww * .38, wy); c.lineTo(RX + ww * .38, wy); c.lineTo(RX + ww * .5, wy + wh); c.lineTo(RX - ww * .5, wy + wh); c.closePath(); c.fill(); c.stroke();
+      if (t > 3.0 && t < 3.6) { const k = seg(t, 3.0, 3.6); c.strokeStyle = a(INK, 1 - k); c.lineWidth = 1.3; c.beginPath(); c.ellipse(RX, G, S * (.04 + k * .12), S * (.01 + k * .02), 0, 0, TAU); c.stroke(); }
+      // wall button
+      const pressed = t > 2.3 && t < 3.2, by = G - S * .12;
+      c.fillStyle = '#1b252a'; c.strokeStyle = pressed ? SUN : a(MUTED, .7); c.lineWidth = 1.4; c.beginPath(); c.roundRect(BTN - S * .016, by - S * .016, S * .032, S * .032, 4); c.fill(); c.stroke();
+      c.fillStyle = pressed ? SUN : a(MUTED, .7); c.beginPath(); c.arc(BTN, by, S * .007, 0, TAU); c.fill();
+      if (pressed) { const k = seg(t, 2.3, 2.9); c.strokeStyle = a(SUN, 1 - k); c.lineWidth = 1.2; c.beginPath(); c.arc(BTN, by, S * (.02 + k * .04), 0, TAU); c.stroke(); }
+      // robot (squashed by the weight)
+      if (t < 3.6) {
+        const sq = t < 3.0 ? 1 : 1 - seg(t, 3.0, 3.3) * .7, al = 1 - seg(t, 3.2, 3.6);
+        c.save(); c.globalAlpha = al; c.translate(RX + (t < 1.3 ? Math.sin(t * 2) * S * .01 : 0), G); c.scale(1 + (1 - sq) * .4, sq);
+        c.strokeStyle = INK; c.lineWidth = 1.5; c.fillStyle = '#1b252a'; c.beginPath(); c.arc(0, -rr, rr, 0, TAU); c.fill(); c.stroke();
+        c.fillStyle = t > 1.3 ? '#ff8a7a' : SUN; c.fillRect(-rr * .7, -rr * 1.35, rr * .7, rr * .22); c.restore();
+      }
+      if (t > 1.3 && t < 2.1) { const k = seg(t, 1.3, 2.1); c.strokeStyle = a('#ff8a7a', 1 - k); c.lineWidth = 1.4; c.beginPath(); c.arc(RX, ry, rr * (1.2 + k * 1.4), 0, TAU); c.stroke(); }
+      if (t > 1.6 && t < 2.8) { const bx = RX + S * .07, bby = ry - rr * 2.4, bw = S * .06; c.strokeStyle = GOLD; c.lineWidth = 1.4; c.fillStyle = '#10171b'; c.beginPath(); c.roundRect(bx - bw / 2, bby - bw / 2, bw, bw, 6); c.fill(); c.stroke(); stopIcon(c, bx, bby, bw * .5, GOLD); }
+      // dropped magic -> slot
+      if (t > 3.2 && t < 5.6) {
+        const f = ease(seg(t, 3.2, 3.6)), bob = Math.sin(t * 5) * S * .006;
+        let x = RX + S * .05, y = lerp(ry - rr * 2, G - S * .04, f) + (f >= 1 ? bob : 0);
+        const fly = ease(seg(t, 5.0, 5.6)); if (fly > 0) { x = lerp(x, slot0[0], fly); y = lerp(y, slot0[1], fly) - Math.sin(fly * Math.PI) * H * .08; }
+        c.shadowColor = GOLD; c.shadowBlur = 12; stopIcon(c, x, y, S * .035, GOLD); c.shadowBlur = 0;
       }
       // mage
       let mx;
-      if (t < 1.6) mx = lerp(W * .06, W * .2, ease(t / 1.6));
-      else if (t < 4.4) mx = W * .2;
-      else if (t < 5.3) mx = lerp(W * .2, RX + rr * .4, ease(seg(t, 4.4, 5.3)));
-      else if (t < 6.4) mx = RX + rr * .4;
-      else if (t < 7.4) mx = lerp(RX + rr * .4, W * .5, seg(t, 6.4, 7.4));
-      else if (t < 9.6) mx = W * .5;
-      else mx = lerp(W * .5, W * 1.08, ease(seg(t, 9.6, 12.4)));
-      const walk = t < 1.6 || (t > 4.4 && t < 5.3) || (t > 6.4 && t < 7.4) || (t > 9.6 && t < 12.4), bob = walk ? Math.abs(Math.sin(t * 9)) * S * .004 : 0;
+      if (t < 1.4) mx = lerp(W * .05, BTN - S * .03, ease(t / 1.4));
+      else if (t < 4.2) mx = BTN - S * .03;
+      else if (t < 5.0) mx = lerp(BTN - S * .03, RX + S * .02, ease(seg(t, 4.2, 5.0)));
+      else if (t < 6.2) mx = RX + S * .02;
+      else if (t < 7.2) mx = lerp(RX + S * .02, W * .5, seg(t, 6.2, 7.2));
+      else if (t < 9.2) mx = W * .5;
+      else mx = lerp(W * .5, W * 1.08, ease(seg(t, 9.2, 11.8)));
+      const walk = t < 1.4 || (t > 4.2 && t < 5.0) || (t > 6.2 && t < 7.2) || (t > 9.2 && t < 11.8), bob = walk ? Math.abs(Math.sin(t * 9)) * S * .004 : 0;
       const mh = S * .1, my = G - bob, tip = [mx + mh * .3, my - mh * .74];
       c.strokeStyle = INK; c.lineWidth = 1.5; c.fillStyle = '#1b252a';
       c.beginPath(); c.moveTo(mx - mh * .22, my); c.lineTo(mx, my - mh * .78); c.lineTo(mx + mh * .22, my); c.closePath(); c.fill(); c.stroke();
       c.beginPath(); c.arc(mx, my - mh * .86, mh * .12, 0, TAU); c.fill(); c.stroke();
       c.beginPath(); c.moveTo(tip[0], my); c.lineTo(tip[0], tip[1]); c.stroke();
-      const flash = (t > 2.6 && t < 2.8) || (t > 8.0 && t < 8.2);
-      c.fillStyle = flash ? '#fff' : GOLD; c.beginPath(); c.arc(tip[0], tip[1], mh * .05, 0, TAU); c.fill();
-      // attack on robot
-      const atk = seg(t, 2.7, 3.3); if (atk > 0 && atk < 1) { c.fillStyle = INK; c.shadowColor = INK; c.shadowBlur = 10; c.beginPath(); c.arc(lerp(tip[0], RX, atk), lerp(tip[1], ry, atk), S * .009, 0, TAU); c.fill(); c.shadowBlur = 0; }
-      if (t > 3.3 && t < 3.8) { const k = seg(t, 3.3, 3.8); c.strokeStyle = a(INK, 1 - k); c.lineWidth = 1.2; c.beginPath(); c.arc(RX, ry, rr * (1 + k * 1.5), 0, TAU); c.stroke(); }
-      // aim + cast on fan
-      const aim = seg(t, 7.4, 8.0);
-      const bo = seg(t, 8.1, 8.6); if (bo > 0 && bo < 1) { c.fillStyle = GOLD; c.shadowColor = GOLD; c.shadowBlur = 14; c.beginPath(); c.arc(lerp(tip[0], FX, bo), lerp(tip[1], FY, bo), S * .01, 0, TAU); c.fill(); c.shadowBlur = 0; }
+      c.fillStyle = (t > 7.3 && t < 7.5) ? '#fff' : GOLD; c.beginPath(); c.arc(tip[0], tip[1], mh * .05, 0, TAU); c.fill();
+      // cast stop magic on the fan
+      const bo = seg(t, 7.4, 8.0); if (bo > 0 && bo < 1) { c.fillStyle = GOLD; c.shadowColor = GOLD; c.shadowBlur = 14; c.beginPath(); c.arc(lerp(tip[0], FX, bo), lerp(tip[1], FY, bo), S * .01, 0, TAU); c.fill(); c.shadowBlur = 0; }
       if (t > T0 && t < T0 + .7) { const k = seg(t, T0, T0 + .7); c.strokeStyle = a(GOLD, 1 - k); c.lineWidth = 1.5; c.beginPath(); c.arc(FX, FY, R * (.15 + k * .9), 0, TAU); c.stroke(); }
     }
   };
@@ -201,10 +208,10 @@ function wmScene() {
 /* ================= player ================= */
 function mount(root, scene) {
   if (!root) return () => {};
-  const cv = root.querySelector('canvas'), ctx = cv.getContext('2d'), dpr = Math.min(2, devicePixelRatio || 1);
+  const cv = root.querySelector('canvas'), ctx = cv.getContext('2d');
   const marks = [...root.querySelectorAll('[data-phase]')], bar = root.querySelector('.nx-anim-bar i');
   let W = 0, H = 0, t = 0, last = 0, raf = 0, visible = false, alive = true;
-  const size = () => { const r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); paint(); };
+  const size = () => { const dpr = Math.min(3, Math.max(2, devicePixelRatio || 1)), r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(cv.width / W, 0, 0, cv.height / H, 0, 0); paint(); };
   function paint() {
     if (!W) return;
     ctx.save(); scene.draw(ctx, W, H, t); ctx.restore();
