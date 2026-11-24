@@ -12,7 +12,7 @@ let history = [], saved = JSON.stringify(data) === JSON.stringify(PUBLISHED), fi
 const SECTIONS = [
   ['intro', '소개', 'nx-intro'],
   ['play', '게임 흐름', 'nx-play'], ['role', '역할 분담', 'nx-split'], ['ai', 'AI와 일하는 방식', 'nx-ai'],
-  ['cases', '설계 의도', 'nx-verify'], ['tools', '제작 도구', 'nx-tools'], ['archive', '이전 프로젝트', 'nx-archive']
+  ['cases', '설계 의도', 'nx-verify'], ['archive', '이전 프로젝트', 'nx-archive']
 ];
 const LABEL = {
   eyebrow: '작은 제목(영문)', title: '제목', lines: '제목 줄', highlight: '강조 문구', lead: '한 줄 소개(비우면 숨김)', tags: '태그',

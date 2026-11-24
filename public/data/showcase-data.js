@@ -105,15 +105,15 @@ window.SHOWCASE_DATA = {
           "icon": "",
           "marks": [
             {
-              "src": "assets/history/wop.svg",
+              "src": "assets/history/wop-game.svg",
               "label": "World of Plant"
             },
             {
-              "src": "assets/history/wordless-mage.svg",
+              "src": "assets/history/wordless-mage-game.svg",
               "label": "Wordless Mage"
             },
             {
-              "src": "assets/history/galactica.svg",
+              "src": "assets/history/galactica-game.svg",
               "label": "Galactica"
             }
           ]
@@ -125,7 +125,7 @@ window.SHOWCASE_DATA = {
           "icon": "",
           "marks": [
             {
-              "src": "assets/history/triple-showdown.svg",
+              "src": "assets/history/triple-showdown-game.svg",
               "label": "Triple Showdown"
             }
           ]
@@ -141,7 +141,7 @@ window.SHOWCASE_DATA = {
               "label": "I2P × O2CUBE 동아리"
             },
             {
-              "src": "assets/history/lone-lantern.svg",
+              "src": "assets/history/lone-lantern-game.svg",
               "label": "Lone Lantern"
             }
           ]
@@ -169,7 +169,7 @@ window.SHOWCASE_DATA = {
               "label": "넷마블문화재단"
             },
             {
-              "src": "assets/history/defair.svg",
+              "src": "assets/history/defair-game.svg",
               "label": "디페어"
             }
           ]
@@ -333,7 +333,8 @@ window.SHOWCASE_DATA = {
             ],
             "reason": "같은 배치를 반복해서 놓는 수고를 줄이고, 원본을 수정해도 진행 중인 시공이 영향을 받지 않게 하려는 설계입니다."
           }
-        ]
+        ],
+        "logo": "assets/history/wop-game.svg"
       },
       {
         "id": "ww",
@@ -397,7 +398,8 @@ window.SHOWCASE_DATA = {
             ],
             "reason": "빠르게 다음 레벨로 넘어가려는 플레이와 완벽하게 풀려는 플레이를 함께 수용하려는 설계입니다. 진행을 막지 않으면서 이전 레벨에 돌아올 이유도 남겼습니다."
           }
-        ]
+        ],
+        "logo": "assets/history/wordless-mage-game.svg"
       }
     ],
     "labels": {

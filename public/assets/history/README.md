@@ -9,4 +9,6 @@ Institutional images:
 
 Institution marks belong to their respective owners. History displays the original institution colors and project-themed symbol palettes. Tools retain their separate grayscale styling.
 
+Current game icons are the transparent `*-game.svg` files, also reused beside the design revision sections. These use a simple filled shape style without generated textures, glow, background scenes or square frames. Wordless Mage's ivory/brass eight-tooth gear is based on the project's `StopGear.png` magic glyph. The earlier line icons remain as unused legacy assets. Generated painted icon drafts were discarded from the published site after the user's simplification request.
+
 - netmarble-foundation-icon.png: official Netmarble Cultural Foundation site icon, used for the Game Academy history entry. Source: https://www.netmarblefoundation.org/ ; asset: https://sgimage.netmarble.com/favicon/foundation/favicon-180x180.png

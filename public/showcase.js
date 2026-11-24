@@ -145,7 +145,7 @@ function verify() {
   return `<section class="nx-section nx-reveal" id="nx-verify" data-nx>
   ${head(C)}
   ${list(C.projects).map(pj => `<div class="nx-pj ${e(pj.id)}">
-    <header class="nx-pj-head"><span class="nx-pj-mark">${ico(pj.id === 'ww' ? 'magic' : 'flower')}</span><div><h3>${e(pj.name)}</h3><small>${e(pj.sub)}</small></div></header>
+    <header class="nx-pj-head"><span class="nx-pj-mark">${pj.logo ? `<img src="${e(pj.logo)}" alt="${e(pj.name)} 아이콘" loading="lazy">` : ico(pj.id === 'ww' ? 'magic' : 'flower')}</span><div><h3>${e(pj.name)}</h3><small>${e(pj.sub)}</small></div></header>
     <div class="nx-ps-grid">${list(pj.items).map(it => psCard(it, '', C.labels || {})).join('')}</div>
   </div>`).join('')}
 </section>`;
@@ -243,7 +243,7 @@ function mount(force) {
   const heading = $('.collection-heading', main), grid = $('.project-grid', main); if (!heading || !grid) return;
   heading.id = 'nx-projects';
   heading.insertAdjacentHTML('beforebegin', intro());
-  grid.insertAdjacentHTML('afterend', play() + split() + aiIssues() + verify() + tools() + archive());
+  grid.insertAdjacentHTML('afterend', play() + split() + aiIssues() + verify() + archive());
   if (window.NXAnim) cleanups.push(NXAnim.mount($('#nx-anim-wop'), NXAnim.wopScene()), NXAnim.mount($('#nx-anim-ww'), NXAnim.wmScene()));
   countUp(); reveal(); rail();
   if (force) $$('.nx-reveal', main).forEach(n => n.classList.add('nx-in'));
