@@ -296,6 +296,17 @@ function wmScene() {
       for (let k = 0; k < 3; k++) blade(ang + k * TAU / 3, st >= 1 ? GOLD : '#b9c6bb');
       c.fillStyle = '#10171b'; c.strokeStyle = fcol; c.lineWidth = 1.4; c.beginPath(); c.arc(FX, FY, R * .12, 0, TAU); c.fill(); c.stroke();
       if (t > T0 && t < 10.2) { c.globalAlpha = 1 - seg(t, 9.4, 10.2); handIcon(c, FX, FY - R * .42, S * .05, GOLD); c.globalAlpha = 1; }
+      // stop-magic duration shown above the fan, running down like the in-game timer
+      if (t > T0 + .9) {
+        const show = seg(t, T0 + .9, T0 + 1.2), left = Math.max(0, 1 - (t - (T0 + 1)) / 6.2), low = left < .3, blink = low ? (Math.sin(t * 14) > 0 ? 1 : .35) : 1;
+        const bw = S * .17, bh = S * .042, bx = FX - bw / 2, byy = TOP - S * .016 - bh - S * .014;
+        c.globalAlpha = show; c.fillStyle = '#0d1418'; c.strokeStyle = a(GOLD, .7); c.lineWidth = 1.2; c.beginPath(); c.roundRect(bx, byy, bw, bh, bh / 2); c.fill(); c.stroke();
+        c.globalAlpha = show * blink; handIcon(c, bx + bh * .55, byy + bh / 2, bh * .62, low ? '#ff6b5a' : GOLD);
+        const tx = bx + bh * 1.05, tw = bw - bh * 1.35, th = bh * .3, ty = byy + bh / 2 - th / 2;
+        c.fillStyle = a(MUTED, .3); c.beginPath(); c.roundRect(tx, ty, tw, th, th / 2); c.fill();
+        c.fillStyle = low ? '#ff6b5a' : GOLD; c.beginPath(); c.roundRect(tx, ty, Math.max(th, tw * left), th, th / 2); c.fill();
+        c.globalAlpha = 1;
+      }
       const wind = 1 - seg(t, T0, T0 + .5);
       if (wind > 0) for (let i = 0; i < 10; i++) { const y = FY - R * .8 + (i * 37 % 100) / 100 * R * 1.6, sp = W * (.35 + (i % 3) * .1), x = FX - R - ((t * sp + i * 97) % (W * .45)); c.strokeStyle = a(INK, .28 * wind); c.lineWidth = 1; c.beginPath(); c.moveTo(x, y); c.lineTo(x + S * .04, y); c.stroke(); }
 

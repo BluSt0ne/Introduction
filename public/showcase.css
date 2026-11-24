@@ -403,3 +403,10 @@ body:not(.nx-overview) .nx-rail{display:none}
 .nx-h-text{color:#c9d6cb;word-break:keep-all}
 .nx-tool-tiles .nx-logo{width:26px;height:26px;object-fit:contain;display:block}
 .nx-tool-tiles li{justify-content:center;min-height:62px}
+/* pixel emblems */
+.nx-h-media i{width:34px;height:34px;border:0;border-radius:8px;background:#0f1813;outline:1px solid var(--line)}
+.nx-pix{width:26px;height:26px;display:block;image-rendering:pixelated}
+.nx-h-logo{width:auto!important;padding:0 6px;background:#fff!important;outline:0!important}
+.nx-h-logo img{height:20px;width:auto;display:block}
+.nx-history li{grid-template-columns:40px auto 1fr}
+.nx-pix{stroke:none!important;stroke-width:0!important}

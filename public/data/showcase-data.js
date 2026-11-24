@@ -79,48 +79,48 @@ window.SHOWCASE_DATA = {
         {
           "year": "2026",
           "text": "개인 개발",
-          "images": [
-            "assets/screenshots/2026-11-24-latest/wop-production.webp",
-            "assets/screenshots/2026-11-24-latest/ww-magic-selection.webp",
-            "assets/archive/galactica-pc-cover.webp"
-          ],
-          "icon": ""
+          "pixel": [
+            "wop",
+            "ww",
+            "galactica"
+          ]
         },
         {
           "year": "2025",
-          "text": "Triple Showdown",
-          "images": [
-            "assets/archive/triple-cover.webp"
-          ],
-          "icon": ""
+          "text": "개인 개발",
+          "pixel": [
+            "triple"
+          ]
         },
         {
           "year": "2024",
           "text": "I2P X O2CUBE 기획, 팀장",
-          "images": [
-            "assets/archive/lone-lantern-cover.webp"
-          ],
-          "icon": ""
+          "pixel": [
+            "lantern"
+          ]
         },
         {
           "year": "2022",
           "text": "정진 장학금",
-          "images": [],
-          "icon": "medal"
+          "pixel": [
+            "medal"
+          ]
         },
         {
           "year": "2020",
           "text": "홍익대 게임학부 입학",
-          "images": [],
-          "icon": "cap"
+          "pixel": [
+            "cap"
+          ]
         },
         {
           "year": "2019",
           "text": "넷마블 게임 아카데미 4기 팀장",
-          "images": [
-            "assets/archive/defair-cover.webp"
+          "pixel": [
+            "defair"
           ],
-          "icon": ""
+          "logo": "assets/logos/netmarble-foundation.png",
+          "logoAlt": "넷마블문화재단"
         }
       ]
     }
