@@ -1,0 +1,70 @@
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>소개 페이지 편집</title><link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#101914;--paper:#17231d;--ink:#e6eee4;--muted:#a1b3a4;--line:#304035;--accent:#c2dc89;--blue:#8cc8ff;--font:'DM Sans','Noto Sans KR',system-ui,sans-serif}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 var(--font);display:grid;grid-template-rows:auto 1fr;overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+.top{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.top h1{font-size:15px;font-weight:600;margin:0 12px 0 0}.top h1 span{color:var(--accent)}
+.top .spacer{flex:1}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:7px 13px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}.btn.primary{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:600}
+.status{font-size:12px;color:var(--muted)}.status.ok{color:var(--accent)}
+.wrap{display:grid;grid-template-columns:minmax(360px,440px) 1fr;min-height:0}
+.panel{overflow:auto;border-right:1px solid var(--line);padding:10px 14px 60px}
+.preview{display:grid;grid-template-rows:auto 1fr;min-height:0;background:#0b120e}
+.preview .bar{display:flex;gap:6px;padding:8px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
+.preview .bar button{font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.preview .bar button.on,.preview .bar button:hover{color:var(--ink);border-color:var(--accent)}
+.preview .bar .sizes{margin-left:auto;display:flex;gap:6px}
+.frame-wrap{display:grid;place-items:start center;overflow:auto;min-height:0}
+iframe{border:0;width:100%;height:100%;background:var(--bg)}
+iframe.mobile{width:390px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+details.sec{border:1px solid var(--line);border-radius:10px;margin:8px 0;background:var(--paper)}
+details.sec>summary{cursor:pointer;padding:11px 14px;font-weight:600;list-style:none;display:flex;justify-content:space-between}
+details.sec>summary:after{content:'+';color:var(--muted)}details.sec[open]>summary:after{content:'−'}
+.body{padding:2px 14px 14px}
+.field{display:grid;gap:4px;margin:9px 0}
+.field>label{font-size:12px;color:var(--muted)}
+input[type=text],input[type=number],textarea,select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:54px}
+.group{border-left:2px solid var(--line);padding-left:10px;margin:10px 0}
+.group>.gtitle{font-size:12px;color:var(--accent);margin-bottom:2px}
+.item{border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin:8px 0;background:#132019}
+.item-head{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.item-head b{color:var(--ink);font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini{border:1px solid var(--line);background:transparent;border-radius:5px;padding:1px 7px;cursor:pointer;color:var(--muted)}
+.mini:hover{color:var(--ink);border-color:var(--accent)}.mini.del:hover{border-color:#ff8a7a;color:#ff8a7a}
+.add{width:100%;border:1px dashed var(--line);background:transparent;border-radius:7px;padding:6px;cursor:pointer;color:var(--muted)}
+.add:hover{border-color:var(--accent);color:var(--ink)}
+.iconpick{display:flex;gap:8px;align-items:center}.iconpick svg{width:22px;height:22px;flex:none;fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hint{font-size:12px;color:var(--muted);margin:6px 2px 10px;line-height:1.6}
+@media(max-width:900px){body{overflow:auto}.wrap{grid-template-columns:1fr}.preview{height:80vh}}
+</style></head>
+<body>
+<header class="top">
+  <h1>소개 페이지 <span>편집</span></h1>
+  <button class="btn" id="undo" title="Ctrl+Z">되돌리기</button>
+  <button class="btn" id="reset">공개본으로 초기화</button>
+  <button class="btn" id="import">파일 불러오기</button>
+  <span class="spacer"></span>
+  <span class="status" id="status">불러오는 중…</span>
+  <button class="btn" id="download">파일로 받기</button>
+  <button class="btn primary" id="save">저장소에 저장</button>
+  <input type="file" id="file" accept=".js,.json" hidden>
+</header>
+<div class="wrap">
+  <aside class="panel" id="panel">
+    <p class="hint">입력하는 즉시 오른쪽 미리보기에 반영됩니다. 편집 내용은 이 브라우저에 자동 보관되며, <b>저장소에 저장</b>으로 <code>public/data/showcase-data.js</code>를 덮어쓴 뒤 GitHub Desktop에서 커밋·푸시하면 사이트에 반영됩니다.</p>
+    <div id="form"></div>
+  </aside>
+  <section class="preview">
+    <div class="bar" id="jump"><span class="sizes"><button data-size="desktop" class="on">데스크톱</button><button data-size="mobile">모바일</button></span></div>
+    <div class="frame-wrap"><iframe id="frame" title="미리보기" src="index.html?showcase-preview=1#overview"></iframe></div>
+  </section>
+</div>
+<script src="./data/showcase-data.js"></script>
+<script src="./showcase-editor.js"></script>
+</body></html>
