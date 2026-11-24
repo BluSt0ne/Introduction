@@ -401,5 +401,5 @@ body:not(.nx-overview) .nx-rail{display:none}
 .nx-h-media i{width:52px;height:34px;display:grid;place-items:center;border-radius:6px;border:1px dashed var(--line);color:var(--accent)}
 .nx-h-media i .nx-ico{width:18px;height:18px}
 .nx-h-text{color:#c9d6cb;word-break:keep-all}
-.nx-tool-tiles .nx-logo{width:26px;height:26px;object-fit:contain;display:block}
+.nx-tool-tiles .nx-logo{width:26px;height:26px;object-fit:contain;display:block;filter:grayscale(1) brightness(1.65)}
 .nx-tool-tiles li{justify-content:center;min-height:62px}
