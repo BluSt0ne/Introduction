@@ -675,7 +675,7 @@ window.SHOWCASE_DATA = {
         "title": "Defair",
         "period": "개발 9개월",
         "genre": "2D 횡스크롤 러닝 액션",
-        "team": "6인, 기획 / 팀장, 넷마블 게임 아카데미 4기",
+        "team": "5인 개발, 기획 / 팀장, 넷마블 게임 아카데미 4기",
         "platform": "Unity",
         "summary": "적 배치를 채보처럼 익히고, 색상별 대응으로 퍼펙트를 노리는 러닝 액션입니다.",
         "cover": "assets/archive/defair-cover.webp",
