@@ -494,3 +494,30 @@ body,body[data-theme="wop"],body[data-theme="mage"]{background:var(--bg)!importa
 .nx-head{margin-bottom:28px!important}
 .nx-ps-grid,.nx-way-grid,.nx-anim-grid,.nx-arc-grid{gap:16px!important}
 .nx-pj+.nx-pj{margin-top:56px}
+
+/* detail pages: everything laid out at once, nothing to click open */
+.ai-all .ai-section-panel{animation:none;margin-top:28px}
+.ai-sub{margin:26px 0 0}.ai-sub:first-child{margin-top:0}
+.ai-sub>h3{font-size:17px;margin:0 0 10px;color:var(--ink,#e9eee6)}
+.ai-flow-list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.ai-flow-list>li{display:grid;grid-template-columns:44px 1fr;gap:14px;background:#121b16;border-radius:8px;padding:18px 20px}
+.ai-flow-num{font-size:13px;color:var(--ai-accent);padding-top:3px}
+.ai-flow-list h3{font-size:17px;margin:0 0 8px}
+.ai-flow-list p:last-child,.ai-flow-list ul:last-child{margin-bottom:0}
+.screen-all{display:grid;gap:18px}
+.screen-all.multi{grid-template-columns:repeat(2,minmax(0,1fr))}
+.screen-all .project-screen figcaption{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.screen-all .project-screen figcaption p{flex-basis:100%;margin:0}
+.screen-num{font-size:13px;color:var(--muted,#a1b3a4)}
+@media(max-width:760px){.screen-all.multi{grid-template-columns:1fr}}
+.nx-play-video{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#0c1210;margin-bottom:14px}
+.nx-play-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+/* the scroll rail shows on every page, not just the overview */
+body:not(.nx-overview) .nx-rail{display:flex}
+/* in-page contents: plain links split by thin lines, no button look */
+.subnav{gap:0!important;flex-wrap:wrap}
+.subnav a{background:none!important;border:0!important;border-radius:0!important;padding:2px 18px!important;box-shadow:none!important;color:var(--muted)}
+.subnav a:first-child{padding-left:0!important}
+.subnav a+a{border-left:1px solid var(--line)!important}
+.subnav a:hover{color:var(--ink)}

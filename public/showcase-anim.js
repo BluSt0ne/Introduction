@@ -431,9 +431,17 @@ function wmScene() {
 function miniBase(c, W, H) { c.fillStyle = '#121b16'; c.fillRect(0, 0, W, H); }
 function miniRing(c, x, y, k, R, col, w = 1.4) { if (k <= 0 || k >= 1) return; c.strokeStyle = a(col, .75 * (1 - k)); c.lineWidth = w; c.beginPath(); c.arc(x, y, k * R, 0, TAU); c.stroke(); }
 function miniBud(c, x, y, r) { c.fillStyle = a(MUTED, .35); c.beginPath(); c.arc(x, y, r * .35, 0, TAU); c.fill(); }
-function miniSlot(c, x, y, s, on, flash) { c.fillStyle = '#0c1210'; c.strokeStyle = flash ? '#ff6b5a' : a(MUTED, .7); c.lineWidth = 1.4; c.beginPath(); c.roundRect(x - s / 2, y - s / 2, s, s, s * .18); c.fill(); c.stroke(); if (on) handIcon(c, x, y + s * .05, s * .55, GOLD); }
+function miniSlot(c, x, y, s, on, flash) { c.fillStyle = '#0c1210'; c.strokeStyle = flash ? '#ff6b5a' : a(MUTED, .7); c.lineWidth = 1.4; c.beginPath(); c.roundRect(x - s / 2, y - s / 2, s, s, s * .18); c.fill(); c.stroke(); if (on) miniGlyph(c, 'stop', x, y + s * .05, s * .55, GOLD); }
 function miniBox(c, x, y, s, col = '#3a4a44') { c.fillStyle = col; c.strokeStyle = a(INK, .7); c.lineWidth = 1.3; c.beginPath(); c.roundRect(x - s / 2, y - s, s, s, 3); c.fill(); c.stroke(); c.strokeStyle = a(INK, .25); c.beginPath(); c.moveTo(x - s / 2, y - s); c.lineTo(x + s / 2, y); c.moveTo(x + s / 2, y - s); c.lineTo(x - s / 2, y); c.stroke(); }
 function miniStar(c, x, y, r, on) { c.beginPath(); for (let i = 0; i < 10; i++) { const an = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; c.lineTo(x + Math.cos(an) * rr, y + Math.sin(an) * rr); } c.closePath(); if (on) { c.fillStyle = SUN; c.fill(); } else { c.strokeStyle = a(MUTED, .6); c.lineWidth = 1.2; c.stroke(); } }
+
+function miniMage(c, x, y, mh) {
+  c.strokeStyle = INK; c.lineWidth = 1.5; c.fillStyle = '#1b252a';
+  c.beginPath(); c.moveTo(x - mh * .22, y); c.lineTo(x, y - mh * .78); c.lineTo(x + mh * .22, y); c.closePath(); c.fill(); c.stroke();
+  c.beginPath(); c.arc(x, y - mh * .86, mh * .12, 0, TAU); c.fill(); c.stroke();
+  c.beginPath(); c.moveTo(x + mh * .3, y); c.lineTo(x + mh * .3, y - mh * .74); c.stroke();
+  c.fillStyle = GOLD; c.beginPath(); c.arc(x + mh * .3, y - mh * .74, mh * .05, 0, TAU); c.fill();
+}
 
 // a field of flower spots shared by the World of Plant clips
 const MINI_SPOTS = (() => { const r = rnd(7), out = []; while (out.length < 22) { const x = r(), y = r(); if (out.every(p => Math.hypot(p[0] - x, (p[1] - y) * .6) > .1)) out.push([x, y, Math.floor(r() * 3)]); } return out; })();
@@ -510,12 +518,12 @@ const MINI = {
     if (gone < 1) { c.globalAlpha = 1 - gone; c.save(); c.translate(RX, G); c.scale(1, flat); c.fillStyle = '#26323a'; c.strokeStyle = INK; c.lineWidth = 1.3; c.beginPath(); c.roundRect(-S * .07, -S * .2, S * .14, S * .2, 5); c.fill(); c.stroke(); c.fillStyle = '#ff6b5a'; c.fillRect(-S * .035, -S * .15, S * .07, S * .025); c.restore(); c.globalAlpha = 1; }
     // bubble with the stop hand, then shards and the falling glyph
     const BX = RX + S * .2, BY = G - S * .42;
-    if (t > .5 && t < hit) { const k = pop(seg(t, .5, .8)); c.fillStyle = '#f4f1e6'; c.beginPath(); c.roundRect(BX - S * .1 * k, BY - S * .08 * k, S * .2 * k, S * .16 * k, 8); c.fill(); handIcon(c, BX, BY + S * .01, S * .1 * k, '#26323a'); }
+    if (t > .5 && t < hit) { const k = pop(seg(t, .5, .8)); c.fillStyle = '#f4f1e6'; c.beginPath(); c.roundRect(BX - S * .1 * k, BY - S * .08 * k, S * .2 * k, S * .16 * k, 8); c.fill(); miniGlyph(c, 'stop', BX, BY + S * .01, S * .1 * k, '#26323a'); }
     if (t >= hit) {
       const k = seg(t, hit, hit + .5); for (let i = 0; i < 6; i++) { const an = i / 6 * TAU; c.fillStyle = a('#f4f1e6', 1 - k); c.fillRect(BX + Math.cos(an) * S * .14 * k, BY + Math.sin(an) * S * .14 * k, S * .025, S * .025); }
       const fall = seg(t, hit + .1, hit + 1.1), fly = seg(t, hit + 1.4, hit + 2.0);
       const gx = lerp(BX, W * .82, ease(fly)), gy = fly > 0 ? lerp(G - S * .06, H * .16, ease(fly)) : lerp(BY, G - S * .06, fall * fall);
-      if (fly < 1) handIcon(c, gx, gy, S * .09, GOLD);
+      if (fly < 1) miniGlyph(c, 'stop', gx, gy, S * .09, GOLD);
     }
     [0, 1, 2].forEach(i => miniSlot(c, W * .82 + (i - 1) * S * .13, H * .16, S * .1, i === 0 && t > hit + 2.0));
   } }),
@@ -540,36 +548,74 @@ const MINI = {
     miniBase(c, W, H); const S = Math.min(W, H), sx = i => W * .5 + (i - 1) * S * .22, sy = H * .55, ss = S * .17;
     const fill = [1, 1.8, 2.6], reject = 3.4, use = 4.8;
     const full = t > 3.0 && t < use + .2, flash = t > reject + .35 && t < reject + .75;
-    [0, 1, 2].forEach(i => { const on = t > fill[i] + .5 && !(i === 2 && t > use + .5); miniSlot(c, sx(i), sy, ss, on, flash); });
-    fill.forEach((f, i) => { const k = seg(t, f, f + .5); if (k > 0 && k < 1) handIcon(c, lerp(W * .5, sx(i), ease(k)), lerp(H * .08, sy, ease(k)), ss * .55, GOLD); });
-    const r = seg(t, reject, reject + .9); if (r > 0 && r < 1) { const y = r < .4 ? lerp(H * .08, sy - ss * .8, ease(r / .4)) : lerp(sy - ss * .8, H * .02, ease((r - .4) / .6)); c.globalAlpha = 1 - Math.max(0, (r - .5) * 2); handIcon(c, W * .5, y, ss * .55, '#ff6b5a'); c.globalAlpha = 1; }
-    const u = seg(t, use, use + .7); if (u > 0 && u < 1) { handIcon(c, lerp(sx(2), W * .9, ease(u)), lerp(sy, H * .2, ease(u)), ss * .55, GOLD); }
+    [0, 1, 2].forEach(i => { const on = t > fill[i] + .5 && !(i === 2 && t > use); miniSlot(c, sx(i), sy, ss, on, flash); });
+    fill.forEach((f, i) => { const k = seg(t, f, f + .5); if (k > 0 && k < 1) miniGlyph(c, 'stop', lerp(W * .5, sx(i), ease(k)), lerp(H * .08, sy, ease(k)), ss * .55, GOLD); });
+    const r = seg(t, reject, reject + .9); if (r > 0 && r < 1) { const y = r < .4 ? lerp(H * .08, sy - ss * .8, ease(r / .4)) : lerp(sy - ss * .8, H * .02, ease((r - .4) / .6)); c.globalAlpha = 1 - Math.max(0, (r - .5) * 2); miniGlyph(c, 'stop', W * .5, y, ss * .55, '#ff6b5a'); c.globalAlpha = 1; }
+    const u = seg(t, use, use + .7); if (u > 0 && u < 1) { miniGlyph(c, 'stop', lerp(sx(2), W * .9, ease(u)), lerp(sy, H * .2, ease(u)), ss * .55, GOLD); }
     if (u >= 1 && t < use + 1.4) miniRing(c, W * .9, H * .2, seg(t, use + .7, use + 1.4), S * .12, GOLD, 2);
     void full;
   } }),
-  // clearing opens the next level; stars are a separate, optional goal
-  'ww-goal': () => ({ duration: 7, steps: [[0, '']], draw(c, W, H, t) {
-    miniBase(c, W, H); const S = Math.min(W, H), y = H * .6, xs = [W * .2, W * .5, W * .8], r = S * .085;
-    c.strokeStyle = a(MUTED, .4); c.lineWidth = 2; c.beginPath(); c.moveTo(xs[0], y); c.lineTo(xs[2], y); c.stroke();
-    const clear = seg(t, 1.2, 1.6), open = seg(t, 1.8, 2.3);
-    xs.forEach((x, i) => {
-      const done = i === 0 ? clear >= 1 : false, unlocked = i === 0 || (i === 1 && open >= 1);
-      c.fillStyle = done ? ACC : '#0c1210'; c.strokeStyle = unlocked ? ACC : a(MUTED, .5); c.lineWidth = 2; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill(); c.stroke();
-      if (!unlocked) { c.strokeStyle = a(MUTED, .7); c.lineWidth = 1.6; c.beginPath(); c.arc(x, y - r * .15, r * .28, Math.PI, 0); c.stroke(); c.fillStyle = a(MUTED, .7); c.fillRect(x - r * .38, y - r * .1, r * .76, r * .55); }
-      if (i === 1 && open > 0 && open < 1) miniRing(c, x, y, open, r * 2.2, ACC, 2);
-      if (done) { c.strokeStyle = '#0c1210'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(x - r * .4, y); c.lineTo(x - r * .1, y + r * .3); c.lineTo(x + r * .45, y - r * .3); c.stroke(); }
-    });
-    // stars on the first level: one from the clear, two more from retries
-    [2.0, 4.0, 5.6].forEach((s, j) => miniStar(c, xs[0] + (j - 1) * r * .9, y - r * 1.9, r * .38, t > s));
-    if (t > 3.3 && t < 3.9 || t > 4.9 && t < 5.5) { const k = seg(t, t < 4 ? 3.3 : 4.9, t < 4 ? 3.9 : 5.5); c.strokeStyle = a(SUN, 1 - k); c.lineWidth = 2; c.beginPath(); c.arc(xs[0], y, r * (1 + k * .6), -Math.PI * .9, Math.PI * .6 * (1 - k)); c.stroke(); }
-  } }),
+  // a fork in the road: take the door now, or climb for the star; a retry comes back for the star
+  'ww-goal': () => {
+    const D = 13;
+    // [time, x, y] keyframes for the two runs (y: 0 ground, 1 ledge)
+    const RUN1 = [[0, .07, 0], [1.2, .34, 0], [2.9, .34, 0], [4.4, .87, 0]];
+    const RUN2 = [[6.2, .07, 0], [7.2, .34, 0], [8.0, .34, 0], [8.3, .40, 0], [9.0, .40, 1], [9.2, .43, 1], [10.0, .66, 1], [10.3, .71, 0], [11.1, .87, 0]];
+    const at = (K, t) => { if (t <= K[0][0]) return [K[0][1], K[0][2], false]; for (let i = 1; i < K.length; i++) if (t < K[i][0]) { const p = K[i - 1], q = K[i], k = seg(t, p[0], q[0]); return [lerp(p[1], q[1], k), lerp(p[2], q[2], q[2] < p[2] ? ease(k) : k), p[1] !== q[1] || p[2] !== q[2]]; } const e = K[K.length - 1]; return [e[1], e[2], false]; };
+    return { duration: D, steps: [[0, '']], draw(c, W, H, t) {
+      miniBase(c, W, H); const S = Math.min(W, H), gy = H * .84, ly = H * .5, mh = S * .2, run2 = t > 6;
+      const X = u => W * u;
+      // ground, a ladder up to the ledge, the door
+      c.fillStyle = '#1c2620'; c.fillRect(X(.04), gy, X(.92), S * .03); c.fillRect(X(.42), ly, X(.24), S * .03);
+      c.strokeStyle = a(MUTED, .5); c.lineWidth = 1.2; c.beginPath(); c.moveTo(X(.04), gy); c.lineTo(X(.96), gy); c.moveTo(X(.42), ly); c.lineTo(X(.66), ly); c.stroke();
+      c.strokeStyle = a(MUTED, .7); c.lineWidth = 1.6; const lx = X(.40), lw = S * .05; c.beginPath(); c.moveTo(lx - lw / 2, gy); c.lineTo(lx - lw / 2, ly - S * .02); c.moveTo(lx + lw / 2, gy); c.lineTo(lx + lw / 2, ly - S * .02); for (let i = 1; i < 6; i++) { const yy = lerp(gy, ly, i / 6); c.moveTo(lx - lw / 2, yy); c.lineTo(lx + lw / 2, yy); } c.stroke();
+      const inDoor = run2 ? seg(t, 11.0, 11.4) : seg(t, 4.3, 4.7), dw = S * .13, dh = mh * 1.25, dx = X(.89);
+      c.fillStyle = inDoor > 0 ? a(ACC, .25 + .5 * inDoor) : '#0c1210'; c.strokeStyle = a(INK, .7); c.lineWidth = 1.6;
+      c.beginPath(); c.moveTo(dx - dw / 2, gy); c.lineTo(dx - dw / 2, gy - dh + dw / 2); c.arc(dx, gy - dh + dw / 2, dw / 2, Math.PI, 0); c.lineTo(dx + dw / 2, gy); c.closePath(); c.fill(); c.stroke();
+      // the star sits on the ledge until the second run picks it up
+      const got = run2 && t > 9.5, sx = X(.55), sy = ly - mh * .45;
+      if (!got) miniStar(c, sx, sy + Math.sin(t * 3) * S * .006, S * .045, true);
+      if (run2) miniRing(c, sx, sy, seg(t, 9.5, 10.2), S * .14, SUN, 2);
+      // mage
+      const [u, v, moving] = at(run2 ? RUN2 : RUN1, t), mx = X(u), bob = moving ? Math.abs(Math.sin(t * 9)) * S * .006 : 0, my = lerp(gy, ly, v) - bob;
+      c.globalAlpha = 1 - inDoor; miniMage(c, mx, my, mh); c.globalAlpha = 1;
+      // thinking at the fork: the bubble flips between the two goals
+      const think = run2 ? [7.2, 8.0] : [1.2, 2.9];
+      if (t > think[0] && t < think[1]) {
+        const k = pop(seg(t, think[0], think[0] + .3)), bx = mx + mh * .45, by = my - mh * 1.35, bw = S * .15 * k, bh = S * .12 * k;
+        c.fillStyle = '#f4f1e6'; c.beginPath(); c.roundRect(bx - bw / 2, by - bh / 2, bw, bh, 6); c.fill();
+        c.beginPath(); c.arc(mx + mh * .2, my - mh * 1.08, S * .012 * k, 0, TAU); c.fill();
+        if (k > .8) { const pick = run2 ? 1 : Math.floor((t - think[0]) / .42) % 2; if (pick) miniStar(c, bx, by, S * .038, true); else { c.fillStyle = '#29333b'; c.beginPath(); c.moveTo(bx - S * .025, by + S * .035); c.lineTo(bx - S * .025, by - S * .01); c.arc(bx, by - S * .01, S * .025, Math.PI, 0); c.lineTo(bx + S * .025, by + S * .035); c.closePath(); c.fill(); } }
+      }
+      // result in the corner: clear alone, then clear with the star
+      const res = run2 ? seg(t, 11.3, 11.7) : seg(t, 4.6, 5.0), out = run2 ? 1 - seg(t, 12.6, 13) : 1 - seg(t, 5.8, 6.1);
+      if (res > 0) {
+        c.globalAlpha = res * out; const cx = W * .78, cy = H * .17, r = S * .055;
+        c.fillStyle = ACC; c.beginPath(); c.arc(cx, cy, r, 0, TAU); c.fill();
+        c.strokeStyle = '#0c1210'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(cx - r * .4, cy); c.lineTo(cx - r * .1, cy + r * .3); c.lineTo(cx + r * .45, cy - r * .3); c.stroke();
+        miniStar(c, cx + r * 2.4, cy, r * .9, run2); c.globalAlpha = 1;
+      }
+      // retry between the runs
+      const rt = seg(t, 6.0, 6.6); if (rt > 0 && rt < 1) { c.globalAlpha = Math.sin(rt * Math.PI); c.strokeStyle = INK; c.lineWidth = 2; const R = S * .06; c.beginPath(); c.arc(W * .5, H * .3, R, -Math.PI * .3, Math.PI * 1.4); c.stroke(); c.globalAlpha = 1; }
+    } };
+  },
 };
+// the game's own spell glyphs (white masks), tinted on demand; vector shapes only until they load
+const GLYPH_SRC = { stop: 'stop', heavy: 'heavy', light: 'light', carry: 'carry', fire: 'fire' }, GLYPH = {}, GLYPH_TINT = {};
+Object.entries(GLYPH_SRC).forEach(([k, f]) => { const im = new Image(); im.src = 'assets/glyphs/' + f + '.png'; GLYPH[k] = im; });
+function glyphTinted(n, col) {
+  const im = GLYPH[n], key = n + col; if (!im || !im.complete || !im.naturalWidth) return null;
+  if (!GLYPH_TINT[key]) { const cv = document.createElement('canvas'); cv.width = im.naturalWidth; cv.height = im.naturalHeight; const g = cv.getContext('2d'); g.drawImage(im, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = col; g.fillRect(0, 0, cv.width, cv.height); GLYPH_TINT[key] = cv; }
+  return GLYPH_TINT[key];
+}
 function miniGlyph(c, n, x, y, s, col) {
+  const img = glyphTinted(n, col);
+  if (img) { const d = s * 1.5; c.drawImage(img, x - d / 2, y - d / 2, d, d); return; }
   c.save(); c.translate(x, y); c.fillStyle = col; c.strokeStyle = col; c.lineWidth = Math.max(1.4, s * .14); c.lineCap = 'round';
   if (n === 'stop') handIcon(c, 0, s * .05, s * 1.1, col);
-  if (n === 'heavy') { c.beginPath(); c.moveTo(-s * .35, -s * .1); c.lineTo(s * .35, -s * .1); c.lineTo(s * .45, s * .4); c.lineTo(-s * .45, s * .4); c.closePath(); c.fill(); c.fillRect(-s * .1, -s * .35, s * .2, s * .25); }
-  if (n === 'light') { c.beginPath(); c.moveTo(0, s * .45); c.lineTo(0, -s * .4); c.moveTo(-s * .3, -s * .1); c.lineTo(0, -s * .4); c.lineTo(s * .3, -s * .1); c.stroke(); }
-  if (n === 'carry') { c.beginPath(); c.moveTo(-s * .45, 0); c.lineTo(s * .4, 0); c.moveTo(s * .1, -s * .3); c.lineTo(s * .4, 0); c.lineTo(s * .1, s * .3); c.stroke(); }
+  if (n === 'heavy') { c.beginPath(); c.moveTo(-s * .35, -s * .1); c.lineTo(s * .35, -s * .1); c.lineTo(s * .45, s * .4); c.lineTo(-s * .45, s * .4); c.closePath(); c.fill(); }
+  if (n === 'light') { c.beginPath(); c.moveTo(-s * .4, -s * .4); c.lineTo(s * .4, s * .4); c.stroke(); }
+  if (n === 'carry') { c.strokeRect(-s * .2, -s * .4, s * .4, s * .3); }
   if (n === 'fire') { c.beginPath(); c.moveTo(0, -s * .5); c.quadraticCurveTo(s * .45, -s * .05, s * .3, s * .3); c.quadraticCurveTo(0, s * .55, -s * .3, s * .3); c.quadraticCurveTo(-s * .4, 0, 0, -s * .5); c.fill(); }
   c.restore();
 }

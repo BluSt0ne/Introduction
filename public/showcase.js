@@ -61,6 +61,7 @@ const list = v => Array.isArray(v) ? v : [];
 function animCard(id, cls, d, steps) {
   return `<article class="nx-anim ${cls}" id="${id}">
     <header><span class="nx-anim-label">${e(d?.label || '')}</span></header>
+    ${ytId(d?.video || '') ? `<div class="nx-play-video"><iframe src="https://www.youtube-nocookie.com/embed/${ytId(d.video)}" title="${e(d?.label || '')} 플레이 영상" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>` : ''}
     <div class="nx-anim-stage"><canvas aria-label="${e(d?.label || '')} 게임 흐름 애니메이션"></canvas></div>
     <div class="nx-anim-bar" aria-hidden="true"><i></i></div>
     <ol class="nx-anim-phases" aria-hidden="true">${steps.map(([, s]) => `<li data-phase>${s}</li>`).join('')}</ol>
@@ -226,18 +227,11 @@ function rail() {
   railEl._upd();
 }
 
-/* project pages: long work-step text starts folded, first step open */
-function foldSteps(main) {
-  $$('.production-step:not(.nx-fold)', main).forEach((st, i) => { st.classList.add('nx-fold'); if (i === 0) st.classList.add('nx-open'); const h = $('.production-content>h3', st); if (h) { h.tabIndex = 0; h.setAttribute('role', 'button'); h.setAttribute('aria-expanded', i === 0); } });
-}
-document.addEventListener('click', ev => { const h = ev.target.closest('.production-step.nx-fold .production-content>h3'); if (!h) return; const st = h.closest('.production-step'); st.classList.toggle('nx-open'); h.setAttribute('aria-expanded', st.classList.contains('nx-open')); });
-document.addEventListener('keydown', ev => { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.matches?.('.production-step.nx-fold .production-content>h3')) { ev.preventDefault(); ev.target.click(); } });
 let cleanups = [];
 function mount(force) {
   const main = $('#main'); const page = (location.hash.slice(1) || 'overview').split(/[/?]/)[0];
   document.body.classList.toggle('nx-overview', page === 'overview');
-  if (page === 'project') foldSteps(main);
-  if (page !== 'overview') { cleanups.forEach(f => f()); cleanups = []; return; }
+  if (page !== 'overview') { cleanups.forEach(f => f()); cleanups = []; rail(); return; }
   if ($('#nx-play', main) && !force) return;
   cleanups.forEach(f => f()); cleanups = [];
   const g0 = $('.project-grid', main), h0 = $('.collection-heading', main);
