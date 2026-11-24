@@ -29,64 +29,76 @@ window.SHOWCASE_DATA = {
       "toolsTitle": "TOOLS",
       "tools": [
         {
-          "icon": "cube",
-          "name": "Unity",
-          "logo": "assets/logos/unity.svg"
-        },
-        {
-          "icon": "code",
-          "name": "C#",
-          "logo": "assets/logos/csharp.svg"
-        },
-        {
-          "icon": "code",
-          "name": "C++",
-          "logo": "assets/logos/cpp.svg"
-        },
-        {
-          "icon": "code",
-          "name": "Python",
-          "logo": "assets/logos/python.svg"
-        },
-        {
           "icon": "ai",
           "name": "ChatGPT",
-          "logo": "assets/logos/chatgpt.svg"
+          "logo": "assets/logos/chatgpt.svg",
+          "group": "AI"
         },
         {
           "icon": "ai",
           "name": "Claude",
-          "logo": "assets/logos/claude.svg"
+          "logo": "assets/logos/claude.svg",
+          "group": "AI"
         },
         {
           "icon": "wave",
           "name": "ElevenLabs",
-          "logo": "assets/logos/elevenlabs.svg"
+          "logo": "assets/logos/elevenlabs.svg",
+          "group": "AI"
+        },
+        {
+          "icon": "cube",
+          "name": "Unity",
+          "logo": "assets/logos/unity.svg",
+          "group": "엔진"
+        },
+        {
+          "icon": "code",
+          "name": "C#",
+          "logo": "assets/logos/csharp.svg",
+          "group": "개발 언어"
+        },
+        {
+          "icon": "code",
+          "name": "C++",
+          "logo": "assets/logos/cpp.svg",
+          "group": "개발 언어"
+        },
+        {
+          "icon": "code",
+          "name": "Python",
+          "logo": "assets/logos/python.svg",
+          "group": "개발 언어"
         },
         {
           "icon": "doc",
           "name": "PowerPoint",
-          "logo": "assets/logos/powerpoint.svg"
+          "logo": "assets/logos/powerpoint.svg",
+          "group": "문서 작업"
         },
         {
           "icon": "chart",
           "name": "Excel",
-          "logo": "assets/logos/excel.svg"
+          "logo": "assets/logos/excel.svg",
+          "group": "문서 작업"
         },
         {
           "icon": "doc",
           "name": "Word",
-          "logo": "assets/logos/word.svg"
+          "logo": "assets/logos/word.svg",
+          "group": "문서 작업"
         },
         {
           "icon": "check",
           "name": "Jira",
-          "logo": "assets/logos/jira.svg"
+          "logo": "assets/logos/jira.svg",
+          "group": "문서 작업"
         },
         {
           "icon": "doc",
           "name": "Confluence",
-          "logo": "assets/logos/confluence.svg"
+          "logo": "assets/logos/confluence.svg",
+          "group": "문서 작업"
         }
       ],
       "historyTitle": "HISTORY",
@@ -94,48 +106,78 @@ window.SHOWCASE_DATA = {
         {
           "year": "2026",
           "text": "개인 개발",
-          "images": [
-            "assets/screenshots/2026-11-24-latest/wop-production.webp",
-            "assets/screenshots/2026-11-24-latest/ww-magic-selection.webp",
-            "assets/archive/galactica-pc-cover.webp"
-          ],
-          "icon": ""
+          "images": [],
+          "icon": "",
+          "marks": [
+            {
+              "src": "assets/history/wop.svg",
+              "label": "World of Plant"
+            },
+            {
+              "src": "assets/history/wordless-mage.svg",
+              "label": "Wordless Mage"
+            },
+            {
+              "src": "assets/history/galactica.svg",
+              "label": "Galactica"
+            }
+          ]
         },
         {
           "year": "2025",
           "text": "Triple Showdown",
-          "images": [
-            "assets/archive/triple-cover.webp"
-          ],
-          "icon": ""
+          "images": [],
+          "icon": "",
+          "marks": [
+            {
+              "src": "assets/history/triple-showdown.svg",
+              "label": "Triple Showdown"
+            }
+          ]
         },
         {
           "year": "2024",
           "text": "I2P X O2CUBE 기획, 팀장",
-          "images": [
-            "assets/archive/lone-lantern-cover.webp"
-          ],
-          "icon": ""
-        },
-        {
-          "year": "2022",
-          "text": "정진 장학금",
           "images": [],
-          "icon": "medal"
+          "icon": "",
+          "marks": [
+            {
+              "src": "assets/history/club-mark.webp",
+              "label": "I2P × O2CUBE 동아리"
+            },
+            {
+              "src": "assets/history/lone-lantern.svg",
+              "label": "Lone Lantern"
+            }
+          ]
         },
         {
           "year": "2020",
-          "text": "홍익대 게임학부 입학",
+          "text": "홍익대 게임소프트웨어전공 입학",
           "images": [],
-          "icon": "cap"
+          "icon": "",
+          "marks": [
+            {
+              "src": "assets/history/game-software-mark.webp",
+              "label": "홍익대학교 게임소프트웨어전공"
+            }
+          ]
         },
         {
           "year": "2019",
           "text": "넷마블 게임 아카데미 4기 팀장",
-          "images": [
-            "assets/archive/defair-cover.webp"
-          ],
-          "icon": ""
+          "images": [],
+          "icon": "",
+          "marks": [
+            {
+              "src": "assets/history/game-academy.webp",
+              "label": "넷마블 게임아카데미 4기"
+            },
+            {
+              "src": "assets/history/defair.svg",
+              "label": "디페어"
+            }
+          ]
         }
       ]
     }

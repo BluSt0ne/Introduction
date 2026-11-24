@@ -88,12 +88,22 @@ function intro() {
 </section>`;
 }
 
+function profileTools(items) {
+  const groups=new Map();
+  list(items).forEach(t=>{const group=t.group||'기타';if(!groups.has(group))groups.set(group,[]);groups.get(group).push(t);});
+  return `<div class="nx-tool-groups">${[...groups].map(([name,tools])=>`<section class="nx-tool-group" aria-label="${e(name)} 도구"><h3>${e(name)}</h3><ul class="nx-tool-tiles">${tools.map(t=>`<li>${t.logo?`<img class="nx-logo" src="${e(t.logo)}" alt="">`:ico(t.icon)}<span>${e(t.name)}</span></li>`).join('')}</ul></section>`).join('')}</div>`;
+}
+function historyMarks(h) {
+  const marks=list(h.marks);
+  if(marks.length)return `<span class="nx-h-media">${marks.map(m=>`<span class="nx-history-mark" title="${e(m.label)}"><img src="${e(m.src)}" alt="${e(m.label)}"></span>`).join('')}</span>`;
+  return `<span class="nx-h-media">${list(h.images).length?list(h.images).map(src=>`<img src="${e(src)}" alt="" loading="lazy">`).join(''):`<i>${ico(h.icon||'check')}</i>`}</span>`;
+}
 function profile(P) {
   if (!P) return '';
   return `<aside class="nx-profile">
     <div class="nx-profile-id">${P.photo ? `<img src="${e(P.photo)}" alt="${e(P.name)} 사진">` : ''}<div><b>${e(P.name)}</b><p>${e(P.sub).replace(/\n/g, '<br>')}</p></div></div>
-    <div class="nx-profile-block"><span class="eyebrow">${e(P.toolsTitle || 'TOOLS')}</span><ul class="nx-tool-tiles">${list(P.tools).map(t => `<li>${t.logo ? `<img class="nx-logo" src="${e(t.logo)}" alt="" onerror="this.remove()">` : ''}<span>${e(t.name)}</span></li>`).join('')}</ul></div>
-    <div class="nx-profile-block"><span class="eyebrow">${e(P.historyTitle || 'HISTORY')}</span><ol class="nx-history">${list(P.history).map(h => `<li><time>${e(h.year)}</time><span class="nx-h-media">${list(h.images).length ? list(h.images).map(src => `<img src="${e(src)}" alt="" loading="lazy">`).join('') : `<i>${ico(h.icon || 'check')}</i>`}</span><span class="nx-h-text">${e(h.text)}</span></li>`).join('')}</ol></div>
+    <div class="nx-profile-block"><span class="eyebrow">${e(P.toolsTitle || 'TOOLS')}</span>${profileTools(P.tools)}</div>
+    <div class="nx-profile-block"><span class="eyebrow">${e(P.historyTitle || 'HISTORY')}</span><ol class="nx-history">${list(P.history).map(h => `<li><time>${e(h.year)}</time>${historyMarks(h)}<span class="nx-h-text">${e(h.text)}</span></li>`).join('')}</ol></div>
   </aside>`;
 }
 
