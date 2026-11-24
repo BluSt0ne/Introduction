@@ -449,3 +449,48 @@ body,body[data-theme="wop"],body[data-theme="mage"]{background:var(--bg)!importa
 .production-content{background:#16231b!important}
 .project-page.ww .production-content{background:#15222a!important}
 .nx-planet{background:var(--paper)!important}
+/* ===== design pass: one system for the whole page =====
+   radius: 12 outer / 8 inner · type: 34 / 22 / 17 / 15 / 13 · one font · one accent (gold only inside Wordless Mage) */
+:root{--bg:#0e1411;--paper:#161f1a;--panel:#1c2620;--ink:#e9efe7;--muted:#97a69a;--line:#26322b;--accent:#c2dc89;--r:12px;--r2:8px}
+body,body[data-theme="wop"],body[data-theme="mage"]{background:var(--bg)!important}
+
+/* one font everywhere */
+.project-card .project-card-body h2,.ww .project-card-body h2,.project-card.wop .project-card-body h2{font-family:var(--font)!important;letter-spacing:-.04em!important;color:var(--ink)!important}
+.ww .project-card-body h2{color:#e2c98e!important}
+
+/* type scale */
+.nx-head h2{font-size:34px!important;font-weight:600!important;letter-spacing:-.05em!important;margin:6px 0 0!important}
+.nx-head p{font-size:15px!important}
+.eyebrow,.nx-anim-label{font-size:13px!important;letter-spacing:.12em!important}
+.nx-pj-head h3,.nx-role h3,.nx-profile-id b,.nx-arc-dialog h2{font-size:22px!important;font-weight:600!important}
+.nx-ps h3,.nx-way h3,.nx-tool h3,.nx-arc-body b,.nx-anim h3,.nx-intro-copy .project-card .project-card-body h2{font-size:17px!important;font-weight:600!important;line-height:1.4!important}
+.nx-intro-copy .project-card .project-card-body h2{font-size:22px!important}
+.nx-ps p,.nx-way p,.nx-tool p,.nx-col li,.nx-arc-sum,.nx-anim>p{font-size:15px!important;line-height:1.75!important}
+.nx-ps h4,.nx-ps h4.sol,.nx-pj-head small,.nx-role small,.nx-profile-id p,.nx-history li,.nx-h-text,.nx-tool-group h3,.nx-tool-tiles span,.nx-role-tile,.nx-anim-phases,.nx-arc-body small,.nx-arc-body em,.nx-arc-body>span,.nx-arc-body i,.nx-arc-points b,.nx-arc-points span,.nx-intro-tags span,.nx-intro-copy .project-card-body p,.card-genre,.nx-ps-shots figcaption{font-size:13px!important}
+
+/* outer cards: one radius, one border, one surface */
+.nx-ps,.nx-way,.nx-role,.nx-anim,.nx-arc,.nx-profile,.nx-route,.project-card,.nx-arc-dialog{border-radius:var(--r)!important;border:1px solid var(--line)!important;background:var(--paper)!important}
+
+/* inner pieces: no borders, a flat tone and the small radius */
+.nx-tool-tiles li,.nx-role-tile,.nx-intro-tags span,.nx-arc-vtabs button,.nx-way-ico,.nx-node{border:0!important;background:var(--panel)!important;border-radius:var(--r2)!important}
+.nx-ps-clip,.nx-ps-shots .nx-zoom,.nx-zoom img,.nx-profile-id img,.nx-h-media img,.nx-tool-shot,.nx-arc-video,.nx-anim-stage{border:0!important;border-radius:var(--r2)!important}
+.nx-anim-stage{border-radius:0!important}
+.nx-history-mark{border-radius:var(--r2)!important}
+.nx-pj-mark{border-radius:var(--r2)!important}
+
+/* design-intent cards: clip first, plain sub-labels instead of badges */
+.nx-ps-bar{display:none!important}
+.nx-ps{display:flex;flex-direction:column;padding:20px 22px 24px!important}
+.nx-ps .nx-ps-clip,.nx-ps .nx-ps-shots{order:-1;margin:0 0 18px!important}
+.nx-ps h3{margin:0 0 14px!important}
+.nx-ps h4,.nx-ps h4.sol{display:block!important;background:none!important;color:var(--muted)!important;padding:0!important;margin:14px 0 4px!important;font-weight:600!important;border-radius:0!important}
+.nx-ps h4.sol{color:var(--accent)!important}
+.nx-pj.ww .nx-ps h4.sol{color:#d9b96e!important}
+.nx-ps hr{display:none!important}
+.nx-ps-reason{margin-top:0!important;padding:0!important;border:0!important;background:none!important}
+
+/* spacing rhythm */
+.nx-section{margin-top:112px!important}
+.nx-head{margin-bottom:28px!important}
+.nx-ps-grid,.nx-way-grid,.nx-anim-grid,.nx-arc-grid{gap:16px!important}
+.nx-pj+.nx-pj{margin-top:56px}
