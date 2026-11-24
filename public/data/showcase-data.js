@@ -375,7 +375,7 @@ window.SHOWCASE_DATA = {
       {
         "id": "galactica-pc",
         "title": "Galactica PC",
-        "period": "2026.10 – 현재",
+        "period": "개발 중 · 2개월째",
         "genre": "싱글플레이 턴제 우주 전략",
         "team": "1인 개발 · AI 활용",
         "platform": "PC · Unity 6",
@@ -418,7 +418,7 @@ window.SHOWCASE_DATA = {
       {
         "id": "triple",
         "title": "Triple Showdown",
-        "period": "2025.05 – 2026",
+        "period": "개발 6개월",
         "genre": "로그라이크 덱 빌딩",
         "team": "1인 개발",
         "platform": "Unity",
@@ -465,7 +465,7 @@ window.SHOWCASE_DATA = {
       {
         "id": "lone-lantern",
         "title": "Lone Lantern",
-        "period": "2024.04 – 2024.11",
+        "period": "개발 8개월",
         "genre": "2D 퍼즐 어드벤처 RPG",
         "team": "5인 · 기획 / 팀장",
         "platform": "Unity",
@@ -500,7 +500,7 @@ window.SHOWCASE_DATA = {
       {
         "id": "hook",
         "title": "Hook Adventure",
-        "period": "2021.11 – 2021.12",
+        "period": "개발 2개월",
         "genre": "3D 필드 탐색 플랫포머",
         "team": "2인 · 기획 / 프로그래밍",
         "platform": "Unity",
@@ -531,7 +531,7 @@ window.SHOWCASE_DATA = {
       {
         "id": "galactica-board",
         "title": "Galactica Board Game",
-        "period": "2021.03 – 2021.06",
+        "period": "개발 4개월",
         "genre": "2:2 팀 전략 보드게임",
         "team": "4인 팀",
         "platform": "Tabletop Simulator",
@@ -579,7 +579,7 @@ window.SHOWCASE_DATA = {
       {
         "id": "defair",
         "title": "Defair",
-        "period": "2019.03 – 2019.11",
+        "period": "개발 9개월",
         "genre": "2D 횡스크롤 러닝 액션",
         "team": "6인 · 기획 / 팀장 · 넷마블 게임 아카데미 4기",
         "platform": "Unity",
