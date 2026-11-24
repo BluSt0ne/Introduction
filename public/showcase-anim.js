@@ -543,17 +543,20 @@ const MINI = {
     if (i === 0) { const r = S * .13; c.strokeStyle = a(BLUE, .8 * k); c.lineWidth = 1.6; c.beginPath(); c.arc(bx, by - S * .08, r, 0, TAU * k); c.stroke(); }
     if (i === 4 && k > .2) for (let f = 0; f < 5; f++) { const fx = bx + (f - 2) * S * .03, fh = S * (.05 + .04 * Math.abs(Math.sin(t * 9 + f))); c.fillStyle = a(f % 2 ? '#f29a4a' : SUN, .9); c.beginPath(); c.moveTo(fx - S * .015, by - S * .16); c.quadraticCurveTo(fx, by - S * .16 - fh * 2, fx + S * .015, by - S * .16); c.fill(); }
   } }),
-  // three slots: fill, refuse a fourth, spend one
-  'ww-slots': () => ({ duration: 6.5, steps: [[0, '']], draw(c, W, H, t) {
+  // three slots fill up; a fourth magic turns red and bounces off
+  'ww-slots': () => ({ duration: 5.4, steps: [[0, '']], draw(c, W, H, t) {
     miniBase(c, W, H); const S = Math.min(W, H), sx = i => W * .5 + (i - 1) * S * .22, sy = H * .55, ss = S * .17;
-    const fill = [1, 1.8, 2.6], reject = 3.4, use = 4.8;
-    const full = t > 3.0 && t < use + .2, flash = t > reject + .35 && t < reject + .75;
-    [0, 1, 2].forEach(i => { const on = t > fill[i] + .5 && !(i === 2 && t > use); miniSlot(c, sx(i), sy, ss, on, flash); });
+    const fill = [.6, 1.3, 2.0], reject = 2.9, flash = t > reject + .35 && t < reject + .9;
+    [0, 1, 2].forEach(i => miniSlot(c, sx(i), sy, ss, t > fill[i] + .5, flash));
     fill.forEach((f, i) => { const k = seg(t, f, f + .5); if (k > 0 && k < 1) miniGlyph(c, 'stop', lerp(W * .5, sx(i), ease(k)), lerp(H * .08, sy, ease(k)), ss * .55, GOLD); });
-    const r = seg(t, reject, reject + .9); if (r > 0 && r < 1) { const y = r < .4 ? lerp(H * .08, sy - ss * .8, ease(r / .4)) : lerp(sy - ss * .8, H * .02, ease((r - .4) / .6)); c.globalAlpha = 1 - Math.max(0, (r - .5) * 2); miniGlyph(c, 'stop', W * .5, y, ss * .55, '#ff6b5a'); c.globalAlpha = 1; }
-    const u = seg(t, use, use + .7); if (u > 0 && u < 1) { miniGlyph(c, 'stop', lerp(sx(2), W * .9, ease(u)), lerp(sy, H * .2, ease(u)), ss * .55, GOLD); }
-    if (u >= 1 && t < use + 1.4) miniRing(c, W * .9, H * .2, seg(t, use + .7, use + 1.4), S * .12, GOLD, 2);
-    void full;
+    const r = seg(t, reject, reject + 1.3);
+    if (r > 0 && r < 1) {
+      // falls onto the full row, turns red on contact, then is knocked back up and away
+      const hit = .3, y = r < hit ? lerp(H * .08, sy - ss * .85, ease(r / hit)) : sy - ss * .85 - Math.sin(Math.min(1, (r - hit) / .7) * Math.PI * .5) * H * .5;
+      const x = W * .5 + (r < hit ? 0 : (r - hit) / .7 * S * .35), red = r >= hit;
+      c.globalAlpha = 1 - Math.max(0, (r - .7) / .3); miniGlyph(c, 'stop', x, y, ss * .55, red ? '#ff6b5a' : GOLD); c.globalAlpha = 1;
+      if (red) miniRing(c, W * .5, sy - ss * .85, seg(r, hit, hit + .35), S * .12, '#ff6b5a', 2);
+    }
   } }),
   // a fork in the road: take the door now, or climb for the star; a retry comes back for the star
   'ww-goal': () => {
