@@ -247,7 +247,7 @@ function mount(force) {
   heading.insertAdjacentHTML('beforebegin', intro());
   // the two main projects sit in the hero, so the page goes straight on to the summary below
   const slot = $('#nx-intro .nx-intro-copy', main); if (slot) { slot.append(grid); heading.classList.add('nx-moved'); }
-  grid.insertAdjacentHTML('afterend', play() + split() + aiIssues() + verify() + archive());
+  heading.insertAdjacentHTML('afterend', play() + split() + aiIssues() + verify() + archive());
   if (window.NXAnim) cleanups.push(NXAnim.mount($('#nx-anim-wop'), NXAnim.wopScene()), NXAnim.mount($('#nx-anim-ww'), NXAnim.wmScene()));
   countUp(); reveal(); rail();
   if (force) $$('.nx-reveal', main).forEach(n => n.classList.add('nx-in'));
