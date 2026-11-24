@@ -25,14 +25,16 @@ const icons={
   oval(15,6,3,4,'#edc458');oval(10,9,4,3,'#edc458');oval(12,13,3,4,'#dba84a');oval(18,13,3,4,'#edc458');oval(20,9,4,3,'#f3d979');oval(15,10,3,3,'#8c6542');box(14,8,2,2,'#b58a4c');
   poly([[25,12],[29,10],[29,14],[25,18],[23,16]],'#dce7df');box(26,13,2,2,'#5d94ac');poly([[23,17],[26,18],[22,21]],'#d89459');
  },
- 'wordless-mage':({a,box,oval})=>{
-  const brass='#b79b58',ivory='#e7e5d7';
-  oval(16,16,10,10,brass);
-  for(const [x,y,w,h]of[[13,3,6,6],[13,23,6,6],[3,13,6,6],[23,13,6,6],[6,6,6,6],[20,6,6,6],[6,20,6,6],[20,20,6,6]])box(x,y,w,h,brass);
-  oval(16,16,8,8,ivory);
-  for(const [x,y,w,h]of[[14,4,4,7],[14,21,4,7],[4,14,7,4],[21,14,7,4],[7,7,5,5],[20,7,5,5],[7,20,5,5],[20,20,5,5]])box(x,y,w,h,ivory);
-  for(let y=17;y<29;y++)for(let x=3;x<29;x++)if(a[y][x]===ivory)a[y][x]='#aeb2aa';
-  oval(16,16,5,5,null);
+ 'wordless-mage':({box,oval,poly,pixel})=>{
+  // stop magic: brass gear, open hand and the warning triangle from the game's glyph
+  const brass='#b79b58',dark='#2f3b44',ivory='#f2e6c9';
+  oval(16,16,11,11,brass);
+  for(const [x,y,w,h]of[[13,2,6,5],[13,25,6,5],[2,13,5,6],[25,13,5,6],[5,5,5,5],[22,5,5,5],[5,22,5,5],[22,22,5,5]])box(x,y,w,h,brass);
+  oval(16,16,8.5,8.5,dark);
+  box(12,9,2,7,ivory);box(15,8,2,8,ivory);box(18,9,2,7,ivory);box(12,15,8,7,ivory);
+  poly([[9,15],[12,16],[12,20],[10,19]],ivory);box(13,22,6,1,ivory);
+  box(14,10,1,5,'#d8c9a5');box(17,9,1,6,'#d8c9a5');
+  poly([[21,12.5],[26.6,24],[15.4,24]],dark);poly([[21,15],[25,22.8],[17,22.8]],'#f0d36a');box(21,17,1,3,dark);pixel(21,21,dark);
  },
  galactica:({poly,box})=>{
   // side-on starfighter: swept wings, cockpit canopy, engine glow
@@ -53,9 +55,29 @@ const icons={
   poly([[11,15],[21,15],[24,27],[8,27]],'#65909b');poly([[13,16],[19,16],[21,25],[11,25]],'#a6d4ca');
   poly([[16,16],[19,21],[18,24],[14,24],[13,22],[15,20]],'#eff1c5');box(8,26,16,3,'#416675');box(15,15,1,3,'#416675');
  },
- defair:({poly,oval})=>{
-  poly([[21,4],[25,3],[21,8],[22,12],[26,13],[30,9],[29,15],[25,19],[21,19],[10,29],[6,29],[3,26],[3,22],[16,11],[16,7]],'#48bfe6');
-  poly([[19,16],[23,18],[10,29],[6,29],[4,27],[7,25]],'#3d6dc0');oval(7,25,2,2,'#e1e6dc');
+ defair:({box,oval,poly,pixel})=>{
+  // the game's hoverboard rider as a chibi: big head, visor, suit line, board and slash
+  const hair='#1d2230',skin='#f3ebe2',visor='#3fd0ec',lens='#1d2a6b',suit='#3b4864',line='#3fd0ec',boot='#222838';
+  // crescent slash in front
+  for(let y=0;y<32;y++)for(let x=21;x<32;x++){const o=(x-19)**2+(y-15.5)**2,i=(x-17.2)**2+(y-15.5)**2;if(o<=11.6**2&&i>10.4**2)pixel(x,y,i>11.3**2?'#3b5bff':'#9db0ff');}
+  // speed lines
+  box(1,13,4,1,'#c5cdd2');box(0,17,3,1,'#c5cdd2');
+  // hoverboard: bright core, blue body, dark rim, thruster glow
+  for(let x=5;x<=27;x++){const y=Math.round(22+(x-5)*5/22);pixel(x,y,'#c8f6ff');pixel(x,y+1,'#3fb6ef');pixel(x,y+2,'#2a6fd6');}
+  pixel(27,25,'#c8f6ff');pixel(28,25,'#3fb6ef');pixel(4,22,'#3fb6ef');
+  pixel(6,25,'#a6f0ff');pixel(7,26,'#a6f0ff');pixel(5,26,'#5fd6ff');pixel(6,27,'#5fd6ff');
+  // legs and boots
+  poly([[14,18],[16.5,19],[13,23],[10.5,22]],suit);box(10,22,3,1,boot);
+  poly([[17,18],[19.5,18],[20.5,24],[18.2,24]],suit);box(18,24,3,1,boot);
+  // torso, chest line
+  poly([[13.5,13.5],[19.5,13],[19.5,19],[14,19]],suit);box(15,15,3,1,line);pixel(19,14,line);
+  // arms: one back for balance, one forward
+  poly([[14,14],[9.5,16],[9.5,17.2],[14,16]],suit);oval(9.4,16.8,1.3,1.3,boot);
+  poly([[18.5,14],[22.5,16],[21.5,17.2],[18.5,16]],suit);oval(22.6,16.9,1.3,1.3,boot);
+  // big deformed head: spiky hair, face, visor
+  oval(17,8,5.8,5.4,hair);poly([[11,7],[12.5,3.5],[14,7]],hair);poly([[19,3.5],[22,2],[21,5]],hair);
+  poly([[17.5,7],[23,7],[23,13],[18.5,13]],skin);
+  box(16,8,8,2,visor);box(19,8,4,1,lens);pixel(22,8,'#e8fbff');pixel(21,12,'#d9a99a');
  }
 };
 for(const [name,draw]of Object.entries(icons))fs.writeFileSync(new URL(name+'-pixel.svg',root),sprite(draw));
