@@ -15,13 +15,8 @@ window.SHOWCASE_DATA = {
       {
         "icon": "code",
         "text": "AI 협업 구현"
-      },
-      {
-        "icon": "gamepad",
-        "text": "직접 플레이 검수"
       }
     ],
-    "scroll": "SCROLL",
     "profile": {
       "photo": "assets/profile.webp",
       "name": "이우현",
@@ -170,8 +165,8 @@ window.SHOWCASE_DATA = {
           "icon": "",
           "marks": [
             {
-              "src": "assets/history/game-academy.webp",
-              "label": "넷마블 게임아카데미 4기"
+              "src": "assets/history/netmarble-foundation-icon.png",
+              "label": "넷마블문화재단"
             },
             {
               "src": "assets/history/defair.svg",
@@ -186,12 +181,10 @@ window.SHOWCASE_DATA = {
     "eyebrow": "GAME FLOW",
     "title": "게임 흐름",
     "wop": {
-      "label": "World of Plant",
-      "title": "꽃에서 은하로"
+      "label": "World of Plant"
     },
     "ww": {
-      "label": "Wordless Mage",
-      "title": "로봇의 말로 길 열기"
+      "label": "Wordless Mage"
     }
   },
   "role": {
@@ -244,7 +237,7 @@ window.SHOWCASE_DATA = {
           "text": "시스템 최적화"
         },
         {
-          "icon": "cube",
+          "icon": "shadedCube",
           "text": "렌더링 / 셰이더"
         },
         {

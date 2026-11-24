@@ -23,6 +23,7 @@ const ICON = {
   doc: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
   code: '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
   cube: '<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
+  shadedCube: '<ellipse cx="13" cy="21" rx="9" ry="2" fill="currentColor" fill-opacity=".18" stroke="none"/><path d="m12 2 8 4.5-8 4.5-8-4.5z" fill="currentColor" fill-opacity=".8"/><path d="m4 6.5 8 4.5v9l-8-4.5z" fill="currentColor" fill-opacity=".4"/><path d="m12 11 8-4.5v9l-8 4.5z" fill="currentColor" fill-opacity=".12"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>',
   robot: '<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 8V4M10 4h4"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/>',
   wrench: '<path d="M15 4a4 4 0 0 0-5 5L4 15l5 5 6-6a4 4 0 0 0 5-5l-3 3-3-3z"/>',
@@ -58,8 +59,8 @@ const list = v => Array.isArray(v) ? v : [];
 
 function animCard(id, cls, d, steps) {
   return `<article class="nx-anim ${cls}" id="${id}">
-    <header><span class="nx-anim-label">${e(d?.label || '')}</span><h3>${e(d?.title || '')}</h3></header>
-    <div class="nx-anim-stage"><canvas aria-label="${e(d?.title || '')} 진행 애니메이션"></canvas></div>
+    <header><span class="nx-anim-label">${e(d?.label || '')}</span></header>
+    <div class="nx-anim-stage"><canvas aria-label="${e(d?.label || '')} 게임 흐름 애니메이션"></canvas></div>
     <div class="nx-anim-bar" aria-hidden="true"><i></i></div>
     <ol class="nx-anim-phases" aria-hidden="true">${steps.map(([, s]) => `<li data-phase>${s}</li>`).join('')}</ol>
   </article>`;
@@ -82,7 +83,6 @@ function intro() {
     <h1>${list(I.lines).map(l => e(l) + '<br>').join('')}<strong>${e(I.highlight || '')}</strong></h1>
     ${I.lead ? `<p class="nx-lead">${e(I.lead)}</p>` : ''}
     <div class="nx-intro-tags">${list(I.tags).map(t => `<span>${ico(t.icon)}${e(t.text)}</span>`).join('')}</div>
-    <button type="button" class="nx-scroll-cue" data-scroll-to="nx-projects" aria-label="아래로 이동"><i aria-hidden="true"></i><span>${e(I.scroll || 'SCROLL')}</span></button>
   </div>
   ${profile(I.profile)}
 </section>`;
@@ -217,7 +217,7 @@ let railEl = null;
 function rail() {
   if (!railEl) {
     railEl = document.createElement('div'); railEl.className = 'nx-rail'; railEl.setAttribute('aria-hidden', 'true');
-    railEl.innerHTML = '<span>SCROLL</span><i><b></b></i>'; document.body.append(railEl);
+    railEl.innerHTML = '<i><b></b></i>'; document.body.append(railEl);
     const upd = () => { const max = document.documentElement.scrollHeight - innerHeight, k = max > 0 ? Math.min(1, scrollY / max) : 1; railEl.style.setProperty('--k', k.toFixed(3)); railEl.classList.toggle('done', k > .98); };
     addEventListener('scroll', upd, { passive: true }); addEventListener('resize', upd); railEl._upd = upd;
   }
