@@ -3,11 +3,55 @@ window.ARCHIVE_DATA = {
   "site": {
     "title": "Game Archive",
     "subtitle": "World of Plant & Wordless Mage",
-    "updated": "2026-11-22",
+    "updated": "2026-11-24",
     "description": "게임의 설계부터 리소스와 변경 기록까지, 함께 확인하는 프로젝트 아카이브.",
     "contactEmail": "dngus0822@gmail.com",
     "heading": "Projects",
-    "kicker": "GAME DESIGN & DEVELOPMENT"
+    "kicker": "GAME DESIGN & DEVELOPMENT",
+    "aiDevelopment": {
+      "title": "AI를 활용한 개발 방식",
+      "intro": "게임의 방향과 최종 판단은 직접 맡고, AI를 구현·문서 정리·사운드 제작에 활용했습니다.",
+      "responsibilities": [
+        "게임 컨셉·핵심 규칙 결정",
+        "프롬프트 작성",
+        "플레이 테스트",
+        "데이터·밸런스 조정",
+        "레벨디자인",
+        "아트 선정"
+      ],
+      "tools": [
+        [
+          "ChatGPT",
+          "기획 문서와 포트폴리오 내용을 정리하고, 요구사항을 구체화하는 데 활용했습니다."
+        ],
+        [
+          "Claude",
+          "요구사항에 따른 코드 구현과 수정 작업에 활용했습니다."
+        ],
+        [
+          "ElevenLabs Sounds",
+          "게임에 사용할 효과음 제작에 활용했습니다."
+        ]
+      ],
+      "steps": [
+        [
+          "설계",
+          "컨셉, 핵심 규칙, 레벨 구성과 필요한 작업을 직접 정했습니다."
+        ],
+        [
+          "요청",
+          "원하는 동작과 조건을 프롬프트로 작성했습니다."
+        ],
+        [
+          "검증",
+          "결과물을 직접 플레이하며 의도한 경험이 구현됐는지 확인했습니다."
+        ],
+        [
+          "조정",
+          "플레이 결과에 따라 데이터·밸런스·레벨을 조정하고 수정 방향을 결정했습니다."
+        ]
+      ]
+    }
   },
   "projects": [
     {
@@ -24,7 +68,7 @@ window.ARCHIVE_DATA = {
         "행성 확장"
       ],
       "note": "문서 기준 v1.0 · 2026.11.18",
-      "cover": "assets/media/82c6e304f4ad008f-thumb.webp",
+      "cover": "assets/screenshots/2026-11-24/wop-world.webp",
       "brief": {
         "title": [
           "World of",
@@ -80,7 +124,12 @@ window.ARCHIVE_DATA = {
           "wop-04"
         ]
       },
-      "cardText": "꽃에서 시작해, 행성으로."
+      "cardText": "꽃에서 시작해, 행성으로.",
+      "coverLayout": {
+        "fit": "cover",
+        "positionX": 50,
+        "positionY": 50
+      }
     },
     {
       "id": "ww",
@@ -96,7 +145,7 @@ window.ARCHIVE_DATA = {
         "퍼즐 해결"
       ],
       "note": "WordlessMage 문서를 함께 수록",
-      "cover": "assets/media/356f2968b216dbe0-thumb.webp",
+      "cover": "assets/screenshots/2026-11-24/ww-controls.webp",
       "brief": {
         "title": [
           "Wordless",
@@ -152,7 +201,12 @@ window.ARCHIVE_DATA = {
           "ww-15"
         ]
       },
-      "cardText": "마법으로 바꾸는 환경의 규칙."
+      "cardText": "마법으로 바꾸는 환경의 규칙.",
+      "coverLayout": {
+        "fit": "cover",
+        "positionX": 50,
+        "positionY": 50
+      }
     }
   ],
   "documents": [
@@ -169,7 +223,9 @@ window.ARCHIVE_DATA = {
       "version": "v1.0",
       "date": "2026-11-18",
       "status": "기초 문서",
-      "images": [],
+      "images": [
+        "capture-wop-world"
+      ],
       "sections": [
         {
           "title": "게임 기획서 본문",
@@ -1791,7 +1847,8 @@ window.ARCHIVE_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "cover": "assets/screenshots/2026-11-24/wop-world.webp"
     },
     {
       "id": "wop-01",
@@ -6006,7 +6063,10 @@ window.ARCHIVE_DATA = {
       "version": "미기록",
       "date": null,
       "status": "기초 문서",
-      "images": [],
+      "images": [
+        "capture-ww-controls",
+        "capture-ww-map"
+      ],
       "sections": [
         {
           "title": "게임 기획서 본문",
@@ -8255,7 +8315,8 @@ window.ARCHIVE_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "cover": "assets/screenshots/2026-11-24/ww-controls.webp"
     },
     {
       "id": "ww-12",
@@ -8271,7 +8332,7 @@ window.ARCHIVE_DATA = {
       "date": null,
       "status": "기초 문서",
       "images": [
-        "img-51d1b8617e53e536"
+        "capture-ww-controls"
       ],
       "sections": [
         {
@@ -8487,7 +8548,8 @@ window.ARCHIVE_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "cover": "assets/screenshots/2026-11-24/ww-controls.webp"
     },
     {
       "id": "ww-13",
@@ -9431,7 +9493,7 @@ window.ARCHIVE_DATA = {
       "date": null,
       "status": "기초 문서",
       "images": [
-        "img-a94877d4b97bf384"
+        "capture-ww-map"
       ],
       "sections": [
         {
@@ -9647,7 +9709,8 @@ window.ARCHIVE_DATA = {
             }
           ]
         }
-      ]
+      ],
+      "cover": "assets/screenshots/2026-11-24/ww-map.webp"
     },
     {
       "id": "ww-18",
@@ -13196,6 +13259,86 @@ window.ARCHIVE_DATA = {
       "license": "미기록",
       "version": "미기록",
       "note": "기획 문서에 포함된 이미지입니다. 게임 원본 에셋과는 별도입니다."
+    },
+    {
+      "id": "capture-wop-world",
+      "name": "World of Plant · 생산과 자동화",
+      "projects": [
+        "wop"
+      ],
+      "type": "스크린샷",
+      "file": "assets/screenshots/2026-11-24/wop-world.webp",
+      "preview": "assets/screenshots/2026-11-24/wop-world.webp",
+      "version": "2026-11-24 캡처",
+      "source": "현재 Unity 프로젝트 실행 화면",
+      "license": "프로젝트 내 사용",
+      "note": "현재 프로젝트 소스로 실행한 게임 화면.",
+      "sourceDocs": [
+        "wop-overview"
+      ],
+      "width": 1600,
+      "height": 900,
+      "bytes": 179846
+    },
+    {
+      "id": "capture-ww-controls",
+      "name": "Wordless Mage · 이동과 점프",
+      "projects": [
+        "ww"
+      ],
+      "type": "스크린샷",
+      "file": "assets/screenshots/2026-11-24/ww-controls.webp",
+      "preview": "assets/screenshots/2026-11-24/ww-controls.webp",
+      "version": "2026-11-24 캡처",
+      "source": "현재 Unity 프로젝트 실행 화면",
+      "license": "프로젝트 내 사용",
+      "note": "현재 프로젝트 소스로 실행한 게임 화면.",
+      "sourceDocs": [
+        "ww-overview",
+        "ww-12"
+      ],
+      "width": 1341,
+      "height": 754,
+      "bytes": 118506
+    },
+    {
+      "id": "capture-ww-map",
+      "name": "Wordless Mage · 스테이지 선택",
+      "projects": [
+        "ww"
+      ],
+      "type": "스크린샷",
+      "file": "assets/screenshots/2026-11-24/ww-map.webp",
+      "preview": "assets/screenshots/2026-11-24/ww-map.webp",
+      "version": "2026-11-24 캡처",
+      "source": "현재 Unity 프로젝트 실행 화면",
+      "license": "프로젝트 내 사용",
+      "note": "현재 프로젝트 소스로 실행한 게임 화면.",
+      "sourceDocs": [
+        "ww-overview",
+        "ww-17"
+      ],
+      "width": 1514,
+      "height": 852,
+      "bytes": 63360
+    },
+    {
+      "id": "capture-ww-result",
+      "name": "Wordless Mage · 결과 화면 검수",
+      "projects": [
+        "ww"
+      ],
+      "type": "스크린샷",
+      "file": "assets/screenshots/2026-11-24/ww-result.webp",
+      "preview": "assets/screenshots/2026-11-24/ww-result.webp",
+      "version": "2026-11-24 캡처",
+      "source": "현재 Unity 프로젝트 실행 화면",
+      "license": "프로젝트 내 사용",
+      "note": "분리된 테스트 진행도로 캡처한 결과 UI. 실제 플레이 기록이 아닙니다.",
+      "sourceDocs": [],
+      "width": 1514,
+      "height": 852,
+      "bytes": 56946
     }
   ],
   "releases": [
