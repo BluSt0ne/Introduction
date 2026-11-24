@@ -389,7 +389,7 @@ body:not(.nx-overview) .nx-rail{display:none}
 @media (max-width:900px){.nx-intro{grid-template-columns:1fr;gap:28px}}
 @media (max-width:480px){.nx-profile-id img{width:76px;height:98px}.nx-tools-list{grid-template-columns:1fr}}
 /* profile visuals */
-.nx-tool-tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px}
+.nx-tool-tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .nx-tool-tiles li{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border:1px solid var(--line);border-radius:10px;background:#0f1813}
 .nx-tool-tiles .nx-ico{width:22px;height:22px;color:var(--accent)}
 .nx-tool-tiles span{font-size:11px;color:var(--muted);white-space:nowrap}

@@ -65,13 +65,28 @@ window.SHOWCASE_DATA = {
         },
         {
           "icon": "doc",
-          "name": "MS Office",
-          "logo": "assets/logos/microsoft-office.svg"
+          "name": "PowerPoint",
+          "logo": "assets/logos/powerpoint.svg"
         },
         {
-          "icon": "grid",
-          "name": "Workspace",
-          "logo": "assets/logos/google-workspace.svg"
+          "icon": "chart",
+          "name": "Excel",
+          "logo": "assets/logos/excel.svg"
+        },
+        {
+          "icon": "doc",
+          "name": "Word",
+          "logo": "assets/logos/word.svg"
+        },
+        {
+          "icon": "check",
+          "name": "Jira",
+          "logo": "assets/logos/jira.svg"
+        },
+        {
+          "icon": "doc",
+          "name": "Confluence",
+          "logo": "assets/logos/confluence.svg"
         }
       ],
       "historyTitle": "HISTORY",
