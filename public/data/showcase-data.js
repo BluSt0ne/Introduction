@@ -105,15 +105,15 @@ window.SHOWCASE_DATA = {
           "icon": "",
           "marks": [
             {
-              "src": "assets/history/wop-game.svg",
+              "src": "assets/history/wop-pixel.svg",
               "label": "World of Plant"
             },
             {
-              "src": "assets/history/wordless-mage-game.svg",
+              "src": "assets/history/wordless-mage-pixel.svg",
               "label": "Wordless Mage"
             },
             {
-              "src": "assets/history/galactica-game.svg",
+              "src": "assets/history/galactica-pixel.svg",
               "label": "Galactica"
             }
           ]
@@ -125,7 +125,7 @@ window.SHOWCASE_DATA = {
           "icon": "",
           "marks": [
             {
-              "src": "assets/history/triple-showdown-game.svg",
+              "src": "assets/history/triple-showdown-pixel.svg",
               "label": "Triple Showdown"
             }
           ]
@@ -141,7 +141,7 @@ window.SHOWCASE_DATA = {
               "label": "I2P × O2CUBE 동아리"
             },
             {
-              "src": "assets/history/lone-lantern-game.svg",
+              "src": "assets/history/lone-lantern-pixel.svg",
               "label": "Lone Lantern"
             }
           ]
@@ -169,7 +169,7 @@ window.SHOWCASE_DATA = {
               "label": "넷마블문화재단"
             },
             {
-              "src": "assets/history/defair-game.svg",
+              "src": "assets/history/defair-pixel.svg",
               "label": "디페어"
             }
           ]
@@ -334,7 +334,7 @@ window.SHOWCASE_DATA = {
             "reason": "같은 배치를 반복해서 놓는 수고를 줄이고, 원본을 수정해도 진행 중인 시공이 영향을 받지 않게 하려는 설계입니다."
           }
         ],
-        "logo": "assets/history/wop-game.svg"
+        "logo": "assets/history/wop-pixel.svg"
       },
       {
         "id": "ww",
@@ -399,7 +399,7 @@ window.SHOWCASE_DATA = {
             "reason": "빠르게 다음 레벨로 넘어가려는 플레이와 완벽하게 풀려는 플레이를 함께 수용하려는 설계입니다. 진행을 막지 않으면서 이전 레벨에 돌아올 이유도 남겼습니다."
           }
         ],
-        "logo": "assets/history/wordless-mage-game.svg"
+        "logo": "assets/history/wordless-mage-pixel.svg"
       }
     ],
     "labels": {

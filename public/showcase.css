@@ -257,8 +257,9 @@
 .nx-ps-shots figcaption{font-size:12px;color:var(--muted);margin-top:6px}
 .nx-pj{margin-top:26px}
 .nx-pj-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.nx-pj-mark{display:grid;place-items:center;width:48px;height:48px;flex:none;color:var(--accent)}
+.nx-pj-mark{display:grid;place-items:center;width:48px;height:48px;flex:none;color:var(--accent);background:#fff;border-radius:8px;overflow:hidden}
 .nx-pj-mark img{width:100%;height:100%;object-fit:contain}
+.nx-pj-mark img[src$="-pixel.svg"],.nx-history-mark img[src$="-pixel.svg"]{image-rendering:pixelated}
 .nx-pj.ww .nx-pj-mark{color:#d9b96e}
 .nx-pj-mark .nx-ico{width:22px;height:22px}
 .nx-pj-head h3{font-size:22px;font-weight:600;letter-spacing:-.04em}
