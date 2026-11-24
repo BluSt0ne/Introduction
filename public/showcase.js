@@ -201,10 +201,17 @@ function drawPlanet(count) {
 
 
 
+/* project pages: long work-step text starts folded, first step open */
+function foldSteps(main) {
+  $$('.production-step:not(.nx-fold)', main).forEach((st, i) => { st.classList.add('nx-fold'); if (i === 0) st.classList.add('nx-open'); const h = $('.production-content>h3', st); if (h) { h.tabIndex = 0; h.setAttribute('role', 'button'); h.setAttribute('aria-expanded', i === 0); } });
+}
+document.addEventListener('click', ev => { const h = ev.target.closest('.production-step.nx-fold .production-content>h3'); if (!h) return; const st = h.closest('.production-step'); st.classList.toggle('nx-open'); h.setAttribute('aria-expanded', st.classList.contains('nx-open')); });
+document.addEventListener('keydown', ev => { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.matches?.('.production-step.nx-fold .production-content>h3')) { ev.preventDefault(); ev.target.click(); } });
 let cleanups = [];
 function mount(force) {
   const main = $('#main'); const page = (location.hash.slice(1) || 'overview').split(/[/?]/)[0];
   document.body.classList.toggle('nx-overview', page === 'overview');
+  if (page === 'project') foldSteps(main);
   if (page !== 'overview') { cleanups.forEach(f => f()); cleanups = []; return; }
   if ($('#nx-play', main) && !force) return;
   cleanups.forEach(f => f()); cleanups = [];
