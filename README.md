@@ -109,3 +109,5 @@ Chrome 또는 Edge에서 편집 도구를 열고 **폴더 연결**로 이 저장
 
 AI 활용 페이지: 상단 AI 활용 또는 각 프로젝트의 AI 활용 과정에서 열 수 있습니다. editor.html의 AI 활용 탭에서 담당 업무·도구·개발 흐름을 수정하고 실시간 미리보기로 확인합니다.
 2026-11-24 캡처: public/assets/screenshots/2026-11-24. WOP는 현재 소스의 Windows 빌드, WW는 기존 level-review 기능으로 캡처했습니다. WW 결과 이미지는 테스트 진행도이며 실제 클리어 기록이 아닙니다. 기존 상세 문서의 본문과 이전 리소스는 보존했습니다.
+
+AI 활용 상세 원고: public/content/ai-development.md. 사용 안내: Markdown_편집_안내.md. Markdown의 ## 제목은 탭, ### 제목은 펼침 항목, 협업 흐름은 단계 선택으로 표시됩니다. 원고를 직접 수정한 경우 node scripts/sync-ai-markdown.mjs 실행 후 페이지 데이터와 함께 커밋합니다. 편집 도구로 가져오면 페이지 데이터와 MD를 폴더/ZIP에 함께 저장합니다.

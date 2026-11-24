@@ -115,7 +115,84 @@ function projectPage(id){const p=project(id),b=BRIEFS[id];if(!p||!b)return empty
  <section class="brief-section" id="flow"><div class="brief-heading"><h2>플레이 흐름</h2></div><div class="play-flow">${b.steps.map(([title,desc],i)=>`<div class="flow-step"><span class="step-num">${String(i+1).padStart(2,'0')}</span><h3>${esc(title)}</h3><p>${esc(desc)}</p></div>`).join('')}</div></section>
  <section class="brief-section" id="build"><div class="brief-heading"><h2>제작 방식</h2><a class="button quiet" href="#ai-development">AI 활용 과정</a></div><div class="build-grid">${b.build.map(([title,desc])=>`<div class="build-item"><h3>${esc(title)}</h3><p>${esc(desc)}</p></div>`).join('')}</div></section>
  <section class="brief-section related-section"><h2>상세 기획</h2><div class="related-docs">${b.featured.map(id=>{const d=DATA.documents.find(d=>d.id===id);return `<button class="related-doc" data-open-doc="${d.id}"><img class="related-doc-cover" style="${coverImageStyle(d)}" src="${href(documentCover(d))}" alt="" loading="lazy">${docIcon(d)}<b>${esc(d.title)}</b><span class="doc-plus" aria-hidden="true">+</span></button>`}).join('')}</div></section></article>`;}
-function aiDevelopment(){const a=DATA.site.aiDevelopment||window.ARCHIVE_DATA.site.aiDevelopment;if(!a)return empty('AI 활용 내용을 준비 중입니다.');return `<article class="ai-page">${titleBlock(esc(a.title),esc(a.intro),'DESIGN & DEVELOPMENT')}<section class="ai-ownership"><h2>직접 담당한 일</h2><ul class="ai-roles">${a.responsibilities.map(text=>`<li>${esc(text)}</li>`).join('')}</ul></section><section class="ai-section"><h2>도구별 활용</h2><div class="ai-tools">${a.tools.map(([name,text],i)=>`<article class="ai-tool"><span class="step-num">0${i+1}</span><h3>${esc(name)}</h3><p>${esc(text)}</p></article>`).join('')}</div></section><section class="ai-section"><h2>개발 흐름</h2><div class="play-flow">${a.steps.map(([title,text],i)=>`<article class="flow-step"><span class="step-num">0${i+1}</span><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`).join('')}</div></section><div class="ai-projects">${DATA.projects.map(p=>`<a class="button" href="#project/${esc(p.id)}">${mark(p.id)}${esc(p.name)}</a>`).join('')}</div></article>`;}
+let aiActiveSection=0,aiActiveStep=0;
+function parseAIMarkdown(value){
+ const sections=[];let current=null,fenced=false;
+ for(const line of String(value||'').replace(/^\uFEFF/,'').replace(/\r\n?/g,'\n').split('\n')){
+  if(/^\s*```/.test(line))fenced=!fenced;
+  const heading=!fenced&&line.match(/^##\s+(.+)$/);
+  if(heading){current={title:heading[1].trim(),lines:[]};sections.push(current);}
+  else if(current)current.lines.push(line);
+  else if(!/^#\s/.test(line)&&line.trim()){current={title:'내용',lines:[line]};sections.push(current);}
+ }
+ // A short introductory sentence belongs to the page header, not an extra tab.
+ if(sections.length>1&&sections[0].title==='내용')sections.shift();
+ return sections;
+}
+function markdownURL(value){const raw=String(value||'').trim();if(/^file:/i.test(raw))return '';return safeURL(raw);}
+function markdownInline(value){
+ const text=String(value||''),pattern=/\[([^\]]+)\]\(([^\s)]+)\)|\*\*([^*]+)\*\*|`([^`]+)`/g;let html='',last=0;
+ for(const m of text.matchAll(pattern)){
+  html+=esc(text.slice(last,m.index));
+  if(m[1]){const url=markdownURL(m[2]);html+=url?`<a href="${esc(url)}" ${/^https?:/i.test(url)?'target="_blank" rel="noopener noreferrer"':''}>${esc(m[1])}</a>`:esc(m[1]);}
+  else html+=m[3]?`<strong>${esc(m[3])}</strong>`:`<code>${esc(m[4])}</code>`;
+  last=m.index+m[0].length;
+ }
+ return html+esc(text.slice(last));
+}
+function markdownCells(line){return line.trim().replace(/^\|/,'').replace(/\|$/,'').split(/(?<!\\)\|/).map(cell=>cell.trim().replace(/\\\|/g,'|'));}
+function renderMarkdownBody(lines){
+ let html='',i=0;
+ const special=line=>/^\s*(?:#{1,6}\s|```|[-*]\s|\d+\.\s|>\s?|!\[|\|)/.test(line);
+ while(i<lines.length){
+  const line=lines[i].trim();if(!line){i++;continue;}
+  if(/^```/.test(line)){const code=[];i++;while(i<lines.length&&!/^\s*```/.test(lines[i]))code.push(lines[i++]);i++;html+=`<pre><code>${esc(code.join('\n'))}</code></pre>`;continue;}
+  const image=line.match(/^!\[([^\]]*)\]\(([^\s)]+)\)$/);
+  if(image){const src=markdownURL(image[2]);if(src)html+=`<figure class="ai-figure"><button type="button" data-md-image="${esc(src)}" data-md-alt="${esc(image[1])}" aria-label="${esc(image[1]||'이미지')} 확대"><img src="${esc(src)}" alt="${esc(image[1])}" loading="lazy"><span aria-hidden="true">확대 ↗</span></button><figcaption>${esc(image[1])}</figcaption></figure>`;i++;continue;}
+  const heading=line.match(/^#{1,6}\s+(.+)$/);if(heading){html+=`<h4>${markdownInline(heading[1])}</h4>`;i++;continue;}
+  if(line.startsWith('|')&&i+1<lines.length&&/^\|?[\s:|-]+\|[\s:|-]*$/.test(lines[i+1].trim())){
+   const headers=markdownCells(line),rows=[];i+=2;while(i<lines.length&&lines[i].trim().startsWith('|'))rows.push(markdownCells(lines[i++]));
+   html+=`<div class="doc-table-scroll"><table class="doc-content-table"><thead><tr>${headers.map(cell=>`<th scope="col">${markdownInline(cell)}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${headers.map((_,j)=>`<td>${markdownInline(row[j]||'')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;continue;
+  }
+  if(/^[-*]\s/.test(line)||/^\d+\.\s/.test(line)){const ordered=/^\d+\./.test(line),tag=ordered?'ol':'ul',items=[];while(i<lines.length&&(ordered?/^\s*\d+\.\s/:/^\s*[-*]\s/).test(lines[i]))items.push(lines[i++].replace(/^\s*(?:[-*]|\d+\.)\s+/,''));html+=`<${tag}>${items.map(item=>`<li>${markdownInline(item)}</li>`).join('')}</${tag}>`;continue;}
+  if(line.startsWith('>')){const quote=[];while(i<lines.length&&/^\s*>/.test(lines[i]))quote.push(lines[i++].replace(/^\s*>\s?/,''));html+=`<blockquote>${quote.map(markdownInline).join('<br>')}</blockquote>`;continue;}
+  const paragraph=[line];i++;while(i<lines.length&&lines[i].trim()&&!special(lines[i]))paragraph.push(lines[i++].trim());html+=`<p>${markdownInline(paragraph.join(' '))}</p>`;
+ }
+ return html;
+}
+function markdownSubsections(lines){
+ const groups=[];let current=null,fenced=false;
+ for(const line of lines){if(/^\s*```/.test(line))fenced=!fenced;const heading=!fenced&&line.match(/^###\s+(.+)$/);if(heading){current={title:heading[1],lines:[]};groups.push(current);}else{if(!current){current={title:'',lines:[]};groups.push(current);}current.lines.push(line);}}
+ return groups;
+}
+function aiSectionBody(section){
+ const groups=markdownSubsections(section.lines);
+ if(section.title==='협업 흐름'){
+  const steps=groups.filter(g=>g.title);aiActiveStep=Math.min(aiActiveStep,Math.max(0,steps.length-1));
+  return `<div class="ai-stepper" role="group" aria-label="개발 단계">${steps.map((step,index)=>`<button type="button" data-ai-step="${index}" aria-pressed="${index===aiActiveStep}" class="${index===aiActiveStep?'selected':''}"><span>${String(index+1).padStart(2,'0')}</span>${esc(step.title.replace(/^\d+\.\s*/,''))}</button>`).join('')}</div><div class="ai-step-detail" aria-live="polite"><h3>${esc(steps[aiActiveStep]?.title||'')}</h3>${renderMarkdownBody(steps[aiActiveStep]?.lines||[])}</div>`;
+ }
+ let number=0;
+ return groups.map(group=>group.title?`<details class="ai-detail" ${number++===0?'open':''}><summary>${esc(group.title)}<span aria-hidden="true">+</span></summary><div>${renderMarkdownBody(group.lines)}</div></details>`:renderMarkdownBody(group.lines)).join('');
+}
+function aiMarkdownPage(a){
+ const sections=parseAIMarkdown(a.markdown);if(!sections.length)return titleBlock(esc(a.title),esc(a.intro),'GAME DESIGN × AI');
+ aiActiveSection=Math.min(aiActiveSection,sections.length-1);const active=sections[aiActiveSection];
+ const theme=/World of Plant/i.test(active.title)?'wop':/Wordless Mage/i.test(active.title)?'ww':'shared';
+ return `<article class="ai-page ai-interactive" data-ai-theme="${theme}">${titleBlock(esc(a.title),esc(a.intro),'GAME DESIGN × AI')}<div class="ai-tool-pills" aria-label="사용한 도구">${a.tools.map(([name])=>`<span>${esc(name)}</span>`).join('')}</div><nav class="ai-tabs" role="tablist" aria-label="AI 활용 목차">${sections.map((section,index)=>`<button type="button" role="tab" id="ai-tab-${index}" aria-controls="ai-section-panel" aria-selected="${index===aiActiveSection}" tabindex="${index===aiActiveSection?0:-1}" data-ai-section="${index}">${esc(section.title)}</button>`).join('')}</nav><section id="ai-section-panel" class="ai-section-panel" role="tabpanel" aria-labelledby="ai-tab-${aiActiveSection}" tabindex="0"><header class="ai-panel-heading"><span>${String(aiActiveSection+1).padStart(2,'0')} / ${String(sections.length).padStart(2,'0')}</span><h2>${esc(active.title)}</h2></header><div class="ai-markdown">${aiSectionBody(active)}</div></section></article>`;
+}
+function selectAISection(index){aiActiveSection=index;aiActiveStep=0;render();document.querySelector(`[data-ai-section="${index}"]`)?.focus();}
+document.addEventListener('click',event=>{
+ const tab=event.target.closest('[data-ai-section]');if(tab){selectAISection(Number(tab.dataset.aiSection));return;}
+ const step=event.target.closest('[data-ai-step]');if(step){aiActiveStep=Number(step.dataset.aiStep);render();document.querySelector(`[data-ai-step="${aiActiveStep}"]`)?.focus();return;}
+ const shot=event.target.closest('[data-md-image]');if(shot){lastFocus=document.activeElement;$('#resource-title').textContent=shot.dataset.mdAlt||'이미지';$('#resource-body').innerHTML=`<div class="resource-full-image"><img src="${href(shot.dataset.mdImage)}" alt="${esc(shot.dataset.mdAlt)}"></div>`;$('#resource-dialog').showModal();}
+});
+document.addEventListener('keydown',event=>{
+ const tab=event.target.closest('[data-ai-section]');if(!tab||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+ event.preventDefault();const count=parseAIMarkdown((DATA.site.aiDevelopment||window.ARCHIVE_DATA.site.aiDevelopment).markdown).length;
+ selectAISection(event.key==='Home'?0:event.key==='End'?count-1:(Number(tab.dataset.aiSection)+(event.key==='ArrowRight'?1:-1)+count)%count);
+});
+
+function aiDevelopment(){const a={...window.ARCHIVE_DATA.site.aiDevelopment,...DATA.site.aiDevelopment};if(a.markdown?.trim())return aiMarkdownPage(a);if(!a.title)return empty('AI 활용 내용을 준비 중입니다.');return `<article class="ai-page">${titleBlock(esc(a.title),esc(a.intro),'DESIGN & DEVELOPMENT')}<section class="ai-ownership"><h2>직접 담당한 일</h2><ul class="ai-roles">${a.responsibilities.map(text=>`<li>${esc(text)}</li>`).join('')}</ul></section><section class="ai-section"><h2>도구별 활용</h2><div class="ai-tools">${a.tools.map(([name,text],i)=>`<article class="ai-tool"><span class="step-num">0${i+1}</span><h3>${esc(name)}</h3><p>${esc(text)}</p></article>`).join('')}</div></section><section class="ai-section"><h2>개발 흐름</h2><div class="play-flow">${a.steps.map(([title,text],i)=>`<article class="flow-step"><span class="step-num">0${i+1}</span><h3>${esc(title)}</h3><p>${esc(text)}</p></article>`).join('')}</div></section><div class="ai-projects">${DATA.projects.map(p=>`<a class="button" href="#project/${esc(p.id)}">${mark(p.id)}${esc(p.name)}</a>`).join('')}</div></article>`;}
 function projectTabs(includeSite=false){return `<div class="filter-tabs" role="group" aria-label="프로젝트 필터">${[['all','전체'],['wop','WOP'],['ww','WW'],...(includeSite?[['site','아카이브']]:[])].map(([id,label])=>`<button data-filter-project="${id}" class="${state.project===id?'selected':''}" aria-pressed="${state.project===id}">${label}</button>`).join('')}</div>`;}
 function empty(title='표시할 항목이 없습니다.',desc='다른 분류를 선택해 주세요.'){return `<div class="empty"><h2>${title}</h2><p>${desc}</p><button class="button" data-reset>필터 초기화</button></div>`;}
 function matchDoc(d){return(state.project==='all'||d.project===state.project)&&(state.kind==='all'||d.kind===state.kind);}
@@ -135,11 +212,11 @@ function openResource(id){const r=DATA.resources.find(r=>r.id===id);if(!r)return
 function toast(message){$('.toast')?.remove();const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');el.textContent=message;document.body.append(el);setTimeout(()=>el.remove(),2500);}
 async function copyDoc(id){const url=new URL(location.href);url.hash='document/'+id;try{await navigator.clipboard.writeText(url.href);toast('문서 링크를 복사했습니다.');}catch{toast('주소창의 링크를 복사해 주세요.');location.hash='document/'+id;}}
 document.addEventListener('click',e=>{if(e.target.closest('.skip-link')){e.preventDefault();$('#main').focus();return;}const doc=e.target.closest('[data-open-doc]');if(doc){openDoc(doc.dataset.openDoc);return;}const resource=e.target.closest('[data-open-resource]');if(resource){openResource(resource.dataset.openResource);return;}const kf=e.target.closest('[data-filter-kind]');if(kf){filter({kind:kf.dataset.filterKind});return;}const pf=e.target.closest('[data-filter-project]');if(pf){filter({project:pf.dataset.filterProject});return;}const reset=e.target.closest('[data-reset]');if(reset){filter({project:'all',kind:'all',});return;}const copy=e.target.closest('[data-copy-doc]');if(copy){copyDoc(copy.dataset.copyDoc);return;}const scroll=e.target.closest('[data-scroll]');if(scroll){e.preventDefault();document.getElementById(scroll.dataset.scroll)?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});return;}if(e.target.closest('[data-close-all]')){document.querySelectorAll('dialog[open]').forEach(d=>d.close());}});
-$('#close-dialog').addEventListener('click',()=>$('#document-dialog').close());$('#close-resource').addEventListener('click',()=>$('#resource-dialog').close());$('#document-dialog').addEventListener('close',()=>lastFocus?.focus());
+$('#close-dialog').addEventListener('click',()=>$('#document-dialog').close());$('#close-resource').addEventListener('click',()=>$('#resource-dialog').close());$('#resource-dialog').addEventListener('close',()=>lastFocus?.focus());$('#document-dialog').addEventListener('close',()=>lastFocus?.focus());
 for(const dlg of document.querySelectorAll('dialog'))dlg.addEventListener('click',e=>{if(e.target===dlg){const r=dlg.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dlg.close();}});
 document.addEventListener('change',e=>{if(e.target.id==='kind-filter')filter({kind:e.target.value});});
 window.addEventListener('hashchange',()=>{document.querySelectorAll('dialog[open]').forEach(d=>d.close());render();window.scrollTo({top:0,behavior:'instant'});});
-async function restoreDraftMedia(){if(new URLSearchParams(location.search).get('draft')!=='1'||!('indexedDB'in window))return;const db=await new Promise((resolve,reject)=>{const req=window.indexedDB.open('project-archive-editor',1);req.onupgradeneeded=()=>req.result.createObjectStore('assets',{keyPath:'path'});req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});const assets=await new Promise((resolve,reject)=>{const req=db.transaction('assets').objectStore('assets').getAll();req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});for(const asset of assets){if(!asset.type?.startsWith('image/')&&!asset.type?.startsWith('video/'))continue;const url=URL.createObjectURL(new Blob([asset.bytes],{type:asset.type}));for(const p of DATA.projects)if(p.cover===asset.path)p.cover=url;for(const d of DATA.documents){if(d.cover===asset.path)d.cover=url;for(const s of d.sections)for(const b of s.blocks)if((b.type==='image'||b.type==='video')&&b.src===asset.path)b.src=url;}for(const r of DATA.resources)if(r.preview===asset.path)r.preview=url;}db.close();}
+async function restoreDraftMedia(){if(new URLSearchParams(location.search).get('draft')!=='1'||!('indexedDB'in window))return;const db=await new Promise((resolve,reject)=>{const req=window.indexedDB.open('project-archive-editor',1);req.onupgradeneeded=()=>req.result.createObjectStore('assets',{keyPath:'path'});req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});const assets=await new Promise((resolve,reject)=>{const req=db.transaction('assets').objectStore('assets').getAll();req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});for(const asset of assets){if(!asset.type?.startsWith('image/')&&!asset.type?.startsWith('video/'))continue;const url=URL.createObjectURL(new Blob([asset.bytes],{type:asset.type}));if(DATA.site.aiDevelopment?.markdown)DATA.site.aiDevelopment.markdown=DATA.site.aiDevelopment.markdown.replaceAll(']('+asset.path+')',']('+url+')');for(const p of DATA.projects)if(p.cover===asset.path)p.cover=url;for(const d of DATA.documents){if(d.cover===asset.path)d.cover=url;for(const s of d.sections)for(const b of s.blocks)if((b.type==='image'||b.type==='video')&&b.src===asset.path)b.src=url;}for(const r of DATA.resources)if(r.preview===asset.path)r.preview=url;}db.close();}
 if(new URLSearchParams(location.search).get('draft')==='1')restoreDraftMedia().catch(()=>{}).finally(render);else render();
 
 initLivePreview();
