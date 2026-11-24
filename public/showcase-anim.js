@@ -61,6 +61,65 @@ function rocket(c, x, y, ang, s, flame) {
   c.restore();
 }
 
+/* galaxy view: a spiral of planets, lit one after another outward from home */
+const GAL = (() => {
+  const r = rnd(21), pts = [];
+  for (let tries = 0; pts.length < 64 && tries < 4000; tries++) {
+    const arm = tries % 3, d = .12 + Math.pow(r(), .8) * .88, an = arm * TAU / 3 + d * 4.2 + (r() - .5) * .55;
+    const x = Math.cos(an) * d, y = Math.sin(an) * d * .62, s = .55 + r() * .6;
+    if (Math.hypot(x, y / .62) < .1) continue;
+    if (pts.some(p => Math.hypot(p.x - x, p.y - y) < .075)) continue;
+    pts.push({ x, y, s, d, kind: pts.length % 3, j: r() });
+  }
+  pts.forEach(p => { p.lit = 15.4 + p.d * 6.5 + p.j * .6; });
+  pts.forEach(p => { let best = { x: 0, y: 0 }, bd = Math.hypot(p.x, p.y); pts.forEach(q => { if (q.lit < p.lit - 1.3) { const d = Math.hypot(p.x - q.x, p.y - q.y); if (d < bd) { bd = d; best = q; } } }); p.src = best; });
+  const dust = []; for (let i = 0; i < 420; i++) { const arm = i % 3, d = Math.pow(r(), .7), an = arm * TAU / 3 + d * 4.2 + (r() - .5) * .8; dust.push([Math.cos(an) * d, Math.sin(an) * d * .62, r()]); }
+  return { pts, dust };
+})();
+function galaxy(c, W, H, S, t, P0, P1, LW, ORB) {
+  const out = { gained: 0, pulse: 0 };
+  const show = seg(t, 13.2, 15.2); if (show <= 0) return out;
+  const CX = W * .6, CY = H * .56, RAD = W * 2.9;
+  c.save(); c.globalAlpha = show;
+  const core = c.createRadialGradient(CX, CY, 0, CX, CY, RAD * .5); core.addColorStop(0, a(ACC, .1)); core.addColorStop(1, a(ACC, 0));
+  c.fillStyle = core; c.beginPath(); c.arc(CX, CY, RAD * .5, 0, TAU); c.fill();
+  GAL.dust.forEach(([x, y, k]) => { c.fillStyle = a(INK, .15 + .35 * k); c.beginPath(); c.arc(CX + x * RAD, CY + y * RAD, (.5 + k) * LW, 0, TAU); c.fill(); });
+  GAL.pts.forEach(p => {
+    const x = CX + p.x * RAD, y = CY + p.y * RAD, r = S * .09 * p.s;
+    const lit = p.lit, g = seg(t, lit, lit + 1.2);
+    if (g > 0) {
+      const halo = c.createRadialGradient(x, y, r * .6, x, y, r * (2.6 + .3 * Math.sin(t * 2 + p.j * 6)));
+      halo.addColorStop(0, a(ACC, .45 * g)); halo.addColorStop(1, a(ACC, 0));
+      c.fillStyle = halo; c.beginPath(); c.arc(x, y, r * 3, 0, TAU); c.fill();
+    }
+    c.fillStyle = g > 0 ? a(ACC, .2 + .5 * g) : a(MUTED, .12); c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill();
+    c.strokeStyle = a(g > 0 ? ACC : MUTED, .35 + .5 * g); c.lineWidth = 1.2 * LW; c.beginPath(); c.arc(x, y, r, 0, TAU); c.stroke();
+    if (g > 0 && g < 1) { c.strokeStyle = a(SUN, .8 * (1 - g)); c.lineWidth = 1.4 * LW; c.beginPath(); c.arc(x, y, r * (1 + g * 2.2), 0, TAU); c.stroke(); }
+  });
+  // tiny rockets: each planet is reached from the nearest planet that was already running
+  GAL.pts.forEach(p => {
+    const k = seg(t, p.lit - 1.2, p.lit); if (k <= 0 || k >= 1) return;
+    const A = [CX + p.src.x * RAD, CY + p.src.y * RAD], B = [CX + p.x * RAD, CY + p.y * RAD], u = ease(k);
+    const x = lerp(A[0], B[0], u), y = lerp(A[1], B[1], u);
+    for (let i = 1; i < 5; i++) { const uu = Math.max(0, u - i * .04); c.fillStyle = a(SUN, .5 * (1 - i / 5)); c.beginPath(); c.arc(lerp(A[0], B[0], uu), lerp(A[1], B[1], uu), (1.4 - i * .2) * LW, 0, TAU); c.fill(); }
+    rocket(c, x, y, Math.atan2(B[0] - A[0], -(B[1] - A[1])), S * .018 * LW, 1);
+  });
+  // energy from every running planet flows to the store
+  GAL.pts.forEach(p => {
+    if (t < p.lit + .4) return;
+    const x = CX + p.x * RAD, y = CY + p.y * RAD;
+    for (let n = 0; n < 8; n++) {
+      const t0 = p.lit + .4 + p.j * 1.5 + n * 1.6; if (t0 > t) break; const k = seg(t, t0, t0 + 1.3);
+      if (k >= 1) { out.gained++; out.pulse = Math.max(out.pulse, 1 - seg(t, t0 + 1.3, t0 + 1.6)); continue; }
+      const u = ease(k), mx = lerp(x, ORB.x, u) + Math.sin(u * Math.PI) * (y - ORB.y) * .15, my = lerp(y, ORB.y, u) - Math.sin(u * Math.PI) * (x - ORB.x) * .15;
+      c.fillStyle = a(SUN, .95); c.beginPath(); c.arc(mx, my, 2.2 * LW, 0, TAU); c.fill();
+      c.fillStyle = a(SUN, .2); c.beginPath(); c.arc(mx, my, 5.5 * LW, 0, TAU); c.fill();
+    }
+  });
+  c.restore();
+  return out;
+}
+
 function wopScene() {
   const slots = []; for (let i = 0; i < 10; i++) { const an = i * 2.399, d = .25 + .62 * Math.sqrt((i + .5) / 10); slots.push({ x: Math.cos(an) * d, y: Math.sin(an) * d, c: PET[i % 3] }); }
   const devs = [{ x: -.12, y: -.12, t: 4.2, kind: 'emitter' }, { x: .05, y: .3, t: 5.2, kind: 'battery' }];
@@ -71,34 +130,26 @@ function wopScene() {
   const SPEND = [[3.5, 0, 10], [4.5, 1, 8], [7.7, 'pad', 14]];
   const MAX = 40;
   return {
-    duration: 27,
-    stateAt: t => ({zoom:ease(seg(t,14,17.5)),galaxy:t>=17.5}),
+    duration: 24,
     // positions in planet-radius units, used by scripts/test.mjs to keep devices off the flowers
     layout: { flowers: slots.map(s => ({ x: s.x * .8, y: s.y * .8 })), devices: devs.map(d => ({ x: d.x * .8, y: d.y * .8 })), flowerRadius: .12, deviceRadius: .17 },
-    steps: [[0, '꽃 기르기'], [1.2, '에너지 수집'], [3.5, '장치 설치'], [6.0, '블루프린트'], [7.6, '로켓 발사'], [10.2, '같은 구조로 가동'], [14,'시야 확장'], [17.5,'은하 운송']],
+    steps: [[0, '꽃 기르기'], [1.2, '에너지 수집'], [3.5, '장치 설치'], [6.0, '블루프린트'], [7.6, '로켓 발사'], [10.2, '같은 구조로 가동'], [13.2, '은하 전체로 확장']],
     draw(c, W, H, t) {
       const S = Math.min(W, H * 1.6), fr = S * .026;
       c.fillStyle = '#111a15'; c.fillRect(0, 0, W, H);
       c.fillStyle = a(MUTED, .1); for (let x = S * .03; x < W; x += S * .04) for (let y = S * .03; y < H; y += S * .04) c.fillRect(x, y, 1, 1);
       const P0 = { x: W * .36, y: H * .58, r: Math.min(W * .21, H * .33) }, P1 = { x: W * .83, y: H * .6, r: Math.min(W * .14, H * .23) };
-      const zoom=ease(seg(t,14,17.5));
-      c.save();c.translate(W*.5,H*.5);c.scale(lerp(1,.55,zoom),lerp(1,.55,zoom));c.translate(-W*.5,-H*.5);
-      if(zoom>0){
-        const extra=[[-.16,.5,.08],[.1,-.15,.07],[.7,-.2,.09],[1.22,.1,.085],[1.23,.7,.09],[1.12,1.18,.08],[.46,1.25,.085],[-.18,1.12,.08]].map(([x,y,r])=>({x:x*W,y:y*H,r:r*S}));
-        const planets=[P0,P1,...extra],edges=[[0,1],[0,2],[0,3],[1,4],[1,5],[1,6],[1,7],[0,8],[0,9],[2,3],[4,5],[6,7],[8,9]];
-        c.save();c.globalAlpha=zoom;
-        edges.forEach(([from,to],i)=>{const start=16+i*.18;if(t<start)return;const p=planets[from],q=planets[to],dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy),ux=dx/len,uy=dy/len,bend=(i%2?1:-1)*len*.14;
-          const A=[p.x+ux*(p.r+S*.012),p.y+uy*(p.r+S*.012)],B=[q.x-ux*(q.r+S*.012),q.y-uy*(q.r+S*.012)],C=[(A[0]+B[0])/2-uy*bend,(A[1]+B[1])/2+ux*bend];
-          c.strokeStyle=a(ACC,.48);c.lineWidth=1.4;c.beginPath();c.moveTo(...A);c.quadraticCurveTo(...C,...B);c.stroke();
-          const k=((t-start)/3.2+i*.13)%1,at=u=>[(1-u)**2*A[0]+2*(1-u)*u*C[0]+u*u*B[0],(1-u)**2*A[1]+2*(1-u)*u*C[1]+u*u*B[1]],point=at(k),next=at(Math.min(.99999,k+.002));rocket(c,point[0],point[1],Math.atan2(next[0]-point[0],-(next[1]-point[1])),S*.034,1);
-        });
-        extra.forEach((p,i)=>{c.fillStyle='#15231b';c.strokeStyle=a(ACC,.8);c.lineWidth=1.5;c.beginPath();c.arc(p.x,p.y,p.r,0,TAU);c.fill();c.stroke();bloom(c,p.x-p.r*.28,p.y-p.r*.12,S*.012,PET[i%3],1);emitter(c,p.x+p.r*.27,p.y+p.r*.1,S*.025,1,t);});
-        c.restore();
-      }
-      const ORB = { x: W * .02 + S * .06, y: H * .04 + S * .06, r: S * .05 };
+      // camera: after the copy runs, pull back to the galaxy
+      const Z = lerp(1, .13, ease(seg(t, 13.0, 16.0))), CX = W * .6, CY = H * .56;
+      const toWorld = (x, y) => [CX + (x - CX) / Z, CY + (y - CY) / Z];
+      const ORBs = { x: W * .02 + S * .06, y: H * .04 + S * .06, r: S * .05 };
+      const [ox, oy] = toWorld(ORBs.x, ORBs.y), ORB = { x: ox, y: oy, r: ORBs.r / Z };
+      c.save(); c.translate(CX, CY); c.scale(Z, Z); c.translate(-CX, -CY);
+      const LW = 1 / Z;
+      const gx = galaxy(c, W, H, S, t, P0, P1, LW, ORB);
       const at = (p, s) => [p.x + s.x * p.r * .8, p.y + s.y * p.r * .8];
       const sc = P1.r / P0.r, green = seg(t, 11.3, 12.6);
-      [[P0, 1], [P1, green]].forEach(([p, g]) => { c.fillStyle = a(ACC, .03 + .05 * g); c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.fill(); c.strokeStyle = a(g > 0 ? ACC : MUTED, .3 + .3 * g); c.lineWidth = 1.2; c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.stroke(); });
+      [[P0, 1], [P1, green]].forEach(([p, g]) => { c.fillStyle = a(ACC, .03 + .05 * g); c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.fill(); c.strokeStyle = a(g > 0 ? ACC : MUTED, .3 + .3 * g); c.lineWidth = 1.2 * LW; c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.stroke(); });
 
       // energy motes: every bloomed flower on either planet feeds the store
       const sources = [...slots.map((s, i) => ({ p: P0, s, b: bt(i) })), ...slots.map((s, i) => ({ p: P1, s, b: copyBloom(i) }))];
@@ -110,8 +161,9 @@ function wopScene() {
           if (k >= 1) { gained++; pulse = Math.max(pulse, 1 - seg(t, t0 + .95, t0 + 1.3)); continue; }
           const u = ease(k), cx = (x + ORB.x) / 2, cy = Math.min(y, ORB.y) + H * .05;
           const mx = (1 - u) * (1 - u) * x + 2 * (1 - u) * u * cx + u * u * ORB.x, my = (1 - u) * (1 - u) * y + 2 * (1 - u) * u * cy + u * u * ORB.y;
-          c.fillStyle = a(SUN, .95); c.beginPath(); c.arc(mx, my, S * .006, 0, TAU); c.fill();
-          c.fillStyle = a(SUN, .18); c.beginPath(); c.arc(mx, my, S * .014, 0, TAU); c.fill();
+          const mf = 1 - seg(t, 13.0, 14.5); if (mf <= 0) continue;
+          c.fillStyle = a(SUN, .95 * mf); c.beginPath(); c.arc(mx, my, S * .006 * LW, 0, TAU); c.fill();
+          c.fillStyle = a(SUN, .18 * mf); c.beginPath(); c.arc(mx, my, S * .014 * LW, 0, TAU); c.fill();
         }
       });
       const pad = [P0.x + P0.r * .78, P0.y - P0.r * .62];
@@ -120,17 +172,6 @@ function wopScene() {
         const tp = target === 'pad' ? pad : at(P0, devs[target]);
         for (let i = 0; i < n; i++) { const t0 = ts + i * .06, k = seg(t, t0, t0 + .55); if (k <= 0) continue; spent++; if (k >= 1) continue; const u = ease(k); c.fillStyle = a(SUN, .9); c.beginPath(); c.arc(lerp(ORB.x, tp[0], u), lerp(ORB.y, tp[1], u), S * .006, 0, TAU); c.fill(); }
       });
-      // energy store (top-left)
-      const level = clamp((gained - spent) / MAX);
-      c.save(); c.beginPath(); c.arc(ORB.x, ORB.y, ORB.r, 0, TAU); c.clip();
-      c.fillStyle = a(SUN, .08); c.fillRect(ORB.x - ORB.r, ORB.y - ORB.r, ORB.r * 2, ORB.r * 2);
-      const top = ORB.y + ORB.r - level * ORB.r * 2;
-      c.fillStyle = a(SUN, .75); c.beginPath(); c.moveTo(ORB.x - ORB.r, ORB.y + ORB.r);
-      for (let x = -1; x <= 1.001; x += .1) c.lineTo(ORB.x + x * ORB.r, top + Math.sin(x * 4 + t * 3) * ORB.r * .06);
-      c.lineTo(ORB.x + ORB.r, ORB.y + ORB.r); c.closePath(); c.fill(); c.restore();
-      c.shadowColor = SUN; c.shadowBlur = 8 + 18 * level + 14 * pulse; c.strokeStyle = a(SUN, .55 + .4 * pulse); c.lineWidth = 1.5;
-      c.beginPath(); c.arc(ORB.x, ORB.y, ORB.r * (1 + .06 * pulse), 0, TAU); c.stroke(); c.shadowBlur = 0;
-
       const ring = (x, y, k, R, col) => { if (k <= 0 || k >= 1) return; c.strokeStyle = a(col, .6 * (1 - k)); c.lineWidth = 1.2; c.beginPath(); c.arc(x, y, k * R, 0, TAU); c.stroke(); };
       // home: cursor waves, then the emitter keeps pulsing
       const cur = tt => [P0.x + P0.r * .35 * Math.sin(tt * 1.3), P0.y + P0.r * .3 * Math.sin(tt * 2.1)];
@@ -172,7 +213,18 @@ function wopScene() {
         devs.forEach((d, i) => { const [x, y] = at(P1, d), k = seg(t, COPY_DEV + i * .15, COPY_DEV + i * .15 + .35); if (k <= 0) { c.strokeStyle = a(BLUE, .7 * ghost); c.lineWidth = 1; c.strokeRect(x - fr * sc * .5, y - fr * sc * .5, fr * sc, fr * sc); } else d.kind === 'emitter' ? emitter(c, x, y, S * .06 * sc, k, t) : battery(c, x, y, S * .055 * sc, k); });
       }
       c.restore();
-      if(zoom>0)label(c,'GALAXY NETWORK',W*.95,H*.07,Math.max(11,S*.024),a(ACC,zoom),'right');
+      // energy store (top-left)
+      gained += gx.gained; pulse = Math.max(pulse, gx.pulse);
+      const level = clamp((gained - spent) / MAX);
+      c.save(); c.beginPath(); c.arc(ORBs.x, ORBs.y, ORBs.r, 0, TAU); c.clip();
+      c.fillStyle = a(SUN, .08); c.fillRect(ORBs.x - ORBs.r, ORBs.y - ORBs.r, ORBs.r * 2, ORBs.r * 2);
+      const top = ORBs.y + ORBs.r - level * ORBs.r * 2;
+      c.fillStyle = a(SUN, .75); c.beginPath(); c.moveTo(ORBs.x - ORBs.r, ORBs.y + ORBs.r);
+      for (let x = -1; x <= 1.001; x += .1) c.lineTo(ORBs.x + x * ORBs.r, top + Math.sin(x * 4 + t * 3) * ORBs.r * .06);
+      c.lineTo(ORBs.x + ORBs.r, ORBs.y + ORBs.r); c.closePath(); c.fill(); c.restore();
+      c.shadowColor = SUN; c.shadowBlur = 8 + 18 * level + 14 * pulse; c.strokeStyle = a(SUN, .55 + .4 * pulse); c.lineWidth = 1.5;
+      c.beginPath(); c.arc(ORBs.x, ORBs.y, ORBs.r * (1 + .06 * pulse), 0, TAU); c.stroke(); c.shadowBlur = 0;
+
     }
   };
 }
@@ -200,8 +252,8 @@ function wmScene() {
   return {
     duration: 14.5,
     // story order, checked by scripts/test.mjs
-    stateAt: t => ({ robotAlive: t < 2.95, defeated: t >= 2.95, drop: t >= 2.95 && t < 5.6, collected: t >= 5.6, casting:t>=7&&t<8,impact:t>=8&&t<8.9,fanStopped: t >= 9.0 }),
-    steps: [[0, '로봇 반응'], [2.3, '낙하 장치'], [2.95, '말풍선 파괴·마법 획득'], [7,'마법 시전'], [8, '팬 정지'], [9.2, '통과']],
+    stateAt: t => ({ robotAlive: t < 2.95, defeated: t >= 2.95, drop: t >= 2.95 && t < 5.6, collected: t >= 5.6, consumed: t >= 6.75, fanStopped: t >= 9.0 }),
+    steps: [[0, '로봇 반응'], [2.3, '낙하 장치'], [2.95, '말풍선 파괴·마법 획득'], [6.2, '팬 정지'], [9.2, '통과']],
     draw(c, W, H, t) {
       const S = Math.min(W, H * 1.6), G = H * .82, CEIL = H * .1;
       c.fillStyle = '#10171b'; c.fillRect(0, 0, W, H);
@@ -226,7 +278,9 @@ function wmScene() {
       const RX = W * .44, rr = S * .032, ry = G - rr, BTN = W * .2;
       const wh = S * .07, ww = S * .08, fallK = seg(t, 2.55, IMPACT), restY = G - rr * .55 - wh;
       const bounce = t > IMPACT ? Math.max(0, Math.sin(seg(t, IMPACT, IMPACT + .28) * Math.PI)) * S * .018 : 0;
-      const wy = (t < IMPACT ? lerp(CEIL + S * .03, restY, fallK * fallK) : restY) - bounce;
+      // after the robot is gone the weight settles onto the floor
+      const settle = seg(t, IMPACT + .3, IMPACT + .5), floorY = G - wh;
+      const wy = (t < IMPACT ? lerp(CEIL + S * .03, restY, fallK * fallK) : lerp(restY, floorY, settle * settle)) - bounce - (settle >= 1 ? Math.max(0, Math.sin(seg(t, IMPACT + .5, IMPACT + .7) * Math.PI)) * S * .006 : 0);
       c.strokeStyle = a(MUTED, .6); c.lineWidth = 2; c.beginPath(); c.moveTo(RX - ww, CEIL); c.lineTo(RX + ww, CEIL); c.stroke();
       if (t < 2.55) { const sway = Math.sin(t * 2.2) * S * .004; c.strokeStyle = a(MUTED, .6); c.lineWidth = 1; c.beginPath(); c.moveTo(RX, CEIL); c.lineTo(RX + sway, wy); c.stroke(); }
       else if (t < 3.2) { const k = seg(t, 2.55, 3.2); c.strokeStyle = a(MUTED, .6 * (1 - k)); c.lineWidth = 1; c.beginPath(); c.moveTo(RX, CEIL); c.lineTo(RX, CEIL + S * .03 * (1 - k)); c.stroke(); }
@@ -243,16 +297,18 @@ function wmScene() {
       c.fillStyle = '#1b252a'; c.strokeStyle = pressed ? SUN : a(MUTED, .7); c.lineWidth = 1.4; c.beginPath(); c.roundRect(BTN - S * .016, by - S * .016, S * .032, S * .032, 4); c.fill(); c.stroke();
       c.fillStyle = pressed ? SUN : a(MUTED, .7); c.beginPath(); c.arc(BTN + (pressed ? S * .003 : 0), by, S * .007, 0, TAU); c.fill();
       if (pressed) { const k = seg(t, 2.3, 2.9); c.strokeStyle = a(SUN, 1 - k); c.lineWidth = 1.2; c.beginPath(); c.arc(BTN, by, S * (.02 + k * .04), 0, TAU); c.stroke(); }
-      // The robot disappears at impact; only its freed spell remains.
-      const flat = 1;
+      // robot: patrols, notices the mage, gets flattened and stays as a wreck
+      const flat = t < IMPACT ? 1 : lerp(1, .32, ease(seg(t, IMPACT, IMPACT + .12)));
       const patrol = t < 1.3 ? Math.sin(t * 2) * S * .012 : Math.sin(1.3 * 2) * S * .012;
       const turned = t > 1.3 ? -1 : (Math.cos(t * 2) > 0 ? 1 : -1);
-      if(t<IMPACT){c.save(); c.translate(RX + patrol, G); c.scale(1 + (1 - flat) * .55, flat);
-      c.globalAlpha = t < IMPACT ? 1 : .7;
+      if (t < IMPACT + .35) {
+      c.save(); c.translate(RX + patrol, G); c.scale(1 + (1 - flat) * .55, flat);
+      c.globalAlpha = t < IMPACT ? 1 : 1 - seg(t, IMPACT + .1, IMPACT + .35);
       c.strokeStyle = INK; c.lineWidth = 1.5 / Math.max(flat, .5); c.fillStyle = '#1b252a'; c.beginPath(); c.arc(0, -rr, rr, 0, TAU); c.fill(); c.stroke();
       const eyeOn = t < IMPACT || (t < IMPACT + .4 && Math.sin(t * 60) > 0);
       if (eyeOn) { c.fillStyle = t > 1.3 ? '#ff8a7a' : SUN; c.fillRect(turned < 0 ? -rr * .75 : rr * .05, -rr * 1.35, rr * .7, rr * .22); }
-      c.restore();}
+      c.restore();
+      }
       if (t > 1.3 && t < 2.3) { const k = seg(t, 1.3, 1.5); warnIcon(c, RX + patrol, ry - rr * 2.1 - S * .01 * (1 - k), S * .05 * pop(k), '#ff8a7a'); }
       // speech bubble: holds the stop sign until the robot is crushed, then shatters and frees it
       const BX = RX + patrol + S * .075, BY = ry - rr * 2.6, BW = S * .065;
@@ -266,7 +322,13 @@ function wmScene() {
       }
       // magic slots (top-left)
       const sl = S * .05, slot0 = [W * .04 + sl / 2, H * .05 + sl / 2];
-      for (let i = 0; i < 3; i++) { const x = W * .04 + i * (sl + S * .012), y = H * .05, on = i === 0 && t > 5.6; c.strokeStyle = on ? GOLD : a(MUTED, .4); c.lineWidth = on ? 1.6 : 1; c.fillStyle = on ? a(GOLD, .12) : 'transparent'; c.beginPath(); c.roundRect(x, y, sl, sl, 4); c.fill(); c.stroke(); if (on) handIcon(c, x + sl / 2, y + sl / 2, sl * .62, GOLD); }
+      const used = seg(t, 6.6, 6.75);
+      for (let i = 0; i < 3; i++) {
+        const x = W * .04 + i * (sl + S * .012), y = H * .05, on = i === 0 && t > 5.6 && t < 6.75, flash = i === 0 ? Math.max(0, 1 - Math.abs(t - 6.75) / .25) : 0;
+        c.strokeStyle = on || flash > 0 ? GOLD : a(MUTED, .4); c.lineWidth = on ? 1.6 : 1; c.fillStyle = on ? a(GOLD, .12) : a(GOLD, .18 * flash);
+        c.beginPath(); c.roundRect(x, y, sl, sl, 4); c.fill(); c.stroke();
+        if (on) { c.globalAlpha = 1 - used; handIcon(c, x + sl / 2, y + sl / 2, sl * .62 * (1 - used * .4), GOLD); c.globalAlpha = 1; }
+      }
       // the freed stop sign drifts down from where the bubble was, then goes to the slot
       if (t >= IMPACT && t < 5.6) {
         const k = ease(seg(t, IMPACT + .15, 3.9)), bob = t > 3.9 ? Math.sin(t * 5) * S * .006 : 0, spin = Math.sin(seg(t, IMPACT, 3.9) * Math.PI * 2) * .25;
@@ -290,10 +352,37 @@ function wmScene() {
       c.beginPath(); c.arc(mx, my - mh * .86, mh * .12, 0, TAU); c.fill(); c.stroke();
       c.beginPath(); c.moveTo(tip[0], my); c.lineTo(tip[0], tip[1]); c.stroke();
       c.fillStyle = (t > 7.3 && t < 7.5) ? '#fff' : GOLD; c.beginPath(); c.arc(tip[0], tip[1], mh * .05, 0, TAU); c.fill();
-      if(t>7&&t<8){const k=seg(t,7,8);c.save();c.globalAlpha=Math.sin(k*Math.PI);c.shadowColor=GOLD;c.shadowBlur=16;c.strokeStyle=GOLD;c.lineWidth=1.6;for(let i=0;i<2;i++){c.beginPath();c.ellipse(tip[0],tip[1],S*(.017+i*.012),S*(.03+i*.014),0,0,TAU);c.stroke();}for(let i=0;i<8;i++){const an=t*3+i*TAU/8;c.fillStyle=INK;c.beginPath();c.arc(tip[0]+Math.cos(an)*S*.035,tip[1]+Math.sin(an)*S*.045,S*.0025,0,TAU);c.fill();}c.restore();}
-      const bo = seg(t, 7.4, 8.0); if (bo > 0 && bo < 1) { c.save();c.shadowColor=GOLD;c.shadowBlur=16;c.strokeStyle=GOLD;c.lineWidth=2.5;c.beginPath();const tail=Math.max(0,bo-.28);c.moveTo(lerp(tip[0],FX,tail),lerp(tip[1],FY,tail));c.lineTo(lerp(tip[0],FX,bo),lerp(tip[1],FY,bo));c.stroke();handIcon(c,lerp(tip[0],FX,bo),lerp(tip[1],FY,bo),S*.04,GOLD);c.restore(); }
-      if(t>=8&&t<8.9){const k=seg(t,8,8.9);c.save();c.globalAlpha=1-k;c.shadowColor=GOLD;c.shadowBlur=15;c.strokeStyle=GOLD;c.lineWidth=2;for(let j=0;j<2;j++){c.beginPath();c.arc(FX,FY,R*(.15+k*(1+j*.2)),0,TAU);c.stroke();}for(let i=0;i<12;i++){const an=i*TAU/12,rr=R*(.2+k*1.1);c.beginPath();c.moveTo(FX+Math.cos(an)*rr,FY+Math.sin(an)*rr);c.lineTo(FX+Math.cos(an)*(rr+S*.018),FY+Math.sin(an)*(rr+S*.018));c.stroke();}c.restore();}
-      if (t > T0 && t < T0 + .7) { const k = seg(t, T0, T0 + .7); c.strokeStyle = a(GOLD, 1 - k); c.lineWidth = 1.5; c.beginPath(); c.arc(FX, FY, R * (.15 + k * .9), 0, TAU); c.stroke(); }
+      // the stop magic leaves its slot and is consumed into the staff
+      const use = seg(t, 6.6, 7.0);
+      if (use > 0 && use < 1) {
+        const u = ease(use), x = lerp(slot0[0], tip[0], u), y = lerp(slot0[1], tip[1], u) - Math.sin(u * Math.PI) * H * .1;
+        for (let i = 1; i < 6; i++) { const uu = Math.max(0, u - i * .05); c.fillStyle = a(GOLD, .4 * (1 - i / 6)); c.beginPath(); c.arc(lerp(slot0[0], tip[0], uu), lerp(slot0[1], tip[1], uu) - Math.sin(uu * Math.PI) * H * .1, S * .006, 0, TAU); c.fill(); }
+        c.shadowColor = GOLD; c.shadowBlur = 14; handIcon(c, x, y, S * .036 * (1 - u * .5), GOLD); c.shadowBlur = 0;
+      }
+      // cast: magic circle at the staff, gathering sparks, a glowing projectile with a trail, burst on the fan
+      const circ = seg(t, 6.9, 7.1) * (1 - seg(t, 7.5, 7.8));
+      if (circ > 0) {
+        const cr = S * .05 * ease(circ);
+        c.save(); c.translate(tip[0], tip[1]); c.globalAlpha = circ;
+        c.strokeStyle = GOLD; c.lineWidth = 1.3; c.beginPath(); c.arc(0, 0, cr, 0, TAU); c.stroke();
+        c.rotate(t * 2.5); c.strokeStyle = a(GOLD, .7); c.lineWidth = 1; c.beginPath(); c.arc(0, 0, cr * .68, 0, TAU); c.stroke();
+        for (let i = 0; i < 6; i++) { c.rotate(TAU / 6); c.beginPath(); c.moveTo(cr * .68, 0); c.lineTo(cr, 0); c.stroke(); }
+        c.restore();
+        for (let i = 0; i < 10; i++) { const k = (t * 1.6 + i / 10) % 1, an = i * 2.4; c.fillStyle = a(GOLD, (1 - k) * circ); c.beginPath(); c.arc(tip[0] + Math.cos(an) * S * .09 * (1 - k), tip[1] + Math.sin(an) * S * .09 * (1 - k), S * .004, 0, TAU); c.fill(); }
+        c.globalAlpha = circ; c.shadowColor = GOLD; c.shadowBlur = 18; c.fillStyle = '#fff6d8'; c.beginPath(); c.arc(tip[0], tip[1], S * .008, 0, TAU); c.fill(); c.shadowBlur = 0; c.globalAlpha = 1;
+      }
+      const bo = seg(t, 7.4, 8.0);
+      if (bo > 0 && bo < 1) {
+        const P = u => [lerp(tip[0], FX, u), lerp(tip[1], FY, u) - Math.sin(u * Math.PI) * S * .04];
+        for (let i = 1; i < 9; i++) { const [x, y] = P(Math.max(0, ease(bo) - i * .025)); c.fillStyle = a(GOLD, .55 * (1 - i / 9)); c.beginPath(); c.arc(x, y, S * (.012 - i * .001), 0, TAU); c.fill(); }
+        const [x, y] = P(ease(bo)); c.shadowColor = GOLD; c.shadowBlur = 20; handIcon(c, x, y, S * .032, GOLD); c.shadowBlur = 0;
+      }
+      if (t > T0 && t < T0 + .8) {
+        const k = seg(t, T0, T0 + .8);
+        c.fillStyle = a('#fff6d8', .5 * (1 - k) * (1 - k)); c.beginPath(); c.arc(FX, FY, R * .35 * (1 + k), 0, TAU); c.fill();
+        c.strokeStyle = a(GOLD, 1 - k); c.lineWidth = 1.5; c.beginPath(); c.arc(FX, FY, R * (.15 + k * .9), 0, TAU); c.stroke();
+        c.strokeStyle = a(GOLD, .8 * (1 - k)); c.lineWidth = 1.2; for (let i = 0; i < 10; i++) { const an = i * TAU / 10 + .2; c.beginPath(); c.moveTo(FX + Math.cos(an) * R * (.2 + k * .5), FY + Math.sin(an) * R * (.2 + k * .5)); c.lineTo(FX + Math.cos(an) * R * (.3 + k * .75), FY + Math.sin(an) * R * (.3 + k * .75)); c.stroke(); }
+      }
       c.restore();
     }
   };

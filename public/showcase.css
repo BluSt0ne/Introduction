@@ -217,3 +217,63 @@
 .nx-play{margin-top:84px}
 @media (max-width:980px){.nx-roles{grid-template-columns:1fr}}
 @media (max-width:640px){.nx-role ul{grid-template-columns:1fr 1fr}.nx-loop li+li:before{display:none}}
+/* keyword layout */
+.nx-intro-tags span{display:inline-flex;align-items:center;gap:6px}
+.nx-intro-tags .nx-ico{width:14px;height:14px;color:var(--accent)}
+.nx-legend{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.nx-legend .nx-ico{width:15px;height:15px;color:var(--accent);margin-right:-8px}
+.nx-issue dl>div{grid-template-columns:24px 1fr;align-items:start}
+.nx-issue dt{padding-top:3px;color:var(--muted)}
+.nx-issue dt .nx-ico{width:16px;height:16px}
+.nx-issue .rule dt{color:var(--accent)}
+.nx-issue dd{font-size:14px}
+.nx-tool p{font-size:14px}
+.nx-anim-phases{padding-bottom:18px}
+@media (max-width:640px){.nx-issue dl>div{grid-template-columns:24px 1fr;gap:8px}}
+.nx-issue dt .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+/* keep the animation card height stable while the active phase changes */
+.nx-anim-phases{flex-wrap:nowrap;overflow:hidden;white-space:nowrap;mask-image:linear-gradient(90deg,#000 88%,transparent)}
+.nx-anim-phases li,.nx-anim-phases li.on{font-weight:500}
+.nx-anim-stage{contain:strict}
+/* problem / solution cards */
+.nx-ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch}
+.nx-ps{position:relative;border:1px solid var(--line);border-radius:16px;background:var(--paper);padding:24px 26px 22px}
+.nx-ps-bar{display:block;width:28px;height:3px;border-radius:2px;background:var(--accent);margin-bottom:14px}
+.nx-pj.ww .nx-ps-bar{background:#d9b96e}
+.nx-ps-tag{position:absolute;top:18px;right:20px;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 10px}
+.nx-ps h3{font-size:19px;font-weight:600;letter-spacing:-.045em;margin-bottom:14px;padding-right:70px}
+.nx-ps h4{font-size:13px;font-weight:700;margin:0 0 4px;color:var(--ink)}
+.nx-ps h4.sol{display:inline-block;font-size:12px;color:var(--bg);background:var(--accent);border-radius:4px;padding:1px 7px;margin-bottom:6px}
+.nx-pj.ww .nx-ps h4.sol{background:#d9b96e}
+.nx-ps p{font-size:15px;line-height:1.75;color:#c9d6cb}
+.nx-ps p strong{color:var(--ink);font-weight:700}
+.nx-ps hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+.nx-ps-shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:16px}
+.nx-ps-shots figure{margin:0}
+.nx-ps-shots img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:10px;border:1px solid var(--line);transition:transform .25s}
+.nx-ps-shots a:hover img{transform:translateY(-2px);border-color:var(--accent)}
+.nx-ps-shots figcaption{font-size:12px;color:var(--muted);margin-top:6px}
+.nx-pj{margin-top:26px}
+.nx-pj-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.nx-pj-mark{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);color:var(--accent)}
+.nx-pj.ww .nx-pj-mark{color:#d9b96e;border-radius:4px}
+.nx-pj-mark .nx-ico{width:22px;height:22px}
+.nx-pj-head h3{font-size:22px;font-weight:600;letter-spacing:-.04em}
+.nx-pj.ww .nx-pj-head h3{color:#e6d29e}
+.nx-pj-head small{font-size:12px;color:var(--muted)}
+@media (max-width:860px){.nx-ps-grid{grid-template-columns:1fr}}
+/* screenshots: large from the start, click to enlarge */
+.nx-ps-shots{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.nx-zoom{all:unset;position:relative;display:block;cursor:zoom-in;border-radius:10px;overflow:hidden}
+.nx-zoom img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+.nx-zoom:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.nx-zoom-ico{position:absolute;right:8px;bottom:8px;width:28px;height:28px;display:grid;place-items:center;border-radius:7px;background:#101914d9;border:1px solid var(--line);color:var(--ink);font-size:15px;transition:background .2s}
+.nx-zoom:hover .nx-zoom-ico{background:var(--accent);color:var(--bg)}
+.nx-lightbox{position:fixed;inset:0;z-index:200;background:#060b08e6;display:grid;place-items:center;padding:4vh 4vw;cursor:zoom-out}
+.nx-lightbox figure{margin:0;max-width:92vw;max-height:88vh;display:flex;flex-direction:column;align-items:center;gap:10px}
+.nx-lightbox img{max-width:92vw;max-height:82vh;object-fit:contain;border-radius:10px}
+.nx-lightbox figcaption{color:var(--muted);font-size:14px}
+.nx-lightbox button{position:absolute;top:18px;right:22px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:16px;cursor:pointer}
+.nx-ps-shots{grid-template-columns:repeat(var(--n,1),minmax(0,1fr))}
+.nx-ps-shots figure{min-width:0}
+.nx-zoom{width:100%;box-sizing:border-box}
