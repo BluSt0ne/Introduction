@@ -61,37 +61,37 @@ function rocket(c, x, y, ang, s, flame) {
   c.restore();
 }
 
-/* galaxy view: neighbouring planets colonised one after another by rocket */
-const GAL = (() => { const r = rnd(21), list = []; for (let i = 0; i < 16; i++) { const an = i * 2.4 + r() * .6, d = .55 + .5 * Math.sqrt((i + 1) / 16) + r() * .12; list.push({ an, d, s: .5 + r() * .7, kind: i % 3 }); } return list; })();
-function galaxyPlan(W, H, S, P0, P1) {
-  const CX = W * .6, CY = H * .56, pts = GAL.map(g => ({ x: CX + Math.cos(g.an) * g.d * W * 1.45, y: CY + Math.sin(g.an) * g.d * H * 1.45, r: S * .045 * g.s * 2.2, kind: g.kind }));
-  const owned = [{ x: P0.x, y: P0.y }, { x: P1.x, y: P1.y }], routes = [], left = pts.map((p, i) => i);
-  for (let k = 0; k < pts.length; k++) {
-    let best = null; left.forEach(i => owned.forEach(o => { const d = Math.hypot(pts[i].x - o.x, pts[i].y - o.y); if (!best || d < best.d) best = { i, o, d }; }));
-    const t0 = 15.0 + k * .32; routes.push({ from: best.o, to: pts[best.i], t0, t1: t0 + 1.3 }); pts[best.i].t = t0 + 1.3;
-    owned.push(pts[best.i]); left.splice(left.indexOf(best.i), 1);
+/* galaxy view: a spiral of planets, lit one after another outward from home */
+const GAL = (() => {
+  const r = rnd(21), pts = [];
+  for (let tries = 0; pts.length < 64 && tries < 4000; tries++) {
+    const arm = tries % 3, d = .12 + Math.pow(r(), .8) * .88, an = arm * TAU / 3 + d * 4.2 + (r() - .5) * .55;
+    const x = Math.cos(an) * d, y = Math.sin(an) * d * .62, s = .55 + r() * .6;
+    if (Math.hypot(x, y / .62) < .1) continue;
+    if (pts.some(p => Math.hypot(p.x - x, p.y - y) < .075)) continue;
+    pts.push({ x, y, s, d, kind: pts.length % 3, j: r() });
   }
-  return { pts, routes };
-}
+  const dust = []; for (let i = 0; i < 420; i++) { const arm = i % 3, d = Math.pow(r(), .7), an = arm * TAU / 3 + d * 4.2 + (r() - .5) * .8; dust.push([Math.cos(an) * d, Math.sin(an) * d * .62, r()]); }
+  return { pts, dust };
+})();
 function galaxy(c, W, H, S, t, P0, P1, LW) {
-  const show = seg(t, 13.2, 14.6); if (show <= 0) return;
-  const { pts, routes } = galaxyPlan(W, H, S, P0, P1);
+  const show = seg(t, 13.2, 15.2); if (show <= 0) return;
+  const CX = W * .6, CY = H * .56, RAD = W * 2.9;
   c.save(); c.globalAlpha = show;
-  const r = rnd(4); c.fillStyle = a(INK, .5); for (let i = 0; i < 160; i++) { const an = r() * TAU, d = Math.pow(r(), .6) * W * 2.1; c.beginPath(); c.arc(W * .6 + Math.cos(an + d / W) * d, H * .56 + Math.sin(an + d / W) * d * .8, (.6 + r()) * LW, 0, TAU); c.fill(); }
-  pts.forEach(p => {
-    const g = p.t ? seg(t, p.t, p.t + .6) : 0;
-    c.fillStyle = a(ACC, .03 + .1 * g); c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.fill();
-    c.strokeStyle = a(g > 0 ? ACC : MUTED, .3 + .5 * g); c.lineWidth = 1.3 * LW; c.beginPath(); c.arc(p.x, p.y, p.r, 0, TAU); c.stroke();
-    if (g > 0) { for (let i = 0; i < 5; i++) { const an = i * 1.256 + p.kind; c.fillStyle = a(PET[(i + p.kind) % 3], .9 * g); c.beginPath(); c.arc(p.x + Math.cos(an) * p.r * .5, p.y + Math.sin(an) * p.r * .5, p.r * .16 * pop(g), 0, TAU); c.fill(); } }
-    if (p.t && t > p.t && t < p.t + .7) { const k = seg(t, p.t, p.t + .7); c.strokeStyle = a(SUN, 1 - k); c.lineWidth = 1.4 * LW; c.beginPath(); c.arc(p.x, p.y, p.r * (1 + k), 0, TAU); c.stroke(); }
-  });
-  routes.forEach(({ from, to, t0, t1 }) => {
-    const k = seg(t, t0, t1); if (k <= 0 || k >= 1) return; const u = ease(k);
-    const mx = (from.x + to.x) / 2 - (to.y - from.y) * .2, my = (from.y + to.y) / 2 + (to.x - from.x) * .2;
-    const q = (u, i) => (1 - u) * (1 - u) * [from.x, from.y][i] + 2 * (1 - u) * u * [mx, my][i] + u * u * [to.x, to.y][i];
-    const x = q(u, 0), y = q(u, 1), dx = q(Math.min(1, u + .02), 0) - x, dy = q(Math.min(1, u + .02), 1) - y;
-    for (let i = 1; i < 7; i++) { const uu = Math.max(0, u - i * .03); c.fillStyle = a(SUN, .5 * (1 - i / 7)); c.beginPath(); c.arc(q(uu, 0), q(uu, 1), (2.4 - i * .25) * LW, 0, TAU); c.fill(); }
-    rocket(c, x, y, Math.atan2(dx, -dy), S * .05 * LW, 1);
+  const core = c.createRadialGradient(CX, CY, 0, CX, CY, RAD * .5); core.addColorStop(0, a(ACC, .1)); core.addColorStop(1, a(ACC, 0));
+  c.fillStyle = core; c.beginPath(); c.arc(CX, CY, RAD * .5, 0, TAU); c.fill();
+  GAL.dust.forEach(([x, y, k]) => { c.fillStyle = a(INK, .15 + .35 * k); c.beginPath(); c.arc(CX + x * RAD, CY + y * RAD, (.5 + k) * LW, 0, TAU); c.fill(); });
+  GAL.pts.forEach(p => {
+    const x = CX + p.x * RAD, y = CY + p.y * RAD, r = S * .09 * p.s;
+    const lit = 15.4 + p.d * 6.5 + p.j * .6, g = seg(t, lit, lit + 1.2);
+    if (g > 0) {
+      const halo = c.createRadialGradient(x, y, r * .6, x, y, r * (2.6 + .3 * Math.sin(t * 2 + p.j * 6)));
+      halo.addColorStop(0, a(ACC, .45 * g)); halo.addColorStop(1, a(ACC, 0));
+      c.fillStyle = halo; c.beginPath(); c.arc(x, y, r * 3, 0, TAU); c.fill();
+    }
+    c.fillStyle = g > 0 ? a(ACC, .2 + .5 * g) : a(MUTED, .12); c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill();
+    c.strokeStyle = a(g > 0 ? ACC : MUTED, .35 + .5 * g); c.lineWidth = 1.2 * LW; c.beginPath(); c.arc(x, y, r, 0, TAU); c.stroke();
+    if (g > 0 && g < 1) { c.strokeStyle = a(SUN, .8 * (1 - g)); c.lineWidth = 1.4 * LW; c.beginPath(); c.arc(x, y, r * (1 + g * 2.2), 0, TAU); c.stroke(); }
   });
   c.restore();
 }
@@ -106,17 +106,17 @@ function wopScene() {
   const SPEND = [[3.5, 0, 10], [4.5, 1, 8], [7.7, 'pad', 14]];
   const MAX = 40;
   return {
-    duration: 21,
+    duration: 24,
     // positions in planet-radius units, used by scripts/test.mjs to keep devices off the flowers
     layout: { flowers: slots.map(s => ({ x: s.x * .8, y: s.y * .8 })), devices: devs.map(d => ({ x: d.x * .8, y: d.y * .8 })), flowerRadius: .12, deviceRadius: .17 },
-    steps: [[0, '꽃 기르기'], [1.2, '에너지 수집'], [3.5, '장치 설치'], [6.0, '블루프린트'], [7.6, '로켓 발사'], [10.2, '같은 구조로 가동'], [13.2, '은하로 확장']],
+    steps: [[0, '꽃 기르기'], [1.2, '에너지 수집'], [3.5, '장치 설치'], [6.0, '블루프린트'], [7.6, '로켓 발사'], [10.2, '같은 구조로 가동'], [13.2, '은하 전체로 확장']],
     draw(c, W, H, t) {
       const S = Math.min(W, H * 1.6), fr = S * .026;
       c.fillStyle = '#111a15'; c.fillRect(0, 0, W, H);
       c.fillStyle = a(MUTED, .1); for (let x = S * .03; x < W; x += S * .04) for (let y = S * .03; y < H; y += S * .04) c.fillRect(x, y, 1, 1);
       const P0 = { x: W * .36, y: H * .58, r: Math.min(W * .21, H * .33) }, P1 = { x: W * .83, y: H * .6, r: Math.min(W * .14, H * .23) };
       // camera: after the copy runs, pull back to the galaxy
-      const Z = lerp(1, .27, ease(seg(t, 13.0, 15.0))), CX = W * .6, CY = H * .56;
+      const Z = lerp(1, .13, ease(seg(t, 13.0, 16.0))), CX = W * .6, CY = H * .56;
       const toWorld = (x, y) => [CX + (x - CX) / Z, CY + (y - CY) / Z];
       const ORBs = { x: W * .02 + S * .06, y: H * .04 + S * .06, r: S * .05 };
       const [ox, oy] = toWorld(ORBs.x, ORBs.y), ORB = { x: ox, y: oy, r: ORBs.r / Z };
@@ -137,8 +137,9 @@ function wopScene() {
           if (k >= 1) { gained++; pulse = Math.max(pulse, 1 - seg(t, t0 + .95, t0 + 1.3)); continue; }
           const u = ease(k), cx = (x + ORB.x) / 2, cy = Math.min(y, ORB.y) + H * .05;
           const mx = (1 - u) * (1 - u) * x + 2 * (1 - u) * u * cx + u * u * ORB.x, my = (1 - u) * (1 - u) * y + 2 * (1 - u) * u * cy + u * u * ORB.y;
-          c.fillStyle = a(SUN, .95); c.beginPath(); c.arc(mx, my, S * .006 * LW, 0, TAU); c.fill();
-          c.fillStyle = a(SUN, .18); c.beginPath(); c.arc(mx, my, S * .014 * LW, 0, TAU); c.fill();
+          const mf = 1 - seg(t, 13.0, 14.5); if (mf <= 0) continue;
+          c.fillStyle = a(SUN, .95 * mf); c.beginPath(); c.arc(mx, my, S * .006 * LW, 0, TAU); c.fill();
+          c.fillStyle = a(SUN, .18 * mf); c.beginPath(); c.arc(mx, my, S * .014 * LW, 0, TAU); c.fill();
         }
       });
       const pad = [P0.x + P0.r * .78, P0.y - P0.r * .62];
