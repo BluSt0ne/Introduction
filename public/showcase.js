@@ -146,7 +146,7 @@ function animCard(id, cls, label, title, desc, steps) {
     <header><span class="nx-anim-label">${label}</span><h3>${title}</h3></header>
     <div class="nx-anim-stage"><canvas aria-label="${e(title)} 진행 애니메이션"></canvas></div>
     <div class="nx-anim-bar" aria-hidden="true"><i></i></div>
-    <ol class="nx-anim-phases">${steps.map(([at,s])=>`<li data-phase><button type="button" data-anim-jump="${at}">${s}</button></li>`).join('')}</ol><div class="nx-anim-controls"><button type="button" data-anim-toggle aria-pressed="false">일시정지</button><button type="button" data-anim-replay>처음부터</button><span data-anim-caption></span></div>
+    <ol class="nx-anim-phases" aria-hidden="true">${steps.map(([, s]) => `<li data-phase>${s}</li>`).join('')}</ol>
     <p>${desc}</p>
   </article>`;
 }
@@ -155,16 +155,23 @@ function play() {
   return `<section class="nx-play" id="nx-play">
   <header class="nx-head"><span class="eyebrow">GAME FLOW</span><h2>게임 흐름</h2></header>
   <div class="nx-anim-grid">
-    ${animCard('nx-anim-wop', 'wop', 'World of Plant', '꽃에서 행성으로', '커서 파동으로 꽃을 깨우고 장치로 생산을 자동화합니다. 완성한 배치를 블루프린트에 담아 로켓으로 보내고, 다른 행성으로 생산을 이어 갑니다.', A ? A.wopScene().steps : [])}
-    ${animCard('nx-anim-ww', 'ww', 'Wordless Mage', '로봇 처치에서 길 열기까지', '정지 신호를 보낸 로봇을 처치해 떨어진 마법을 획득합니다. 마법 휠에서 정지를 선택하고 거대 팬에 발동한 뒤, 멈춘 날개 사이로 통과합니다.', A ? A.wmScene().steps : [])}
+    ${animCard('nx-anim-wop', 'wop', 'World of Plant', '꽃에서 행성으로', '커서 파동으로 꽃을 피워 에너지를 모으고, 장치를 설치해 생산을 자동화합니다. 완성한 배치를 블루프린트로 저장해 로켓으로 보내고, 새 행성에서 같은 생산 구조를 이어 갑니다.', A ? A.wopScene().steps : [])}
+    ${animCard('nx-anim-ww', 'ww', 'Wordless Mage', '로봇 처치에서 길 열기까지', '플레이어를 발견한 로봇이 정지 신호를 보내고, 처치하면 그 신호가 마법으로 떨어집니다. 획득한 정지 마법을 거대 팬에 발동해 날개를 멈추고 그 사이로 통과합니다.', A ? A.wmScene().steps : [])}
   </div>
 </section>`;
 }
 function intro() {
-  const projects=window.ARCHIVE_DATA.projects;
-  return `<section class="nx-intro nx-reveal" id="nx-intro"><div class="nx-intro-copy"><span class="eyebrow">LEE WOOHYEON · GAME DESIGN × AI</span><h1>규칙을 설계하고,<br>플레이로 다듬는<br><strong>이우현입니다.</strong></h1><p class="nx-lead">시스템과 콘텐츠를 기획하고, AI와 협업해 직접 플레이할 수 있는 게임으로 만듭니다. 컨셉·핵심 규칙·레벨과 밸런스는 직접 정하고, 구현 결과는 플레이로 확인합니다.</p><div class="nx-intro-tags"><span>시스템·콘텐츠 기획</span><span>AI 협업 구현</span><span>직접 플레이 검수</span></div><a class="button primary" href="#" data-scroll="nx-play">두 게임의 흐름 보기 ↓</a></div><div class="nx-project-overview" aria-label="소개할 프로젝트">${projects.map(p=>`<a class="nx-overview-card ${p.id}" href="#project/${p.id}"><div><span>${p.id==='wop'?'01 · 성장과 자동화':'02 · 마법과 환경 퍼즐'}</span><h2>${e(p.name)}</h2><p>${p.id==='wop'?'꽃에서 얻은 자원으로 생산을 자동화하고, 로켓으로 다른 행성까지 정원을 넓히는 게임.':'로봇을 처치해 얻은 마법으로 장치를 바꾸고, 막힌 길을 풀어 가는 퍼즐 플랫포머.'}</p><b>게임과 제작 과정 보기 ↗</b></div><img src="${e(p.cover)}" alt="${e(p.name)} 플레이 화면"></a>`).join('')}</div></section><nav class="nx-jump" aria-label="페이지 내 이동">${[['nx-intro','소개'],['nx-play','게임 흐름'],['nx-projects','프로젝트'],['nx-split','역할 분담'],['nx-ai','AI 협업 시행착오'],['nx-verify','문제 해결'],['nx-tools','제작 도구']].map(([id,t],i)=>`<a href="#" data-scroll="${id}"><span>${String(i+1).padStart(2,'0')}</span>${t}</a>`).join('')}</nav>`;
+  return `<section class="nx-intro nx-reveal" id="nx-intro">
+  <div class="nx-intro-copy">
+    <span class="eyebrow">LEE WOOHYEON · GAME DESIGN × AI</span>
+    <h1>규칙을 설계하고,<br>플레이로 다듬는<br><strong>이우현입니다.</strong></h1>
+    <p class="nx-lead">시스템과 콘텐츠를 기획하고, AI와 협업해 직접 플레이할 수 있는 게임으로 만듭니다. 컨셉·핵심 규칙·레벨과 밸런스는 직접 정하고, 구현 결과는 플레이로 확인합니다.</p>
+    <div class="nx-intro-tags"><span>시스템·콘텐츠 기획</span><span>AI 협업 구현</span><span>직접 플레이 검수</span></div>
+  </div>
+  <div class="nx-stats" aria-label="주요 수치">${STATS.map(([n, u, l, s]) => `<div class="nx-stat"><strong><span data-count="${n}">0</span>${u ? `<small>${u}</small>` : ''}</strong><span>${l}</span><em>${s}</em></div>`).join('')}</div>
+</section>
+<nav class="nx-jump" aria-label="페이지 내 이동">${[['nx-play','게임 흐름'],['nx-intro','소개'],['nx-projects','프로젝트'],['nx-split','역할 분담'],['nx-ai','AI 협업 시행착오'],['nx-verify','문제 해결'],['nx-tools','제작 도구']].map(([id, t], i) => `<a href="#" data-scroll="${id}"><span>${String(i + 1).padStart(2, '0')}</span>${t}</a>`).join('')}</nav>`;
 }
-function metrics(){return `<div class="nx-stats nx-project-stats" aria-label="프로젝트 주요 수치">${STATS.map(([n,u,l,s])=>`<div class="nx-stat"><strong><span data-count="${n}">0</span>${u?`<small>${u}</small>`:''}</strong><span>${l}</span><em>${s}</em></div>`).join('')}</div>`;}
 
 function split() {
   return `<section class="nx-section nx-reveal" id="nx-split">
@@ -284,17 +291,19 @@ function drawPlanet(count) {
 
 
 
-let sceneCleanups=[];
+let cleanups = [];
 function mount() {
   const main = $('#main'); const page = (location.hash.slice(1) || 'overview').split(/[/?]/)[0];
   document.body.classList.toggle('nx-overview', page === 'overview');
-  if(page!=='overview'){sceneCleanups.forEach(dispose=>dispose());sceneCleanups=[];return;}if($('#nx-play',main))return;sceneCleanups.forEach(dispose=>dispose());sceneCleanups=[];
+  if (page !== 'overview') { cleanups.forEach(f => f()); cleanups = []; return; }
+  if ($('#nx-play', main)) return;
+  cleanups.forEach(f => f()); cleanups = [];
   const heading = $('.collection-heading', main), grid = $('.project-grid', main); if (!heading || !grid) return;
   heading.id = 'nx-projects';
-  heading.insertAdjacentHTML('beforebegin', intro() + play());
-  grid.insertAdjacentHTML('afterend', metrics() + split() + aiIssues() + verify() + tools());
+  heading.insertAdjacentHTML('beforebegin', play() + intro());
+  grid.insertAdjacentHTML('afterend', split() + aiIssues() + verify() + tools());
   $('#nx-split-panel').innerHTML = splitPanel(state.proj, state.stage);
-  if (window.NXAnim) { sceneCleanups.push(NXAnim.mount($('#nx-anim-wop'), NXAnim.wopScene()),NXAnim.mount($('#nx-anim-ww'), NXAnim.wmScene())); }
+  if (window.NXAnim) cleanups.push(NXAnim.mount($('#nx-anim-wop'), NXAnim.wopScene()), NXAnim.mount($('#nx-anim-ww'), NXAnim.wmScene()));
   drawPlanet(0); countUp(); reveal();
 }
 
